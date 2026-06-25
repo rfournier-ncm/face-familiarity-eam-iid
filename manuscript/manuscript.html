@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Raphaël Fournier">
+<meta name="author" content="Paul Downing">
+<meta name="author" content="Richard Ramsey">
+<meta name="dcterms.date" content="2026-06-25">
+<meta name="keywords" content="face perception, memory, familiarity, person knowledge, decision models, evidence accumulation modelling, individual difference">
+
+<title>manuscript</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="manuscript_files/libs/clipboard/clipboard.min.js"></script>
+<script src="manuscript_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="manuscript_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="manuscript_files/libs/quarto-html/popper.min.js"></script>
+<script src="manuscript_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="manuscript_files/libs/quarto-html/anchor.min.js"></script>
+<link href="manuscript_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="manuscript_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="manuscript_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="manuscript_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="manuscript_files/libs/bootstrap/bootstrap-fe6853329b567fd5d0b87211734a8b84.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="99">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
+  <li><a href="#method-and-materials" id="toc-method-and-materials" class="nav-link" data-scroll-target="#method-and-materials"><span class="header-section-number">2</span> Method and Materials</a>
+  <ul class="collapse">
+  <li><a href="#pre-registration-and-open-science" id="toc-pre-registration-and-open-science" class="nav-link" data-scroll-target="#pre-registration-and-open-science"><span class="header-section-number">2.1</span> Pre-registration and open science</a></li>
+  <li><a href="#participants" id="toc-participants" class="nav-link" data-scroll-target="#participants"><span class="header-section-number">2.2</span> Participants</a></li>
+  <li><a href="#material" id="toc-material" class="nav-link" data-scroll-target="#material"><span class="header-section-number">2.3</span> Material</a></li>
+  <li><a href="#procedure" id="toc-procedure" class="nav-link" data-scroll-target="#procedure"><span class="header-section-number">2.4</span> Procedure</a></li>
+  <li><a href="#stimuli" id="toc-stimuli" class="nav-link" data-scroll-target="#stimuli"><span class="header-section-number">2.5</span> Stimuli</a></li>
+  <li><a href="#evidence-accumulation-modeling" id="toc-evidence-accumulation-modeling" class="nav-link" data-scroll-target="#evidence-accumulation-modeling"><span class="header-section-number">2.6</span> Evidence accumulation modeling</a>
+  <ul class="collapse">
+  <li><a href="#model-specification" id="toc-model-specification" class="nav-link" data-scroll-target="#model-specification"><span class="header-section-number">2.6.1</span> Model specification</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">3</span> Results</a></li>
+  <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion"><span class="header-section-number">4</span> Discussion</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">5</span> References</a></li>
+  <li><a href="#appendix-content-here" id="toc-appendix-content-here" class="nav-link" data-scroll-target="#appendix-content-here"><span class="header-section-number">6</span> Appendix content here</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="manuscript.pdf"><i class="bi bi-file-pdf"></i>Typst (preprint)</a></li><li><a href="manuscript.docx"><i class="bi bi-file-word"></i>MS Word (preprint)</a></li></ul></div><div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="https://osf.io/preprints/psyarxiv/"><i class="bi bi-file-pdf"></i>Preprint (PsyArXiv)</a></li><li><a href="https://rich-ramsey.github.io/preprint-example"><i class="bi bi-globe2"></i>Online supplement</a></li><li><a href="supplementary.pdf"><i class="bi bi-file-pdf"></i>Supplementary Materials (PDF)</a></li><li><a href="https://github.com/rich-ramsey/"><i class="bi bi-github"></i>GitHub Repository</a></li><li><a href="https://osf.io/65bt2"><i class="bi bi-archive"></i>OSF Repository</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Authors</div>
+  <div class="quarto-title-meta-heading">Affiliations</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Raphaël Fournier <a href="https://orcid.org/0000-0002-5135-4066" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            ETH Zürich
+          </p>
+      </div>
+    <div class="quarto-title-meta-contents">
+    <p class="author">Paul Downing </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Bangor University
+          </p>
+      </div>
+    <div class="quarto-title-meta-contents">
+    <p class="author">Richard Ramsey <a href="mailto:rramsey@ethz.ch" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> <a href="https://orcid.org/0000-0002-0329-2112" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            ETH Zürich
+          </p>
+        <p class="affiliation">
+            ETH Zürich
+          </p>
+        <p class="affiliation">
+            ETH Zürich
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 25, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+<div>
+  <div class="keywords">
+    <div class="block-title">Keywords</div>
+    <p>face perception, memory, familiarity, person knowledge, decision models, evidence accumulation modelling, individual difference</p>
+  </div>
+</div>
+
+</header>
+
+
+<div style="page-break-after: always;"></div>
+<section id="introduction" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
+<p>Paragraph 1: general comment on face recognition and on the important variability in the “normal” population • Face recognition: importance in daily life/ real-life tasks from eye-witness identification to passport control (for example). • Variability in the population in face recognition ability. Prosopagnosia or super recognizers example (ref: Noyes, Phillips, &amp; O’Toole, 2017 for super recognizers/Kress &amp; Daum, 2003 for prosopagnosia patients), but even in the normal population (Burton, White, McNeill., 2016; Dowsett &amp; Burton, 2015; White et al., 2014), more specifically for tasks involving unfamiliar faces.</p>
+<p>Paragraph 2: past investigation of individual difference in face identity processing • Investigating individual differences in face identity processing: often measured by different tests. Examples: Cambridge Face Memory test (CFMT) = New face learning / Glasgow Face Matching Test (GFMT): unfamiliar face perception / before They Were Famous task: Familiar face perception -&gt; (McCaffery et al., 2018). These scores are then correlated between them or with different behavioural or physiological measures to assess the strength of the relationship between them. • Description of some results here</p>
+<p>Paragraph 3: Investigating individual differences in latent processes using computational approaches • Behavioural measures remain distant proxies of underlying cognitive processes, thus not ideal for capturing individual differences in these processes (Haines et al., 2020) + make interpretation more errors prone (ex: Ratcliff et al., 2010) -&gt; more cautious, not because better processing. Problem: how to disentangle multiple components of a process.<br>
+• One potential alternative: using computational approaches. Advantage of model-based analysis of individual difference: fitting data from individual participants to disentangle the effects of the different processes driving behaviour. Cleaner measures of the processes of interest and could enhance our understanding how variation in these latent, unobserved processes arise across individuals (White, Curl &amp; Sloane., 2016). Example with Ratcliff (2010) and White et al.&nbsp;(2014).</p>
+<p>Paragraph 4: building upon our past project results summary and application of individual differences in face recognition ability • Past study: we used hierarchical model fitting of evidence-accumulation models to model choice-rt in a face memory old/new task -&gt; better evidence of accumulation for detecting novel faces that recognizing visually learned faces. Novelty pop-out effect of novel faces. Increased threshold as well for novel faces (need more evidence to committing to the novel response compared to the learned one). Using this computational approach, we found that distinct computational processes involved in the decision-making of face recognition are affected by face familiarity. We also found inter-subject variability in the estimated parameters. • Question: are these parameters linked to individual face recognition ability? Does face recognition ability predict the estimation of these parameters? • Help us understanding what do these parameters reflect, from where this inter-subject variability comes from and how specific the inferences that we can make about them are related to the face recognition ability. • Possibility that the variation observed in these parameters reflect a general recognition ability, unspecific to faces.</p>
+<p>Paragraph 5: Short description of how we are going to address the questions • How will we do it: estimation of parameter from a face memory task, followed by two Memory ability scores: Cambridge Face Memory Test (CFMT) and Cambridge Car Memory Test (CCMT).</p>
+</section>
+<section id="method-and-materials" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Method and Materials</h1>
+<section id="pre-registration-and-open-science" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="pre-registration-and-open-science"><span class="header-section-number">2.1</span> Pre-registration and open science</h2>
+<p>We report how we determined our sample size, all data exclusions (if any), all manipulations, and all measures in the study <span class="citation" data-cites="simonsConstraintsGeneralityCOG2017">(<a href="#ref-simonsConstraintsGeneralityCOG2017" role="doc-biblioref"><strong>simonsConstraintsGeneralityCOG2017?</strong></a>)</span>. The research question, hypotheses, experimental design, planned analysis, and exclusion criteria were preregistered (Experiment: link OSF). The raw data, experimental materials, and analysis code are available on GitHub (link) or the Open Science Framework (link).</p>
+</section>
+<section id="participants" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="participants"><span class="header-section-number">2.2</span> Participants</h2>
+<p>All participant were recruited on the Prolific platform (<a href="https://www.prolific.com" class="uri">https://www.prolific.com</a>). Participants had to be located in the United Kingdom or in the United States, be aged between 18-65 years old, with normal or corrected-to-normal vision and speak fluent English. Furthermore, Prolific offers the option to chose the approval rate of the participants willing to take part in the study. The approval rate is the percentage for which participants has been approved in previous experiment. An approval rating between 95% and 100% was chosen in our study to try to ensure high data quality. 383 participants completed the experiment. Following our preregistered exclusion criterion, 2 participants were excluded because their percentage of missed trials was higher than 40%, 3 because their percentage of RT outside the established range (0.2 to 2 seconds) were higher than 25% and 78 were removed because the overall accuracy was lower than 55%. In the end, data from 300 participants (141 men and 159 women) were retained for the analysis and the LBA modeling. Ages ranged from 19 to 64 (<span class="math inline">\(M_{age} =\)</span> 42, <span class="math inline">\(SD_{age} =\)</span> 11.2). Following Prolific payment principles, each participant received 9£ for the completion of the study. This experiment was accepted by the ethics committee of the Federal Institute of technology (ETH) Zurich.</p>
+</section>
+<section id="material" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="material"><span class="header-section-number">2.3</span> Material</h2>
+</section>
+<section id="procedure" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="procedure"><span class="header-section-number">2.4</span> Procedure</h2>
+</section>
+<section id="stimuli" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="stimuli"><span class="header-section-number">2.5</span> Stimuli</h2>
+</section>
+<section id="evidence-accumulation-modeling" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="evidence-accumulation-modeling"><span class="header-section-number">2.6</span> Evidence accumulation modeling</h2>
+<section id="model-specification" class="level3" data-number="2.6.1">
+<h3 data-number="2.6.1" class="anchored" data-anchor-id="model-specification"><span class="header-section-number">2.6.1</span> Model specification</h3>
+</section>
+</section>
+</section>
+<section id="results" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Results</h1>
+<div class="place" data-arguments="top, scope: &quot;parent&quot;, float: true">
+<p>Full page width content goes here.</p>
+</div>
+</section>
+<section id="discussion" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Discussion</h1>
+<p>Paragraph 1: Quick summary of results Aim of the project: use evidence accumulation modelling to investigate the relationship between face recognition ability and the cognitive mechanisms involved in the face recognition process. Our results showed that individual difference in face recognition ability is associated with different latent computational processes. Face recognition ability seems to be positively associated with the rate of evidence accumulation (drift rate parameter) as well as the response caution (threshold parameter) for both learned and novel faces recognition. In addition, this association (still holds) when accounting for object recognition ability.</p>
+<p>By joining experimental psychology, individual differences approach and computational models, we bla bla bla.</p>
+<p>Paragraph 2: Drift rate and threshold • Effect of individual differences on LBA parameters is multifaceted: effect on across several LBA parameters, not just one. • Drift rate: Face recognition ability predict an increase in the rate at which evidence accumulates for both novel and visually familiar faces, where people with a better face recognition ability accumulate more recognition signal (drift rate TRUE) and are more capable to ignore noise coming from the stimulus. - Finding in accordance with previous research that found that expertise effects are primarily due to a better information extraction (REF: fingerprints examiners (ref: Thompson, Tangen &amp; McCarthy, 2013), medical images perception (van der Gijp et al., 2014, 2016; Litchfiled and Donovan, 2017)). - Our results extend these effect that these effects are visible in the “normal” population as well, outside of group-level differences between experts and novice. • Threshold: Face recognition ability predict an increase in the response caution for both novel and visually familiar faces. - Threshold: higher threshold = more accurate but slower to respond / lower threshold = less accurate but quicker to respond - People with higher face recognition ability are more cautious, prioritizing accuracy over response time. However, the quality and speed of evidence accumulation is higher. - General metacognition -&gt; people with higher abilities are more confident in their confidence judgement regarding this ability (ref: Lichtenstein &amp; Fischoff, 1977). Previous studies have shown that confidence is itself a decision variable that can regulate future behaviour -&gt; can adjust their future caution to increase their performance (ref: Folke, Jacobsen, Fleming &amp; De Martino, 2017; Fleming, van der Putten &amp; Daw, 2018). Suggestion: People with higher face recognition ability are better at estimating the difficulty of the task, voluntary increasing their threshold to ensure a better performance given the task demands. However future research would be required to confirm this proposal. • Overall: Our results suggest that not only does high face recognition ability predict a better ability to extract meaningful information for the recognition success but also predict the voluntary strategic decision of the subject to be more cautious.</p>
+<p>Paragraph 3: Theoretical implications Our approach provides unusual insight into individual differences in latent computational processes in the domain of face recognition. These results have several theoretical implications not only for investigating individual differences and potentially expertise effects but also offer implications regarding models of face perception and memory.</p>
+<p>• Implications for studying individual differences and expertise:</p>
+<p>Most of investigations of individual differences in face recognition across the entire range of face processing abilities have used associations between different abilities performance scores (ref:), addressing potential association/dissociation of abilities. In this study we used traditional approach of an experimental manipulation in a large sample, extended the separate analysis of response times and accuracy to the estimation of latent variables through computational modelling that we then associated with face recognition ability. On a general level, the new insights obtained from evidence-accumulation modelling about individual differences in face recognition would not have been possible using the conventional analysis of response times and accuracy (Parker &amp; Ramsey, 2023b). We propose that this approach could be applicable to other types of individual differences in expertise or abilities. - One key question in cognitive psychology concern the degree to which an expertise or an ability is domain-specific or domain-general. - (here find some examples in which we could apply our approach to other abilities/expertise)</p>
+<p>• Theoretical implications about models of face perception and memory</p>
+<ul>
+<li>Bruce and Young model</li>
+<li>Individual differences in face recognition: observations from comparing group-levels difference between two different populations (ex: prosopagnosia and control/super-recognizer and control) / individual differences in typical range of face processing ability  While Bruce and Young model describe the face perception process in general, there are some individual variabilities in the outcome of this process (outcome = performance) and in other steps in this  With this study we also contribute to the extension of this model by showing that not only there are individual differences in the outcome, but that there is also individual differences in the cognitive processes that give rise to this outcome.  Future research could use an individual differences approach to investigate how some variations in the components in the Bruce and Young face recognition model could influence estimated latent variables and how are individuals differences in face recognition ability are related to the observed differences of latent variables of interest.</li>
+</ul>
+<p>Paragraph 4: Mentioning the car correlations Even if main interest of this paper was to look into the CFMT, the exploratory analysis of the CCMT correlations with LBA parameters reveal interesting associations:</p>
+<p>• Drift rate: Cambridge Car Memory score positive association only with Novel faces, not learned faces . • Object recognition memory largely relies on featural information processing (REF). Does not capture (or should not capture) holistic processing. • Since novel faces recognition processing relies more on feature information processing and matching, it would make sense that the CCMT score only correlate to drift rate (accumulation of evidence) for novel faces and not learned faces (combination of holistic processing and feature information processing). • When looking at car recognition effect on drift rate: similar direction for TRUE and FALSE and for both type of faces: increased drift rate as the CCMT score increase.  CCMT does not predict the discrimination between TRUE and FALSE drift rate. Would expect that increased recognition ability lead to increase evidence accumulation when TRUE and decreased when FALSE, but not the case here -&gt; especially regarding learned faces, seems that increased recognition ability for object predict an increased drift rate when participant are wrong and that pattern is different that observed in the prediction of the CFMT regarding learned faces. Suggestion: using visual information processing alone help to accumulate meaningful information for the recognition of faces but also contribute to the accumulation of information detrimental to the recognition process (noise). Whereas relying on both (visual information processing and holistic processing) seems to increase the accumulation of meaningful information while decreasing the noise coming from detrimental visual information to the recognition process.</p>
+<p>Paragraph 5: Limitations</p>
+<p>• Small effects size (correlations)</p>
+<p>• Similar limitations to LBA parameter estimation than in the first paper</p>
+<p>• Object recognition memory vs.&nbsp;Car recognition memory?</p>
+<p>Paragraph 6: Conclusive paragraph</p>
+</section>
+<section id="references" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> References</h1>
+<div id="refs" role="list">
+
+</div>
+</section>
+<section id="appendix-content-here" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Appendix content here</h1>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

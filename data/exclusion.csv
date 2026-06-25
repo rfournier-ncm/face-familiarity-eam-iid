@@ -1,0 +1,5 @@
+stage,criterion,n_removed,n_remain
+1,> 40% missed trials,2,381
+2,"> 25% RT outside [0.2, 2] s",3,378
+3a,Accuracy < 55%,78,300
+3b,Accuracy > 95%,0,300
