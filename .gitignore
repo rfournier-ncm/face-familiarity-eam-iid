@@ -6,3 +6,5 @@
 /sandpit
 **/test
 /models
+/datadata/raw_data.csv
+data/theta_pid.csv
