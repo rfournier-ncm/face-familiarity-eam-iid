@@ -1,0 +1,292 @@
+---
+title: "LBA model"
+author: "Raph & Rich"
+date: "`r Sys.Date()`"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+This file fits the pre-registered LBA model for the face familiarity individual differences study.
+
+```{r}
+#| label: setup
+#| include: false
+
+pkgs <- c(
+  "EMC2", "tidyverse", "here", "parallel", "future"
+  )
+vapply(
+  pkgs, library, logical(1), character.only = TRUE, logical.return = TRUE
+  )
+
+## set options
+options(mc.cores = parallel::detectCores(),
+        future.fork.enable = TRUE,
+        future.rng.onMisuse = "ignore") ## automatically set in RStudio
+
+supportsMulticore()
+
+detectCores()
+
+plan(multicore)
+
+## make things reproducible where possible 
+set.seed(123)
+```
+
+# 1. read in the raw data and wrangle
+
+raw data
+
+```{r}
+raw <- read_csv(here("data", "data.csv"))
+head(raw)
+glimpse(raw)
+```
+
+wrangle 
+
+```{r}
+data_emc <- raw |>
+  select(pid, cond, keypress, rt) |>
+  rename(subjects = pid, S = cond, R = keypress) |>
+  mutate(
+    subjects = factor(subjects),
+    S = factor(S,
+      levels = c("novel", "learned")
+    ),
+    R = if_else(R == "q", "learned", "novel"),
+    R = factor(R,
+      levels = c("novel", "learned")
+    )
+  ) |>
+  as.data.frame() ## in EMC, post predict needs a df and not a tibble..
+head(data_emc)
+glimpse(data_emc)
+summary(data_emc)
+```
+
+# 2. Preregistered model
+
+## 2.1 Build model
+
+```{r}
+#| label: matchfun
+
+matchfun <- function(d) d$S == d$lR
+```
+
+```{r}
+#| label: design
+
+design_iid <- design(
+  data = data_emc,
+  model = LBA,
+  matchfun = matchfun,
+  formula = list(
+    v  ~ 0 + S:lM,
+    sv ~ 0 + lM,
+    B  ~ 0 + lR,
+    A  ~ 1,
+    t0 ~ 1
+  ),
+  constants = c(sv_lMFALSE = log(1))
+)
+```
+
+```{r}
+#| label: p-vector
+
+p_vector <- c(
+  "v_Snovel:lMFALSE"   = 4, "v_Slearned:lMFALSE" = 4,
+  "v_Snovel:lMTRUE"    = 4, "v_Slearned:lMTRUE"  = 4,
+  sv_lMTRUE            = log(.5),
+  B_lRnovel            = log(2), B_lRlearned = log(2),
+  A                    = log(.5), t0 = log(.3)
+)
+
+mapped_pars(p_vector, x = design_iid)
+```
+
+```{r}
+#| label: priors
+
+mu_mean <- c(
+  "v_Snovel:lMFALSE"   = 0, "v_Slearned:lMFALSE" = 0,
+  "v_Snovel:lMTRUE"    = 1, "v_Slearned:lMTRUE"  = 1,
+  sv_lMTRUE            = log(.5),
+  B_lRnovel            = log(1), B_lRlearned = log(1),
+  A                    = log(.5), t0 = log(.3)
+)
+
+mu_sd <- c(
+  "v_Snovel:lMFALSE"   = 2, "v_Slearned:lMFALSE" = 2,
+  "v_Snovel:lMTRUE"    = 2, "v_Slearned:lMTRUE"  = 2,
+  sv_lMTRUE            = .5,
+  B_lRnovel            = .5, B_lRlearned = .5,
+  A                    = .3, t0 = .3
+)
+
+prior_iid <- prior(
+  design_iid,
+  type  = "standard",
+  pmean = mu_mean,
+  psd   = mu_sd
+)
+
+## plot priors
+plot(x = prior_iid, selection = "mu")
+
+## save out a plot
+png("figures/lba/lba_priors.png", width = 8, height = 6, units = "in", res = 150)
+plot(
+  prior_iid,
+  selection = "mu",
+  layout = c(3, 3)
+)
+dev.off()
+
+## check values
+prior_iid$theta_mu_mean
+prior_iid$theta_mu_var
+```
+
+## 2.2 Fit model
+
+a quick test first with a subset of PIDs and samples (1000), just to see things fit ok.
+
+```{r}
+#| label: fit-test
+#| eval: false
+
+## make things reproducible 
+# set.seed(123)
+# pids_subset <- data_emc |> distinct(subjects) |> slice_sample(n = 30)
+# data_emc_subset <- data_emc |> semi_join(pids_subset, by = "subjects")
+# 
+# LBA_iid_test <- make_emc(
+#   data_emc_subset,
+#   design_iid,
+#   type   = "standard",
+#   prior  = prior_iid,
+#   compress = TRUE
+# )
+# 
+# LBA_iid_test <- fit(
+#   LBA_iid_test,
+#   cores_for_chains = 3,
+#   cores_per_chain  = 9,
+#   iter             = 1000,
+#   step_size        = 200,
+#   verbose          = TRUE,
+#   fileName        = here("models", "test", "tmp_test.RData")
+# )
+# 
+# saveRDS(LBA_iid, "models/test/LBA_iid_test.rds")
+# 
+# ## check it
+# check(LBA_iid_test)
+# summary(LBA_iid_test)
+```
+
+and the real thing..
+
+```{r}
+#| label: fit
+#| eval: false
+
+LBA_iid <- make_emc(
+  data_emc, 
+  design_iid,
+  type = "standard", 
+  prior = prior_iid,
+  compress = TRUE
+)
+
+LBA_iid <- fit(
+  LBA_iid,
+  cores_for_chains = 3,
+  cores_per_chain = 9,
+  iter            = 5000,
+  step_size       = 500,
+  verbose         = TRUE,
+  fileName        = here("models", "tmp.RData")
+)
+
+saveRDS(LBA_iid, "models/LBA_iid.rds")
+```
+
+```{r}
+#| label: load
+
+LBA_iid <- readRDS("models/LBA_iid.rds")
+```
+
+## 2.3 Check model
+
+```{r}
+#| label: check
+
+check(LBA_iid)
+summary(LBA_iid)
+
+## save out as necessary
+png("figures/lba/chains.png", width = 8, height = 6, units = "in", res = 150)
+plot(
+  LBA_iid,
+  selection = "mu",
+  layout = c(3, 3)
+)
+dev.off()
+
+```
+
+```{r}
+#| label: plot-pars
+
+plot_pars(LBA_iid, selection = "mu", layout = c(3, 3))
+
+## save out as necessary
+png("figures/lba/pars.png", width = 8, height = 6, units = "in", res = 300)
+plot_pars(
+  LBA_iid,
+  selection = "mu",
+  layout = c(3, 3)
+)
+dev.off()
+```
+
+## 2.4 Posterior predictions
+
+```{r}
+#| label: posterior-predictions
+#| eval: false
+
+pp_LBA_iid <- predict(LBA_iid, n_cores = 28)
+saveRDS(pp_LBA_iid, "models/pp_LBA_iid.rds")
+```
+
+```{r}
+#| label: plot-fit
+
+pp_LBA_iid <- readRDS("models/pp_LBA_iid.rds")
+
+## 
+png("figures/lba/pp_density.png", width = 8, height = 6, units = "in", res = 150)
+plot_density(
+  data_emc, 
+  pp_LBA_iid, 
+  factors = "S"
+)
+dev.off()
+
+png("figures/lba/pp_cdf.png", width = 8, height = 6, units = "in", res = 150)
+plot_cdf(
+  data_emc,
+  pp_LBA_iid,  
+  factors = "S"
+)
+dev.off()
+
+```

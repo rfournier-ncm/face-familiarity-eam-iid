@@ -1,0 +1,558 @@
+---
+title: "iid_effects_residuals"
+format: html
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+knitr::opts_chunk$set(echo = TRUE, results = "markup")
+
+## packages
+pkgs <- c(
+  "tidyverse", "RColorBrewer", "patchwork", "tidybayes", "parallel", "future",
+  "here", "rstantools", "brms"
+)
+vapply(
+  pkgs, library, logical(1), character.only = TRUE, logical.return = TRUE
+)
+
+## plot settings
+theme_set(
+  theme_bw() +
+    theme(text = element_text(size = 18, face = "bold"), 
+          title = element_text(size = 18, face = "bold"),
+          legend.position = "bottom")
+)
+
+## Set options (removed mc.cores = , as I now put this in the model fit function)
+options(
+  brms.backend = "cmdstanr",
+  future.fork.enable = TRUE,
+  future.rng.onMisuse = "ignore"
+)
+
+## Detect machine capabilities
+parallel::detectCores()  # Should be 28
+
+supportsMulticore()
+
+plan(multicore)
+```
+
+# 1. read in models
+
+```{r}
+#| label: read-models
+
+b1_drift <- readRDS("models/b1_drift.rds")
+b2_drift_res <- readRDS("models/b2_drift_res.rds")
+
+b1_thresh <- readRDS("models/b1_thresh.rds")
+b2_thresh_res <- readRDS("models/b2_thresh_res.rds")
+```
+
+# 2. drift rate posterior predictions 
+
+## wrangle 
+
+```{r}
+#| label: ppreds-drift-wrangle
+
+# --- all newdata grids ---
+
+# b1: face only
+newdata_b1 <- expand_grid(
+  condition = factor(
+    c("learned.false", "learned.true", "novel.false", "novel.true"),
+    levels = c("learned.false", "learned.true", "novel.false", "novel.true")
+  ),
+  face = seq(-15, 15, by = 1)
+)
+
+# b2: face + car at three car levels
+newdata_b2 <- expand_grid(
+  condition = factor(
+    c("learned.false", "learned.true", "novel.false", "novel.true"),
+    levels = c("learned.false", "learned.true", "novel.false", "novel.true")
+  ),
+  face = seq(-15, 15, by = 1),
+  car = c(-8, 0, 8)
+)
+
+# --- get posterior preds ---
+preds_b1 <- newdata_b1 |>
+  add_epred_draws(b1_drift, ndraws = 1000) |>
+  mutate(
+    stimulus = if_else(str_detect(as.character(condition), "novel"), "novel", "learned"),
+    accuracy = if_else(str_detect(as.character(condition), "true"), "true", "false"),
+    stimulus = factor(stimulus, levels = c("learned", "novel")),
+    accuracy = factor(accuracy, levels = c("false", "true")),
+    model    = "Face only"
+  )
+
+preds_b2_res <- newdata_b2 |>
+  add_epred_draws(b2_drift_res, ndraws = 1000) |>
+  mutate(
+    stimulus = if_else(str_detect(as.character(condition), "novel"), "novel", "learned"),
+    accuracy = if_else(str_detect(as.character(condition), "true"), "true", "false"),
+    stimulus = factor(stimulus, levels = c("learned", "novel")),
+    accuracy = factor(accuracy, levels = c("false", "true")),
+    model = "Face + Car",
+    car_label = factor(car,
+      levels = c(-8, 0, 8),
+      labels = c("Low car (-8)", "Average car (0)", "High car (+8)")
+    )
+  )
+
+# filter b2 at car = 0 only (for direct comparison with b1)
+preds_b2_car0 <- preds_b2_res |> filter(car == 0)
+
+# shared y range across all predictions
+y_range_drift <- range(c(preds_b1$.epred, preds_b2_res$.epred))
+
+# --- contrast data ---
+contrasts_drift <- bind_rows(
+  preds_b1 |>
+    filter(face %in% c(-15, 15)) |>
+    ungroup() |>
+    mutate(face_level = if_else(face == 15, "high", "low")),
+  preds_b2_car0 |>
+    filter(face %in% c(-15, 15)) |>
+    ungroup() |>
+    mutate(face_level = if_else(face == 15, "high", "low"))
+) |>
+  select(model, condition, stimulus, accuracy, .draw, .epred, face_level) |>
+  pivot_wider(names_from = face_level, values_from = .epred) |>
+  mutate(
+    diff  = high - low,
+    model = factor(model, levels = c("Face only", "Face + Car"))
+  )
+
+# discrimination (true - false) per condition at high vs low face
+discrim_contrast <- bind_rows(
+  preds_b1 |>
+    filter(face %in% c(-15, 15)) |>
+    ungroup() |>
+    mutate(face_level = if_else(face == 15, "high", "low"), car = 0),
+  preds_b2_car0 |>
+    filter(face %in% c(-15, 15)) |>
+    ungroup() |>
+    mutate(face_level = if_else(face == 15, "high", "low"))
+) |>
+  select(model, stimulus, accuracy, .draw, .epred, face_level) |>
+  # create a combined key so we pivot both dimensions at once
+  mutate(key = paste(accuracy, face_level, sep = "_")) |>
+  select(-accuracy, -face_level) |>
+  pivot_wider(names_from = key, values_from = .epred) |>
+  mutate(
+    discrim_high = true_high - false_high,
+    discrim_low  = true_low - false_low,
+    discrim_diff = discrim_high - discrim_low,
+    model        = factor(model, levels = c("Face only", "Face + Car"))
+  )
+
+# novel - learned discrimination contrast
+# i.e., does face ability affect discrimination more for novel than learned?
+learned_novel_contrast <- discrim_contrast |>
+  select(model, stimulus, .draw, discrim_diff) |>
+  pivot_wider(names_from = stimulus, values_from = discrim_diff) |>
+  mutate(novel_vs_learned = novel - learned)
+```
+
+## plot 
+
+```{r}
+#| label: ppreds-drift-plot-1x4
+
+# a quick 1x4 look at the preds
+# plot face only model
+p_face_1x4 <- ggplot(preds_b1, aes(x = face, y = .epred)) +
+  stat_lineribbon(alpha = 0.5, .width = c(.66, .95)) +
+  scale_fill_brewer(breaks = rev) +
+  facet_wrap(~condition, nrow = 1) +
+  coord_cartesian(ylim = y_range_drift) +
+  labs(
+    x = "Face Ability",
+    y = "Predicted Drift Rate"
+  )
+
+# plot face and car model
+p_face_car_1x4 <- ggplot(preds_b2_res, aes(
+  x = face, y = .epred,
+  color = factor(car)
+)) +
+  stat_lineribbon(alpha = 0.5, .width = c(.66, .95)) +
+  scale_fill_brewer(breaks = rev) +
+  facet_wrap(~condition, nrow = 1) +
+  coord_cartesian(ylim = y_range_drift) +
+  labs(
+    x = "Face Ability",
+    y = "Predicted Drift Rate",
+    color = "Car Ability"
+  )
+
+(p_face_1x4 / p_face_car_1x4) +
+  plot_layout(
+    axes = "collect",
+    guides = "collect"
+  ) &
+  theme(legend.position = "bottom")
+
+ggsave(here("figures", "iid_ppreds", "preds_drift_1x4-res.jpeg"), 
+       width = 10, height = 7)
+```
+
+```{r}
+#| label: ppreds-drift-plot-2x2
+
+plot_preds_2x2 <- function(preds, title) {
+  ggplot(preds, aes(
+    x = face, y = .epred,
+    fill = accuracy, colour = accuracy
+  )) +
+    stat_lineribbon(alpha = 0.4, .width = c(0.66, 0.95)) +
+    scale_fill_brewer(palette = "Dark2") +
+    scale_colour_brewer(palette = "Dark2") +
+    facet_wrap(~stimulus, nrow = 1) +
+    coord_cartesian(ylim = y_range_drift) +
+    labs(
+      title = title,
+      x = "Face recognition (centred)", y = "Predicted drift rate",
+      fill = NULL, colour = NULL
+    ) +
+    theme(legend.position = "bottom")
+}
+
+p_2x2_b1 <- plot_preds_2x2(preds_b1, "Face only model")
+p_2x2_b2 <- plot_preds_2x2(preds_b2_car0, "Face & car model")
+
+(p_2x2_b1 | p_2x2_b2) +
+  plot_layout(axes = "collect",
+              guides = "collect") &
+  theme(legend.position = "bottom")
+
+ggsave(here("figures", "iid_ppreds", "preds_drift_2x2-res.jpeg"), 
+       width = 10, height = 7)
+```
+
+```{r}
+#| label: ppreds-drift-plot-car-levels
+
+plot_preds_carlevel <- function(preds, car_level, title) {
+  ggplot(
+    preds |> filter(car == car_level),
+    aes(x = face, y = .epred, fill = accuracy, colour = accuracy)
+  ) +
+    stat_lineribbon(alpha = 0.4, .width = c(0.66, 0.95)) +
+    scale_fill_brewer(palette = "Dark2") +
+    scale_colour_brewer(palette = "Dark2") +
+    facet_wrap(~stimulus, nrow = 1) +
+    coord_cartesian(ylim = y_range_drift) +
+    labs(
+      title = title,
+      x = "Face recognition (centred)", y = "Predicted drift rate",
+      fill = NULL, colour = NULL
+    ) +
+    theme(legend.position = "bottom")
+}
+
+p_car_lo <- plot_preds_carlevel(preds_b2_res, -8, "Low car (-8)")
+p_car_mid <- plot_preds_carlevel(preds_b2_res, 0, "Average car (0)")
+p_car_hi <- plot_preds_carlevel(preds_b2_res, 8, "High car (+8)")
+
+(p_car_lo | p_car_mid | p_car_hi) +
+  plot_layout(guides = "collect", axes = "collect") &
+  theme(legend.position = "bottom")
+
+ggsave(here("figures", "iid_ppreds", "preds_drift_by_car-res.jpeg"), 
+       width = 10, height = 7)
+```
+
+```{r}
+#| label: ppreds-drift-contrasts
+
+p_contrasts_drift <- ggplot(
+  contrasts_drift,
+  aes(x = diff, y = model, fill = accuracy, colour = accuracy)
+) +
+  stat_halfeye(alpha = 0.7, .width = c(0.66, 0.95)) +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "darkgrey") +
+  scale_fill_brewer(palette = "Dark2") +
+  scale_colour_brewer(palette = "Dark2") +
+  facet_wrap(~stimulus, nrow = 1) +
+  labs(
+    title = "High > low face ability",
+    x     = "Difference in predicted drift rate (high > low face)",
+    y     = NULL,
+    fill  = NULL, colour = NULL
+  ) +
+  theme(legend.position = "bottom")
+
+p_contrasts_drift
+
+ggsave(here("figures", "iid_ppreds", "preds_drift_contrasts-res.jpeg"), 
+       width = 8, height = 6)
+```
+
+
+```{r}
+#| label: contrasts-drift-discrimination
+
+# plot discrimination contrast by condition and model
+p_discrim_contrast <- ggplot(
+  discrim_contrast,
+  aes(x = discrim_diff, y = model)
+) +
+  stat_halfeye(alpha = 0.7, .width = c(0.66, 0.95),
+               fill = "skyblue") +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "darkgrey") +
+  facet_wrap(~stimulus, nrow = 1) +
+  labs(
+    title = "Change in drift discrimination (true - false) at high vs low face ability",
+    x = "Difference in discrimination (high - low face)",
+    y = NULL,
+    fill = NULL, colour = NULL
+  ) +
+  theme(legend.position = "none")
+
+p_discrim_contrast
+
+ggsave(here("figures", "iid_ppreds", "preds_drift_discrim_contrast-res.jpeg"),
+       width = 8, height = 6)
+```
+
+```{r}
+#| label: contrasts-learned-vs-novel
+
+# novel - learned discrimination contrast
+# i.e., does face ability affect discrimination more for novel than learned?
+p_learned_novel <- ggplot(
+  learned_novel_contrast,
+  aes(x = novel_vs_learned, y = model)
+) +
+  stat_halfeye(alpha = 0.7, .width = c(0.66, 0.95),
+               fill = "skyblue") +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "darkgrey") +
+  labs(
+    title = "Novel vs learned: difference in discrimination slope",
+    x = "Novel - learned discrimination contrast",
+    y = NULL,
+    fill = NULL, colour = NULL
+  ) +
+  theme(legend.position = "bottom")
+
+p_learned_novel
+
+ggsave(here("figures", "iid_ppreds", "preds_drift_novel_vs_learned-res.jpeg"),
+       width = 8, height = 6)
+```
+
+# 3. threshold posterior predictions
+
+## wrangle
+
+```{r}
+#| label: ppreds-thresh-wrangle
+
+# b1: face only
+newdata_b1_thresh <- expand_grid(
+  response = factor(c("learned", "novel"), levels = c("learned", "novel")),
+  face     = seq(-15, 15, by = 1)
+)
+
+# b2: face + car
+newdata_b2_thresh <- expand_grid(
+  response = factor(c("learned", "novel"), levels = c("learned", "novel")),
+  face     = seq(-15, 15, by = 1),
+  car      = c(-8, 0, 8)
+)
+
+preds_b1_thresh <- newdata_b1_thresh |>
+  add_epred_draws(b1_thresh) |>
+  mutate(model = "Face only")
+
+preds_b2_thresh_res <- newdata_b2_thresh |>
+  add_epred_draws(b2_thresh_res, ndraws = 1000) |>
+  mutate(
+    model = "Face + Car",
+    car_label = factor(car,
+      levels = c(-8, 0, 8),
+      labels = c("Low car (-8)", "Average car (0)", "High car (+8)")
+    )
+  )
+
+preds_b2_thresh_car0 <- preds_b2_thresh_res |> filter(car == 0)
+
+y_range_thresh <- range(c(preds_b1_thresh$.epred, preds_b2_thresh_res$.epred))
+
+# contrasts
+contrasts_thresh <- bind_rows(
+  preds_b1_thresh |>
+    filter(face %in% c(-15, 15)) |>
+    ungroup() |>
+    mutate(face_level = if_else(face == 15, "high", "low")),
+  preds_b2_thresh_car0 |>
+    filter(face %in% c(-15, 15)) |>
+    ungroup() |>
+    mutate(face_level = if_else(face == 15, "high", "low"))
+) |>
+  select(model, response, .draw, .epred, face_level) |>
+  pivot_wider(names_from = face_level, values_from = .epred) |>
+  mutate(
+    diff  = high - low,
+    model = factor(model, levels = c("Face only", "Face + Car"))
+  )
+
+# threshold novel - learned gap at high vs low face
+thresh_gap_contrast <- bind_rows(
+  preds_b1_thresh |>
+    filter(face %in% c(-15, 15)) |>
+    ungroup() |>
+    mutate(face_level = if_else(face == 15, "high", "low")),
+  preds_b2_thresh_car0 |>
+    filter(face %in% c(-15, 15)) |>
+    ungroup() |>
+    mutate(face_level = if_else(face == 15, "high", "low"))
+) |>
+  select(model, response, .draw, .epred, face_level) |>
+  mutate(key = paste(response, face_level, sep = "_")) |>
+  select(-response, -face_level) |>
+  pivot_wider(names_from = key, values_from = .epred) |>
+  mutate(
+    gap_high = novel_high - learned_high,
+    gap_low  = novel_low - learned_low,
+    gap_diff = gap_high - gap_low,
+    model    = factor(model, levels = c("Face only", "Face + Car"))
+  )
+```
+
+## plot
+
+```{r}
+#| label: ppreds-thresh-plots
+
+# drift: colours 1 and 2 from Dark2 (false and true)
+# threshold: colours 3 and 4 from Dark2 (learned and novel)
+dark2_cols <- RColorBrewer::brewer.pal(8, "Dark2")
+
+thresh_colors <- c("learned" = dark2_cols[3], "novel" = dark2_cols[4])
+
+plot_preds_thresh <- function(preds, title) {
+  ggplot(preds, aes(
+    x = face, y = .epred,
+    fill = response, colour = response
+  )) +
+    stat_lineribbon(alpha = 0.4, .width = c(0.66, 0.95)) +
+    scale_fill_manual(values = thresh_colors) +
+    scale_colour_manual(values = thresh_colors) +
+    coord_cartesian(ylim = y_range_thresh) +
+    labs(
+      title = title,
+      x = "Face recognition (centred)", y = "Predicted threshold",
+      fill = "Response", colour = "Response"
+    ) +
+    theme(legend.position = "bottom")
+}
+
+p_thresh_b1 <- plot_preds_thresh(preds_b1_thresh, "Face only model")
+p_thresh_b2 <- plot_preds_thresh(preds_b2_thresh_car0, "Face & car model")
+
+(p_thresh_b1 | p_thresh_b2) +
+  plot_layout(
+    axes = "collect",
+    guides = "collect"
+  ) &
+  theme(legend.position = "bottom")
+
+ggsave(here("figures", "iid_ppreds", "preds_thresh_1x2-res.jpeg"), 
+       width = 8, height = 6)
+```
+
+```{r}
+#| label: ppreds-thresh-car-levels
+
+plot_preds_thresh_car <- function(preds, car_level, title) {
+  ggplot(
+    preds |> filter(car == car_level),
+    aes(x = face, y = .epred, fill = response, colour = response)
+  ) +
+    stat_lineribbon(alpha = 0.4, .width = c(0.66, 0.95)) +
+    scale_fill_manual(values = thresh_colors) +
+    scale_colour_manual(values = thresh_colors) +
+    coord_cartesian(ylim = y_range_thresh) +
+    labs(
+      title = title,
+      x = "Face recognition (centred)", y = "Predicted threshold",
+      fill = "Response", colour = "Response"
+    ) +
+    theme(legend.position = "bottom")
+}
+
+p_thresh_car_lo <- plot_preds_thresh_car(preds_b2_thresh_res, -8, "Low car (-8)")
+p_thresh_car_mid <- plot_preds_thresh_car(preds_b2_thresh_res, 0, "Average car (0)")
+p_thresh_car_hi <- plot_preds_thresh_car(preds_b2_thresh_res, 8, "High car (+8)")
+
+(p_thresh_car_lo | p_thresh_car_mid | p_thresh_car_hi) +
+  plot_layout(guides = "collect", axes = "collect") &
+  theme(legend.position = "bottom")
+
+ggsave(here("figures", "iid_ppreds", "preds_thresh_by_car-res.jpeg"), 
+       width = 10, height = 7)
+```
+
+```{r}
+#| label: ppreds-thresh-contrasts
+
+p_contrasts_thresh <- ggplot(
+  contrasts_thresh,
+  aes(x = diff, y = model, fill = response, colour = response)
+) +
+  stat_halfeye(alpha = 0.7, .width = c(0.66, 0.95)) +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "darkgrey") +
+  scale_fill_manual(values = thresh_colors) +
+  scale_colour_manual(values = thresh_colors) +
+  facet_wrap(~response, nrow = 1) +
+  labs(
+    title = "High > low face ability",
+    x = "Difference in predicted threshold (high > low face)",
+    y = NULL,
+    fill = "Response", colour = "Response"
+  ) +
+  theme(legend.position = "bottom")
+
+p_contrasts_thresh
+
+ggsave(here("figures", "iid_ppreds", "preds_thresh_contrasts-res.jpeg"), 
+       width = 8, height = 6)
+```
+
+```{r}
+#| label: contrasts-threshold-diff
+
+# threshold novel - learned gap at high vs low face
+p_thresh_gap <- ggplot(
+  thresh_gap_contrast,
+  aes(x = gap_diff, y = model)
+) +
+  stat_halfeye(alpha = 0.7, .width = c(0.66, 0.95),
+               fill = "skyblue") +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "darkgrey") +
+  labs(
+    title = "Change in threshold by condition and high vs low face ability",
+    x     = "Difference in threshold (high - low face)",
+    y     = NULL,
+    fill  = NULL, colour = NULL
+  ) +
+  theme(legend.position = "bottom")
+
+p_thresh_gap
+
+ggsave(here("figures", "iid_ppreds", "preds_thresh_cond_face_contrast-res.jpeg"),
+       width = 8, height = 6)
+```
+

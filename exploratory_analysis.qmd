@@ -1,0 +1,209 @@
+---
+title: "exploratory_analysis"
+author: "Fournier Raphaël"
+format: html
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+This file calculates, visualises and summarises the exploratory analyses from  the individual differences face familiarity study.
+
+```{r}
+#| label: setup
+#| include: false
+
+pkgs <- c(
+  "EMC2", "tidyverse", "tidybayes", "patchwork", "paletteer", "here",
+  "corrplot", "ggdist", "RColorBrewer", "parallel", "future", "brms", "tidyr",
+  "ggplot2", "dplyr", "ggpubr"
+  )
+vapply(
+  pkgs, library, logical(1), character.only = TRUE, logical.return = TRUE
+  )
+
+theme_set(
+  theme_bw() +
+    theme(
+      text  = element_text(size = 15, face = "bold"),
+      title = element_text(size = 15, face = "bold"),
+      legend.position = "none"
+    )
+)
+
+## set options
+options(mc.cores = parallel::detectCores(),
+        future.fork.enable = TRUE,
+        future.rng.onMisuse = "ignore") ## automatically set in RStudio
+
+supportsMulticore()
+
+detectCores()
+
+plan(multicore)
+
+## make things reproducible where possible 
+set.seed(123)
+
+safe_pal   <- paletteer_d("rcartocolor::Safe", 4)
+mycolors <- c("novel" = safe_pal[1], "learned" = safe_pal[2])
+```
+
+# 1. read in the data
+
+```{r}
+#| label: read-wrangle
+
+# read in posterior medians and cambridge scores
+theta_pid_q <- read_csv(
+  here("data", "theta_pid_q.csv"),
+  show_col_types = FALSE
+)
+cam_face_car <- read_csv(
+  here("data", "cambridge_acc_scores_pid_res.csv"))
+
+
+# drift rate data — same structure as pilot
+drift_data <- theta_pid_q |>
+  filter(str_detect(param, "v_S")) |>
+  select(pid, param, value) |>
+  mutate(
+    stimulus = if_else(str_detect(param, "novel"), "novel", "learned"),
+    accuracy = if_else(str_detect(param, "TRUE"), "true", "false"),
+    condition = factor(
+      paste0(stimulus, ".", accuracy),
+      levels = c("learned.false", "novel.false", "learned.true", "novel.true")
+    ),
+    stimulus = factor(stimulus, levels = c("learned", "novel")),
+    accuracy = factor(accuracy, levels = c("false", "true"))
+  ) |>
+  left_join(cam_face_car, by = "pid") |>
+  select(pid, condition, stimulus, accuracy, face, car, value)
+
+# threshold data
+thresh_data <- theta_pid_q |>
+  filter(str_detect(param, "B_")) |>
+  select(pid, param, value) |>
+  mutate(
+    response = if_else(str_detect(param, "novel"), "novel", "learned"),
+    response = factor(response, levels = c("learned", "novel"))
+  ) |>
+  left_join(cam_face_car, by = "pid") |>
+  select(pid, response, face, car, value)
+
+# check structure
+head(drift_data)
+head(thresh_data)
+```
+
+# 2. Calculate d' and Criterion from the accuracy data of the face recognition taks
+
+```{r}
+#read in the face recognition task
+data_task <- read_csv(here("data", "data.csv"))
+
+#create d' dataframes: separate data frames for learned and novel (we will put them back together later)
+dprime_final <- d_prime %>%
+  group_by(pid) %>%
+  summarise(
+    # Learned condition
+    HR_learned = mean(resp_type_learned == "hit", na.rm = TRUE),
+    FAR_learned = mean(resp_type_learned == "fa",  na.rm = TRUE),
+    
+    # Novel condition
+    HR_novel = mean(resp_type_novel == "hit", na.rm = TRUE),
+    FAR_novel = mean(resp_type_novel == "fa",  na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    dprime_learned = qnorm(HR_learned) - qnorm(FAR_learned),
+    dprime_novel   = qnorm(HR_novel)   - qnorm(FAR_novel)
+  )
+```
+
+#Adding d'prime column in drift dataframe
+```{r}
+cor_data <- theta_pid_q |>
+  select(pid, param, value) |>
+  pivot_wider(names_from = param, values_from = value) |>
+  left_join(dprime_final, by = "pid") |>
+  # derived contrasts
+  mutate(
+    # drift discrimination (true - false) per condition
+    discrim_novel   = v_Snovel_lMTRUE   - v_Snovel_lMFALSE,
+    discrim_learned = v_Slearned_lMTRUE - v_Slearned_lMFALSE,
+    # cross-condition drift contrast (novel - learned discrimination)
+    discrim_diff    = discrim_novel - discrim_learned,
+    # threshold contrast
+    thresh_diff     = B_lRnovel - B_lRlearned
+  )
+```
+
+
+Correlations
+```{r}
+param_cols <- c(
+  "drift_learned", "drift_novel"
+)
+
+# pivot to long with both predictors as a variable
+cor_long <- cor_data |>
+  select(pid, discrim_novel, discrim_learned, dprime_learned, dprime_novel)|>
+  rename(drift_learned = "discrim_learned", drift_novel = "discrim_novel") |>
+  pivot_longer(
+    cols      = all_of(param_cols),
+    names_to  = "param",
+    values_to = "estimate"
+  ) |>
+  pivot_longer(
+    cols      = c(dprime_learned, dprime_novel),
+    names_to  = "predictor",
+    values_to = "score"
+  ) |>
+  mutate(
+    predictor = if_else(str_detect(predictor, "learned"), "sensitivity learned", "sensitivity novel"),
+    predictor = factor(predictor, levels = c("sensitivity learned", "sensitivity novel"))
+  )
+
+# compute r per param x predictor
+cor_labels <- cor_long |>
+  group_by(param, predictor) |>
+  summarise(
+    r = cor(estimate, score, use = "complete.obs"),
+    .groups = "drop"
+  ) |>
+  mutate(
+    label = sprintf("r = %.2f", r),
+    vjust = if_else(predictor == "sensitivity learned", 1.5, 3.0)
+  )
+
+# Extract the two panels' data
+df_plot <- cor_long %>%
+  # Keep only the matching condition pairs
+  filter(
+    (param == "drift_learned" & predictor == "sensitivity learned") |
+    (param == "drift_novel"   & predictor == "sensitivity novel")
+  ) %>%
+  mutate(condition = case_when(
+    param == "drift_learned" ~ "Learned",
+    param == "drift_novel"   ~ "Novel"
+  ))
+
+# Plot
+ggplot(df_plot, aes(x = score, y = estimate)) +
+  geom_point(size = 2.5, alpha = 0.8) +
+  geom_smooth(method = "lm", se = TRUE, color = "steelblue") +
+  stat_cor(method = "pearson", label.x.npc = "left", label.y.npc = "top") + # requires ggpubr
+  facet_wrap(~ condition, scales = "free") +
+  labs(
+    x = "Sensitivity (d')",
+    y = "Drift rate",
+    title = "Drift rate ~ Sensitivity by condition"
+  ) +
+  theme_bw()
+
+ggsave(here("figures", "corr", "d_prime.jpeg"), 
+       width = 10, height = 8)
+```
+
+

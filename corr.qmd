@@ -1,0 +1,1318 @@
+---
+title: "Correlational analyses"
+date: "`r Sys.Date()`"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+This file calculates, visualises and summarises the correlational analyses from  the individual differences face familiarity study.
+
+```{r}
+#| label: setup
+#| include: false
+
+pkgs <- c(
+  "EMC2", "tidyverse", "tidybayes", "patchwork", "paletteer", "here",
+  "corrplot", "ggdist", "RColorBrewer", "parallel", "future"
+  )
+vapply(
+  pkgs, library, logical(1), character.only = TRUE, logical.return = TRUE
+  )
+
+theme_set(
+  theme_bw() +
+    theme(
+      text  = element_text(size = 15, face = "bold"),
+      title = element_text(size = 15, face = "bold"),
+      legend.position = "none"
+    )
+)
+
+## set options
+options(mc.cores = parallel::detectCores(),
+        future.fork.enable = TRUE,
+        future.rng.onMisuse = "ignore") ## automatically set in RStudio
+
+supportsMulticore()
+
+detectCores()
+
+plan(multicore)
+
+## make things reproducible where possible 
+set.seed(123)
+
+safe_pal   <- paletteer_d("rcartocolor::Safe", 4)
+mycolors <- c("novel" = safe_pal[1], "learned" = safe_pal[2])
+```
+
+# 1. Read in the raw Cambridge test data and wrangle
+
+raw Cambridge test data
+
+```{r}
+#| label: read-cambridge-data
+
+## read in the pid data
+cambridge_acc_pid <- read_csv(
+  here("data", "cambridge_acc_scores_pid.csv")
+)
+head(cambridge_acc_pid)
+glimpse(cambridge_acc_pid)
+
+## filter and wrangle
+## face scores
+cam_face <- cambridge_acc_pid |>
+  filter(task == "face") |>
+  rename(face_recog = n_correct) |>
+  mutate(
+    face_recog_centred = face_recog - mean(face_recog, na.rm = TRUE)
+  ) |>
+  select(pid, face_recog, face_recog_centred)
+
+## car scores
+cam_car <- cambridge_acc_pid |>
+  filter(task == "car") |>
+  rename(car_recog = n_correct) |>
+  mutate(
+    car_recog_centred = car_recog - mean(car_recog, na.rm = TRUE)
+  ) |>
+  select(pid, car_recog, car_recog_centred)
+
+## join together for cor plots
+cam_face_car <- cam_face |> 
+  left_join(cam_car, by = "pid")
+head(cam_face_car)
+```
+
+# 2. Read in the model object and wrangle
+
+```{r}
+#| label: read-model
+#| eval: false 
+
+LBA_iid <- readRDS("models/LBA_iid.rds")
+```
+
+```{r}
+#| label: wrangle-post
+#| eval: false ## just do this once
+
+## col names for map = TRUE
+param_cols <- c(
+  "v_Snovel_lMTRUE", "v_Snovel_lMFALSE",
+  "v_Slearned_lMTRUE", "v_Slearned_lMFALSE",
+  "sv_lMTRUE", "B_lRnovel", "B_lRlearned", "A", "t0"
+)
+
+# subject-level — alpha, natural scale, drop constant
+params <- EMC2::parameters(
+  LBA_iid,
+  selection = "alpha",
+  N = NULL,
+  map = TRUE
+) |>
+  select(-sv_lMFALSE)
+
+# take a look
+head(params)
+glimpse(params)
+
+# pid-level posteriors
+n_pids  <- length(unique(params$subjects))
+n_draws <- nrow(params) / n_pids
+
+theta_pid <- params |>
+  as_tibble() |>
+  pivot_longer(
+    cols = all_of(param_cols),
+    names_to = "param",
+    values_to = "value"
+  ) |>
+  rename(pid = subjects) |>
+  mutate(.draw = rep(1:n_draws, each = length(param_cols), times = n_pids))
+
+head(theta_pid)
+glimpse(theta_pid)
+
+## pid summary data
+## 300 pids * 9 params = 2700
+theta_pid_q <- theta_pid |>
+  group_by(pid, param) |>
+  median_qi(value)
+
+## save out some files
+write_csv(theta_pid, "data/theta_pid.csv")
+write_csv(theta_pid_q, "data/theta_pid_q.csv")
+```
+
+read in posterior params
+
+```{r}
+#| label: read-post
+
+theta_pid <- read_csv(
+  "data/theta_pid.csv",
+  show_col_types = FALSE
+)
+
+theta_pid_q <- read_csv(
+  "data/theta_pid_q.csv",
+  show_col_types = FALSE
+)
+```
+
+# 3. Plot Cambridge test data
+
+## plot face recog distribution ##
+
+face recog data
+
+```{r}
+#| label: plot-face-car-hist
+
+p3.1 <- cam_face |>
+  ggplot(aes(x = face_recog)) +
+  geom_histogram(
+    bins = 20,
+    fill = "skyblue",
+    alpha = 0.7,
+    color = "black"
+  ) +
+  geom_vline(
+    xintercept = mean(cam_face$face_recog, na.rm = TRUE),
+    linetype = "dashed",
+    color = "red"
+  ) +
+  labs(
+    title = "Face Recognition Score Distribution",
+    x = "Face Recognition Score (0-54)",
+    y = "Count",
+    caption = "Red line = mean"
+  )
+
+p3.2 <- cam_car |>
+  ggplot(aes(x = car_recog)) +
+  geom_histogram(
+    bins  = 20,
+    fill  = "green",
+    alpha = 0.7,
+    color = "black"
+  ) +
+  geom_vline(
+    xintercept = mean(cam_car$car_recog, na.rm = TRUE),
+    linetype = "dashed",
+    color = "red"
+  ) +
+  labs(
+    title = "Car Recognition Score Distribution",
+    x     = "Car Recognition Score (0-54)",
+    y     = "Count",
+    caption = "Red line = mean"
+  )
+
+(p3.1 / p3.2) +
+  plot_layout(axes = "collect")
+```
+
+## plot face by car corr dot plot ##
+
+```{r}
+#| label: plot-face-car-corr
+
+## face by car cor
+# compute r and CI
+cor_test <- cor.test(cam_face_car$face_recog, cam_face_car$car_recog)
+r_label  <- sprintf("r = %.2f [%.2f, %.2f]",
+                    cor_test$estimate,
+                    cor_test$conf.int[1],
+                    cor_test$conf.int[2])
+
+# base plot
+p_face_car <- ggplot(cam_face_car, aes(x = face_recog, y = car_recog)) +
+  geom_point(alpha = 0.4, size = 1.5) +
+  geom_smooth(method = "lm", colour = "blue", fill = "lightblue") +
+  annotate("text",
+           x    = -Inf, y = Inf,
+           hjust = -0.1, vjust = 1.5,
+           label = r_label,
+           size  = 5, fontface = "bold") +
+  labs(
+    x = "Face recognition score",
+    y = "Car recognition score",
+    title = "Cambridge face vs. car memory scores"
+  )
+
+# add marginal densities
+p_face_car_dens <- ggExtra::ggMarginal(
+  p_face_car,
+  type     = "density",
+  fill     = "steelblue",
+  alpha    = 0.4,
+  colour   = "steelblue"
+)
+p_face_car_dens
+
+png(here("figures", "corr", "face_car_corr.png"), 
+    width = 8, height = 6, units = "in", res = 300)
+print(p_face_car_dens)
+dev.off()
+```
+
+# 4. Plot parameter estimates as a function of Cambriddge test scores
+
+## all params
+
+wrangle
+
+```{r}
+#| label: wrangle-correlations
+
+# join median params with cambridge scores
+cor_data <- theta_pid_q |>
+  select(pid, param, value) |>
+  pivot_wider(names_from = param, values_from = value) |>
+  left_join(cam_face, by = "pid") |>
+  left_join(cam_car,  by = "pid") |>
+  # derived contrasts
+  mutate(
+    # drift discrimination (true - false) per condition
+    discrim_novel   = v_Snovel_lMTRUE   - v_Snovel_lMFALSE,
+    discrim_learned = v_Slearned_lMTRUE - v_Slearned_lMFALSE,
+    # cross-condition drift contrast (novel - learned discrimination)
+    discrim_diff    = discrim_novel - discrim_learned,
+    # threshold contrast
+    thresh_diff     = B_lRnovel - B_lRlearned
+  )
+```
+
+plot
+
+```{r}
+#| label: plot-raw-params
+
+param_cols <- c(
+  "v_Snovel_lMTRUE", "v_Snovel_lMFALSE",
+  "v_Slearned_lMTRUE", "v_Slearned_lMFALSE",
+  "sv_lMTRUE", "B_lRnovel", "B_lRlearned", "A", "t0"
+)
+
+# pivot to long with both predictors as a variable
+cor_long <- cor_data |>
+  pivot_longer(
+    cols      = all_of(param_cols),
+    names_to  = "param",
+    values_to = "estimate"
+  ) |>
+  pivot_longer(
+    cols      = c(face_recog_centred, car_recog_centred),
+    names_to  = "predictor",
+    values_to = "score"
+  ) |>
+  mutate(
+    predictor = if_else(str_detect(predictor, "face"), "Face", "Car"),
+    predictor = factor(predictor, levels = c("Face", "Car"))
+  )
+
+# compute r per param x predictor
+cor_labels <- cor_long |>
+  group_by(param, predictor) |>
+  summarise(
+    r = cor(estimate, score, use = "complete.obs"),
+    .groups = "drop"
+  ) |>
+  mutate(
+    label = sprintf("r = %.2f", r),
+    vjust = if_else(predictor == "Face", 1.5, 3.0)
+  )
+
+# plot
+p_raw_params <- ggplot(cor_long, aes(x = score, y = estimate,
+                                      colour = predictor, fill = predictor)) +
+  geom_point(alpha = 0.3, size = 2) +
+  geom_smooth(method = "lm", se = TRUE, alpha = 0.3) +
+  geom_text(
+    data = cor_labels,
+    aes(label = label, vjust = vjust, colour = predictor),
+    x = -Inf, y = Inf,
+    hjust = -0.1,
+    size = 5, fontface = "bold",
+    show.legend = FALSE
+  ) +
+  facet_wrap(~param, scales = "free_y", ncol = 3) +
+  scale_colour_manual(values = c("Face" = safe_pal[1], "Car" = safe_pal[2])) +
+  scale_fill_manual(values   = c("Face" = safe_pal[1], "Car" = safe_pal[2])) +
+  labs(
+    title   = "Raw parameter estimates vs. recognition scores",
+    x       = "Recognition score (centred)",
+    y       = "Parameter estimate (median)",
+    colour  = NULL, fill = NULL
+  ) +
+  theme(legend.position = "bottom")
+
+p_raw_params
+
+ggsave(here("figures", "corr", "all_params.jpeg"), 
+       width = 15, height = 8)
+```
+
+### a different layout plus derived corrs
+ 
+```{r}
+#| label: plot-all-params-grid
+
+# all params + derived contrasts in one long df
+all_params_long <- cor_data |>
+  select(pid, face_recog_centred, car_recog_centred,
+         all_of(param_cols), 
+         discrim_novel, discrim_learned, discrim_diff, thresh_diff) |>
+  pivot_longer(
+    cols      = -c(pid, face_recog_centred, car_recog_centred),
+    names_to  = "param",
+    values_to = "estimate"
+  )
+
+# r labels per param x predictor
+all_r_face <- all_params_long |>
+  group_by(param) |>
+  summarise(
+    r     = cor(estimate, face_recog_centred, use = "complete.obs"),
+    .groups = "drop"
+  ) |>
+  mutate(label = sprintf("%s\n(r = %.2f)", param, r))
+
+all_r_car <- all_params_long |>
+  group_by(param) |>
+  summarise(
+    r     = cor(estimate, car_recog_centred, use = "complete.obs"),
+    .groups = "drop"
+  ) |> 
+  mutate(label = sprintf("%s\n(r = %.2f)", param, r))
+
+# join labels back
+face_plot_data <- all_params_long |>
+  left_join(all_r_face, by = "param") |>
+  mutate(param_label = label)
+
+car_plot_data <- all_params_long |>
+  left_join(all_r_car, by = "param") |>
+  mutate(param_label = label)
+
+# face plot
+p_all_face <- ggplot(face_plot_data,
+                      aes(x = face_recog_centred, y = estimate)) +
+  geom_point(alpha = 0.4, size = 2, colour = "grey30") +
+  geom_smooth(method = "lm", se = TRUE, colour = "red", fill = "grey30") +
+  facet_wrap(~param_label, scales = "free_y", ncol = 5) +
+  labs(
+    title = "All parameters: correlations with face recognition",
+    x     = "Face recognition ability (centred)",
+    y     = "Parameter value"
+  )
+
+p_all_face
+
+ggsave(here("figures", "corr", "all_params_face.jpeg"), 
+       width = 15, height = 8)
+
+# car plot
+p_all_car <- ggplot(car_plot_data,
+                     aes(x = car_recog_centred, y = estimate)) +
+  geom_point(alpha = 0.4, size = 2, colour = "grey30") +
+  geom_smooth(method = "lm", se = TRUE, colour = "red", fill = "grey30") +
+  facet_wrap(~param_label, scales = "free_y", ncol = 5) +
+  labs(
+    title = "All parameters: correlations with car recognition",
+    x     = "Car recognition ability (centred)",
+    y     = "Parameter value"
+  )
+
+p_all_car
+
+ggsave(here("figures", "corr", "all_params_car.jpeg"), 
+       width = 15, height = 8)
+
+
+#Meaningful correlations
+# face plot
+discrim_learned <- face_plot_data |>
+  filter(param == c("discrim_learned", "discrim_novel"))
+p_drift_face <- ggplot(discrim_learned,
+                      aes(x = face_recog_centred, y = estimate)) +
+  geom_point(alpha = 0.4, size = 2, colour = "grey30") +
+  geom_smooth(method = "lm", se = TRUE, colour = "red", fill = "grey30") +
+  facet_wrap(~param_label, scales = "free_y", ncol = 2) +
+  labs(
+    title = "Drift rate (TRUE-FALSE) correlations with face recognition",
+    x     = "Face recognition ability (centred)",
+    y     = "Drift rate"
+  )
+
+p_drift_face
+ggsave(here("figures", "corr", "drift_face.jpeg"), 
+       width = 8, height = 6)
+
+# car plot
+discrim_learned <- car_plot_data |>
+  filter(param == c("discrim_learned", "discrim_novel"))
+p_drift_car <- ggplot(discrim_learned,
+                     aes(x = car_recog_centred, y = estimate)) +
+  geom_point(alpha = 0.4, size = 2, colour = "grey30") +
+  geom_smooth(method = "lm", se = TRUE, colour = "red", fill = "grey30") +
+  facet_wrap(~param_label, scales = "free_y", ncol = 5) +
+  labs(
+    title = "Drift rate (TRUE-FALSE) correlations with car recognition",
+    x     = "Car recognition ability (centred)",
+    y     = "Drift rate"
+  )
+
+p_drift_car
+
+ggsave(here("figures", "corr", "drift_car.jpeg"), 
+       width = 8, height = 6)
+
+```
+
+## plot pre-registered relationships
+
+wrangle
+
+```{r}
+#| label: wrangle-focused-plots
+
+# drift long format with median estimates
+drift_plot_data <- cor_data |>
+  select(pid, face_recog_centred, car_recog_centred,
+         v_Snovel_lMTRUE, v_Snovel_lMFALSE,
+         v_Slearned_lMTRUE, v_Slearned_lMFALSE) |>
+  pivot_longer(
+    cols      = starts_with("v_"),
+    names_to  = "param",
+    values_to = "estimate"
+  ) |>
+  mutate(
+    condition = if_else(str_detect(param, "novel"), "Novel", "Learned"),
+    accuracy  = if_else(str_detect(param, "TRUE"),  "true",  "false"),
+    condition = factor(condition, levels = c("Learned", "Novel")),
+    accuracy  = factor(accuracy,  levels = c("true", "false"))
+  )
+
+# threshold long format
+thresh_plot_data <- cor_data |>
+  select(pid, face_recog_centred, car_recog_centred,
+         B_lRnovel, B_lRlearned) |>
+  pivot_longer(
+    cols      = starts_with("B_"),
+    names_to  = "param",
+    values_to = "estimate"
+  ) |>
+  mutate(
+    response = if_else(str_detect(param, "novel"), "novel", "learned"),
+    response = factor(response, levels = c("novel", "learned"))
+  )
+```
+
+### plot drift rate
+
+```{r}
+#| label: plot-drift-focused
+
+drift_colors <- c("true" = "salmon", "false" = "steelblue")
+
+# density panel
+p_drift_dens <- ggplot(
+  drift_plot_data,
+  aes(x = estimate, fill = accuracy, colour = accuracy)
+) +
+  geom_density(alpha = 0.6) +
+  scale_fill_manual(values = drift_colors) +
+  scale_colour_manual(values = drift_colors) +
+  facet_wrap(~condition) +
+  labs(
+    title = "Distribution of individual drift rates",
+    x = "Drift rate", y = "Density",
+    fill = "Response type", colour = "Response type"
+  ) +
+  theme(legend.position = "bottom")
+
+# scatter + smooth — face score
+p_drift_face <- ggplot(
+  drift_plot_data,
+  aes(
+    x = face_recog_centred, y = estimate,
+    colour = accuracy, fill = accuracy
+  )
+) +
+  geom_point(alpha = 0.3, size = 2) +
+  geom_smooth(method = "lm", se = TRUE, alpha = 0.4) +
+  scale_fill_manual(values = drift_colors) +
+  scale_colour_manual(values = drift_colors) +
+  facet_wrap(~condition) +
+  labs(
+    title = "Face recognition effects on drift rate",
+    x = "Face recognition ability (centred)",
+    y = "Drift rate",
+    colour = "Response type", fill = "Response type"
+  ) +
+  theme(legend.position = "bottom")
+
+# scatter + smooth — car score
+p_drift_car <- ggplot(
+  drift_plot_data,
+  aes(
+    x = car_recog_centred, y = estimate,
+    colour = accuracy, fill = accuracy
+  )
+) +
+  geom_point(alpha = 0.3, size = 2) +
+  geom_smooth(method = "lm", se = TRUE, alpha = 0.4) +
+  scale_fill_manual(values = drift_colors) +
+  scale_colour_manual(values = drift_colors) +
+  facet_wrap(~condition) +
+  labs(
+    title = "Car recognition effects on drift rate",
+    x = "Car recognition ability (centred)",
+    y = "Drift rate",
+    colour = "Response type", fill = "Response type"
+  ) +
+  theme(legend.position = "bottom")
+
+# combined — replicating image 3 layout
+p_drift_combined <- (p_drift_dens | p_drift_face | p_drift_car) +
+  plot_layout(guides = "collect") &
+  theme(legend.position = "bottom")
+
+p_drift_combined
+
+
+
+ggsave(here("figures", "corr", "drift_correlations.jpeg"), 
+       width = 15, height = 6)
+
+p_drift_face
+
+ggsave(here("figures", "corr", "drift_correlations_simple.jpeg"), 
+       width = 8, height = 6)
+```
+
+and an alternative
+
+```{r}
+#| label: wrangle-drift-alt-style
+
+drift_alt <- theta_pid_q |>
+  filter(str_detect(param, "v_S")) |>
+  select(pid, param, value) |>
+  mutate(
+    stimulus = if_else(str_detect(param, "novel"), "novel", "learned"),
+    accuracy = if_else(str_detect(param, "TRUE"), "true", "false"),
+    condition = factor(
+      paste0(stimulus, ".", accuracy),
+      levels = c("learned.false", "novel.false", "learned.true", "novel.true")
+    ),
+    stimulus = factor(stimulus, levels = c("learned", "novel")),
+    accuracy = factor(accuracy, levels = c("false", "true"))
+  ) |>
+  left_join(cam_face |> select(pid, face_recog_centred), by = "pid") |>
+  left_join(cam_car  |> select(pid, car_recog_centred),  by = "pid") |>
+  rename(face = face_recog_centred, car = car_recog_centred)
+
+head(drift_alt)
+```
+
+```{r}
+#| label: plot-drift-alt-style
+#| fig-width: 10
+#| fig-height: 8
+
+# reuse the same plotting functions from the pilot
+plot_smooth <- function(data, x, y) {
+  ggplot(data, aes(x = {{ x }}, y = {{ y }})) +
+    geom_point(alpha = 0.5) +
+    geom_smooth(method = "lm") +
+    facet_wrap(~condition, nrow = 1) +
+    labs(y = "Drift rate (median)")
+}
+
+p_face <- plot_smooth(drift_alt, face, value) +
+  labs(x = "Face recognition (centred)")
+p_car  <- plot_smooth(drift_alt, car,  value) +
+  labs(x = "Car recognition (centred)")
+
+p_combi <- p_face / p_car
+p_combi
+
+ggsave(here("figures", "corr", "drift_rate_smooth.jpeg"), 
+       width = 12, height = 8)
+```
+
+and now as a 2x2 structure
+
+```{r}
+#| label: plot-drift-2x2
+#| fig-width: 10
+#| fig-height: 6
+
+plot_2x2 <- function(data, x, y) {
+  ggplot(
+    data,
+    aes(x = {{ x }}, y = {{ y }}, fill = accuracy, colour = accuracy)
+  ) +
+    geom_point(alpha = 0.5) +
+    geom_smooth(method = "lm") +
+    scale_fill_brewer(palette = "Dark2") +
+    scale_colour_brewer(palette = "Dark2") +
+    facet_wrap(~stimulus, nrow = 1) +
+    labs(y = "Drift rate (median)", fill = NULL, colour = NULL)
+}
+
+## face
+p_face_2x2 <- plot_2x2(drift_alt, face, value) +
+  labs(x = "Face recognition (centred)", title = "Face") 
+
+## car
+p_car_2x2 <- plot_2x2(drift_alt, car, value) +
+  labs(x = "Car recognition (centred)", title = "Car")
+
+## combined
+(p_face_2x2 | p_car_2x2) +
+  plot_layout(guides = "collect",
+              axes = "collect") &
+  theme(legend.position = "bottom")
+
+ggsave(here("figures", "corr", "drift_rate_2x2.jpeg"), 
+       width = 10, height = 7)
+```
+
+### plot threshold
+
+```{r}
+#| label: plot-threshold-focused
+
+thresh_colors <- c("novel" = "purple", "learned" = "orange")
+
+# density panel
+p_thresh_dens <- ggplot(
+  thresh_plot_data,
+  aes(x = estimate, fill = response, colour = response)
+) +
+  geom_density(alpha = 0.6) +
+  scale_fill_manual(values = thresh_colors) +
+  scale_colour_manual(values = thresh_colors) +
+  labs(
+    title = "Distribution of response thresholds",
+    x = "Threshold (B)", y = "Density",
+    fill = "Response", colour = "Response"
+  ) +
+  theme(legend.position = "bottom")
+
+# scatter + smooth — face score
+p_thresh_face <- ggplot(
+  thresh_plot_data,
+  aes(
+    x = face_recog_centred, y = estimate,
+    colour = response, fill = response
+  )
+) +
+  geom_point(alpha = 0.3, size = 2) +
+  geom_smooth(method = "lm", se = TRUE, alpha = 0.4) +
+  scale_fill_manual(values = thresh_colors) +
+  scale_colour_manual(values = thresh_colors) +
+  labs(
+    title = "Face recognition effects on threshold",
+    x = "Face recognition ability (centred)",
+    y = "Threshold",
+    colour = "Response", fill = "Response"
+  ) +
+  theme(legend.position = "bottom")
+
+# scatter + smooth — car score
+p_thresh_car <- ggplot(
+  thresh_plot_data,
+  aes(
+    x = car_recog_centred, y = estimate,
+    colour = response, fill = response
+  )
+) +
+  geom_point(alpha = 0.3, size = 2) +
+  geom_smooth(method = "lm", se = TRUE, alpha = 0.4) +
+  scale_fill_manual(values = thresh_colors) +
+  scale_colour_manual(values = thresh_colors) +
+  labs(
+    title = "Car recognition effects on threshold",
+    x = "Car recognition ability (centred)",
+    y = "Threshold",
+    colour = "Response", fill = "Response"
+  ) +
+  theme(legend.position = "bottom")
+
+# combined
+p_thresh_combined <- (p_thresh_dens | p_thresh_face | p_thresh_car) +
+  plot_layout(guides = "collect") &
+  theme(legend.position = "bottom")
+
+p_thresh_combined
+
+ggsave(here("figures", "corr", "threshold_correlations.jpeg"), 
+       width = 15, height = 6)
+
+p_thresh_face
+ggsave(here("figures", "corr", "threshold_correlations_simple.jpeg"), 
+       width = 8, height = 6)
+```
+
+alternative layout
+
+```{r}
+#| label: wrangle-threshold-alt-style
+
+thresh_alt <- theta_pid_q |>
+  filter(str_detect(param, "B_")) |>
+  select(pid, param, value) |>
+  mutate(
+    response = if_else(str_detect(param, "novel"), "novel", "learned"),
+    response = factor(response, levels = c("learned", "novel"))
+  ) |>
+  left_join(cam_face |> select(pid, face_recog_centred), by = "pid") |>
+  left_join(cam_car  |> select(pid, car_recog_centred),  by = "pid") |>
+  rename(face = face_recog_centred, car = car_recog_centred)
+
+head(thresh_alt)
+```
+
+```{r}
+#| label: plot-threshold-smooth
+#| fig-width: 10
+#| fig-height: 8
+
+plot_smooth_thresh <- function(data, x, y) {
+  ggplot(data, aes(x = {{ x }}, y = {{ y }})) +
+    geom_point(alpha = 0.5) +
+    geom_smooth(method = "lm") +
+    facet_wrap(~response, nrow = 1) +
+    labs(y = "Threshold (median)")
+}
+
+p_thresh_face <- plot_smooth_thresh(thresh_alt, face, value) +
+  labs(x = "Face recognition (centred)")
+p_thresh_car  <- plot_smooth_thresh(thresh_alt, car,  value) +
+  labs(x = "Car recognition (centred)")
+
+p_thresh_combi <- p_thresh_face / p_thresh_car
+p_thresh_combi
+
+ggsave(here("figures", "corr", "threshold_smooth.jpeg"), 
+       width = 10, height = 7)
+```
+
+```{r}
+#| label: plot-threshold-2x2
+#| fig-width: 8
+#| fig-height: 6
+
+plot_2x2_thresh <- function(data, x, y) {
+  ggplot(
+    data,
+    aes(x = {{ x }}, y = {{ y }}, fill = response, colour = response)
+  ) +
+    geom_point(alpha = 0.5) +
+    geom_smooth(method = "lm") +
+    scale_fill_manual(values = thresh_colors) +
+    scale_colour_manual(values = thresh_colors) +
+    facet_wrap(~response, nrow = 1) +
+    labs(y = "Threshold (median)", fill = NULL, colour = NULL)
+}
+
+p_thresh_face_2x2 <- plot_2x2_thresh(thresh_alt, face, value) +
+  labs(x = "Face recognition (centred)", title = "Face")
+
+p_thresh_car_2x2 <- plot_2x2_thresh(thresh_alt, car, value) +
+  labs(x = "Car recognition (centred)", title = "Car")
+
+(p_thresh_face_2x2 | p_thresh_car_2x2) +
+  plot_layout(guides = "collect", axes = "collect") &
+  theme(legend.position = "bottom")
+
+ggsave(here("figures", "corr", "threshold_2x2.jpeg"), 
+       width = 10, height = 7)
+```
+
+# 5. Conventional correlation table
+
+```{r}
+#| label: correlation-table
+
+prereg_params <- c(
+  "B_lRnovel", "B_lRlearned", "thresh_diff",
+  "v_Snovel_lMTRUE", "v_Snovel_lMFALSE", "discrim_novel",
+  "v_Slearned_lMTRUE", "v_Slearned_lMFALSE", "discrim_learned",
+  "discrim_diff"
+)
+
+param_labels <- c(
+  B_lRnovel        = "Threshold: Novel",
+  B_lRlearned      = "Threshold: Learned",
+  thresh_diff      = "Threshold: Novel - Learned",
+  v_Snovel_lMTRUE  = "Drift: Novel (true)",
+  v_Snovel_lMFALSE = "Drift: Novel (false)",
+  discrim_novel    = "Drift: Novel (true - false)",
+  v_Slearned_lMTRUE  = "Drift: Learned (true)",
+  v_Slearned_lMFALSE = "Drift: Learned (false)",
+  discrim_learned  = "Drift: Learned (true - false)",
+  discrim_diff     = "Drift: (Novel - Learned) difference"
+)
+
+cor_table <- cor_data |>
+  select(all_of(prereg_params), face_recog_centred, car_recog_centred) |>
+  pivot_longer(
+    cols      = all_of(prereg_params),
+    names_to  = "param",
+    values_to = "estimate"
+  ) |>
+  group_by(param) |>
+  summarise(
+    r_face = cor(estimate, face_recog_centred, use = "complete.obs"),
+    r_car  = cor(estimate, car_recog_centred,  use = "complete.obs"),
+    .groups = "drop"
+  ) |>
+  mutate(
+    param = factor(param, levels = prereg_params),
+    label = param_labels[as.character(param)]
+  ) |>
+  arrange(param) |>
+  select(label, r_face, r_car) |>
+  knitr::kable(
+    digits    = 3,
+    col.names = c("Parameter", "r (Face)", "r (Car)"),
+    caption   = "Zero-order correlations between LBA parameters and recognition scores"
+  )
+
+cor_table
+```
+
+corr mat plot
+
+```{r}
+#| label: plot-corrplot
+#| fig-width: 12
+#| fig-height: 6
+
+cor_matrix_data <- cor_data |>
+  select(all_of(prereg_params), face_recog_centred, car_recog_centred) |>
+  pivot_longer(
+    cols      = all_of(prereg_params),
+    names_to  = "param",
+    values_to = "estimate"
+  ) |>
+  group_by(param) |>
+  summarise(
+    r_face    = cor.test(estimate, face_recog_centred)$estimate,
+    lo_face   = cor.test(estimate, face_recog_centred)$conf.int[1],
+    hi_face   = cor.test(estimate, face_recog_centred)$conf.int[2],
+    r_car     = cor.test(estimate, car_recog_centred)$estimate,
+    lo_car    = cor.test(estimate, car_recog_centred)$conf.int[1],
+    hi_car    = cor.test(estimate, car_recog_centred)$conf.int[2],
+    .groups   = "drop"
+  ) |>
+  mutate(label = param_labels[param])
+
+# long format for plotting
+cor_long_plot <- cor_matrix_data |>
+  pivot_longer(
+    cols      = c(r_face, r_car, lo_face, hi_face, lo_car, hi_car),
+    names_to  = c(".value", "predictor"),
+    names_pattern = "(r|lo|hi)_(face|car)"
+  ) |>
+  mutate(
+    predictor  = if_else(predictor == "face", "Face", "Car"),
+    predictor  = factor(predictor, levels = c("Face", "Car")),
+    label      = factor(label, levels = rev(param_labels)),
+    cell_label = sprintf("%.2f\n[%.2f, %.2f]", r, lo, hi)
+  )
+
+ggplot(cor_long_plot, aes(x = predictor, y = label, fill = r)) +
+  geom_tile(colour = "white", linewidth = 0.5) +
+  geom_text(aes(label = cell_label),
+            size = 3, fontface = "bold", lineheight = 0.9) +
+  scale_fill_distiller(
+    palette   = "RdBu",
+    limits    = c(-0.3, 0.3),
+    direction = 1
+  ) +
+  labs(
+    title = "Zero-order correlations with recognition scores",
+    x     = NULL,
+    y     = NULL,
+    fill  = "r"
+  ) +
+  theme(
+    axis.text.x     = element_text(size = 13, face = "bold"),
+    axis.text.y     = element_text(size = 11, face = "bold"),
+    legend.position = "right"
+  )
+
+ggsave(here("figures", "corr", "corrplot.jpeg"), 
+       width = 10, height = 7)
+```
+
+# 6. Plausible value correlations
+
+```{r}
+#| label: plausible-value-wrangle
+
+all_prereg_params <- c(
+  param_cols,
+  "discrim_novel", "discrim_learned",
+  "discrim_diff", "thresh_diff"
+)
+
+# join theta_pid (full posterior) with cambridge scores
+# theta_pid has 300 pids x 9 params x 15000 draws
+pv_data <- theta_pid |>
+  pivot_wider(names_from = param, values_from = value) |>
+  mutate(
+    discrim_novel   = v_Snovel_lMTRUE - v_Snovel_lMFALSE,
+    discrim_learned = v_Slearned_lMTRUE - v_Slearned_lMFALSE,
+    discrim_diff    = discrim_novel - discrim_learned,
+    thresh_diff     = B_lRnovel - B_lRlearned
+  ) |>
+  left_join(
+    cam_face |> select(pid, face_recog_centred),
+    by = "pid"
+  ) |>
+  left_join(
+    cam_car |> select(pid, car_recog_centred),
+    by = "pid"
+  ) |>
+  pivot_longer(
+    cols      = all_of(all_prereg_params),
+    names_to  = "param",
+    values_to = "estimate"
+  )
+
+# compute correlation for each draw x param x predictor
+# this will take a moment with 15000 draws
+pv_cors <- pv_data |>
+  group_by(.draw, param) |>
+  summarise(
+    r_face = cor(estimate, face_recog_centred, use = "complete.obs"),
+    r_car = cor(estimate, car_recog_centred, use = "complete.obs"),
+    .groups = "drop"
+  ) |>
+  pivot_longer(
+    cols      = c(r_face, r_car),
+    names_to  = "predictor",
+    values_to = "r"
+  ) |>
+  mutate(
+    predictor = if_else(predictor == "r_face", "Face", "Car"),
+    predictor = factor(predictor, levels = c("Face", "Car"))
+  )
+
+# save out — this is a big object
+write_csv(pv_cors, here("data", "pv_cors.csv"))
+```
+
+```{r}
+#| label: plausible-value-summary
+
+# summarise
+pv_summary <- pv_cors |>
+  group_by(param, predictor) |>
+  median_qi(r, .width = c(0.95)) |>
+  mutate(label = param_labels[param]) |> 
+  print(n=Inf)
+```
+
+```{r}
+#| label: plot-pv-key-params
+#| fig-width: 12
+#| fig-height: 8
+
+# key params per prereg: drift discriminations + threshold + their differences
+key_params <- c(
+  "discrim_novel", "discrim_learned", "discrim_diff",
+  "B_lRnovel", "B_lRlearned", "thresh_diff"
+)
+
+key_labels <- c(
+  discrim_novel   = "Drift: Novel (true-false)",
+  discrim_learned = "Drift: Learned (true-false)",
+  discrim_diff    = "Drift: Novel - Learned",
+  B_lRnovel       = "Threshold: Novel",
+  B_lRlearned     = "Threshold: Learned",
+  thresh_diff     = "Threshold: Novel - Learned"
+)
+
+pv_cors_key <- pv_cors |>
+  filter(param %in% key_params) |>
+  mutate(
+    param = factor(param, levels = key_params,
+                   labels = key_labels)
+  )
+
+ggplot(pv_cors_key, aes(x = r, y = predictor, 
+                         fill = predictor, colour = predictor)) +
+  stat_halfeye(alpha = 0.7, .width = c(0.5, 0.95)) +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "darkgrey") +
+  scale_fill_manual(values = c("Face" = safe_pal[1], "Car" = safe_pal[2])) +
+  scale_colour_manual(values = c("Face" = safe_pal[1], "Car" = safe_pal[2])) +
+  facet_wrap(~param, ncol = 3) +
+  labs(
+    title = "Posterior correlation distributions — key parameters",
+    x     = "Plausible correlation with recognition score",
+    y     = NULL,
+    fill  = NULL, colour = NULL
+  ) +
+  theme(legend.position = "bottom")
+
+ggsave(here("figures", "pv_cors_key.jpeg"), width = 12, height = 8)
+```
+
+```{r}
+#| label: plot-pv-threshold
+
+thresh_colors <- c("Novel" = safe_pal[1], "Learned" = safe_pal[2])
+
+# left panel — novel and learned
+pv_thresh_main <- pv_cors |>
+  filter(param %in% c("B_lRnovel", "B_lRlearned")) |>
+  mutate(
+    response  = if_else(param == "B_lRnovel", "Novel", "Learned"),
+    response  = factor(response, levels = c("Novel", "Learned"))
+  )
+
+p_thresh_left <- ggplot(
+  pv_thresh_main,
+  aes(x = r, y = predictor, fill = response, colour = response)
+) +
+  stat_halfeye(alpha = 0.7, .width = c(0.5, 0.95)) +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "darkgrey") +
+  scale_fill_manual(values = thresh_colors) +
+  scale_colour_manual(values = thresh_colors) +
+  labs(
+    x = "Plausible r", y = NULL,
+    title = "Threshold",
+    fill = NULL, colour = NULL
+  ) +
+  theme(legend.position = "bottom")
+
+# right panel — difference
+pv_thresh_diff <- pv_cors |>
+  filter(param == "thresh_diff")
+
+p_thresh_right <- ggplot(
+  pv_thresh_diff,
+  aes(x = r, y = predictor)
+) +
+  stat_halfeye(
+    alpha = 0.7, .width = c(0.5, 0.95),
+    fill = "#1A7A7A"
+  ) +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "darkgrey") +
+  labs(
+    x = "Plausible r", y = NULL,
+    title = "Threshold (Novel - Learned)",
+    fill = NULL, colour = NULL
+  ) +
+  theme(legend.position = "bottom")
+
+p_thresh <- (p_thresh_left | p_thresh_right) +
+  plot_layout(guides = "collect",
+              axes = "collect") &
+  theme(legend.position = "bottom")
+
+p_thresh
+
+ggsave(here("figures", "corr", "pv_threshold.jpeg"), 
+       width = 10, height = 5)
+```
+
+```{r}
+#| label: plot-pv-drift
+
+drift_colors <- c("Novel" = safe_pal[1], "Learned" = safe_pal[2])
+
+# left panel — true and false per condition
+pv_drift_main <- pv_cors |>
+  filter(param %in% c(
+    "v_Snovel_lMTRUE", "v_Snovel_lMFALSE",
+    "v_Slearned_lMTRUE", "v_Slearned_lMFALSE"
+  )) |>
+  mutate(
+    condition = if_else(str_detect(param, "novel"), "Novel", "Learned"),
+    accuracy  = if_else(str_detect(param, "TRUE"), "true", "false"),
+    condition = factor(condition, levels = c("Novel", "Learned")),
+    accuracy  = factor(accuracy, levels = c("true", "false"))
+  )
+
+p_drift_left <- ggplot(
+  pv_drift_main,
+  aes(
+    x = r, y = predictor, fill = condition, colour = condition,
+    alpha = accuracy
+  )
+) +
+  stat_halfeye(.width = c(0.5, 0.95)) +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "darkgrey") +
+  scale_fill_manual(values = drift_colors) +
+  scale_colour_manual(values = drift_colors) +
+  scale_alpha_manual(values = c("true" = 0.8, "false" = 0.3)) +
+  labs(
+    x = "Plausible r", y = NULL,
+    title = "Drift rate (true / false)",
+    fill = NULL, colour = NULL, alpha = "Accuracy"
+  ) +
+  theme(legend.position = "bottom")
+
+# middle panel — discrimination (true - false) per condition
+pv_drift_discrim <- pv_cors |>
+  filter(param %in% c("discrim_novel", "discrim_learned")) |>
+  mutate(
+    condition = if_else(param == "discrim_novel", "Novel", "Learned"),
+    condition = factor(condition, levels = c("Novel", "Learned"))
+  )
+
+p_drift_mid <- ggplot(
+  pv_drift_discrim,
+  aes(x = r, y = predictor, fill = condition, colour = condition)
+) +
+  stat_halfeye(alpha = 0.7, .width = c(0.5, 0.95)) +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "darkgrey") +
+  scale_fill_manual(values = drift_colors) +
+  scale_colour_manual(values = drift_colors) +
+  labs(
+    x = "Plausible r", y = NULL,
+    title = "Drift (true - false)",
+    fill = NULL, colour = NULL
+  ) +
+  theme(legend.position = "bottom")
+
+# right panel — novel-learned difference of discriminations
+pv_drift_diff <- pv_cors |>
+  filter(param == "discrim_diff")
+
+p_drift_right <- ggplot(
+  pv_drift_diff,
+  aes(x = r, y = predictor, fill = predictor, colour = predictor)
+) +
+  stat_halfeye(alpha = 0.7, .width = c(0.5, 0.95)) +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "darkgrey") +
+  scale_fill_manual(values = c("Face" = safe_pal[1], "Car" = safe_pal[2])) +
+  scale_colour_manual(values = c("Face" = safe_pal[1], "Car" = safe_pal[2])) +
+  labs(
+    x = "Plausible r", y = NULL,
+    title = "Drift difference\n(Novel - Learned)",
+    fill = NULL, colour = NULL
+  ) +
+  theme(legend.position = "bottom")
+
+p_drift <- (p_drift_left | p_drift_mid | p_drift_right) +
+  plot_layout(guides = "collect") &
+  theme(legend.position = "bottom")
+
+p_drift
+
+ggsave(here("figures", "pv_drift.jpeg"), 
+       width = 14, height = 5)
+```
+
+```{r}
+#| label: plot-pv-drift-v2
+#| fig-width: 14
+#| fig-height: 6
+
+drift_colors <- c("Novel" = safe_pal[1], "Learned" = safe_pal[2])
+
+# left panel — true and false per condition, faceted by predictor
+pv_drift_main <- pv_cors |>
+  filter(param %in% c(
+    "v_Snovel_lMTRUE", "v_Snovel_lMFALSE",
+    "v_Slearned_lMTRUE", "v_Slearned_lMFALSE"
+  )) |>
+  mutate(
+    condition = if_else(str_detect(param, "novel"), "Novel", "Learned"),
+    accuracy  = if_else(str_detect(param, "TRUE"), "true", "false"),
+    condition = factor(condition, levels = c("Learned", "Novel")),
+    accuracy  = factor(accuracy, levels = c("true", "false"))
+  )
+
+p_drift_left <- ggplot(
+  pv_drift_main,
+  aes(
+    x = r, y = condition, fill = condition, colour = condition,
+    alpha = accuracy
+  )
+) +
+  stat_halfeye(.width = c(0.5, 0.95)) +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "darkgrey") +
+  scale_fill_manual(values = drift_colors) +
+  scale_colour_manual(values = drift_colors, guide = "none") +
+  scale_alpha_manual(values = c("true" = 0.8, "false" = 0.3), guide = "none") +
+  facet_wrap(~predictor, ncol = 1) +
+  labs(
+    x = "Plausible r", y = NULL,
+    title = "Drift rate",
+    subtitle = "light = false; dark = true",
+    fill = NULL
+  ) +
+  theme(legend.position = "none")
+
+# middle panel — discrimination (true - false) per condition, faceted by predictor
+pv_drift_discrim <- pv_cors |>
+  filter(param %in% c("discrim_novel", "discrim_learned")) |>
+  mutate(
+    condition = if_else(param == "discrim_novel", "Novel", "Learned"),
+    condition = factor(condition, levels = c("Learned", "Novel"))
+  )
+
+p_drift_mid <- ggplot(
+  pv_drift_discrim,
+  aes(x = r, y = condition, fill = condition, colour = condition)
+) +
+  stat_halfeye(alpha = 0.7, .width = c(0.5, 0.95)) +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "darkgrey") +
+  scale_fill_manual(values = drift_colors) +
+  scale_colour_manual(values = drift_colors) +
+  facet_wrap(~predictor, ncol = 1) +
+  labs(
+    x = "Plausible r", y = NULL,
+    title = "Drift (true - false)",
+    fill = NULL, colour = NULL
+  ) +
+  theme(legend.position = "bottom")
+
+# right panel — novel-learned difference, faceted by predictor
+pv_drift_diff <- pv_cors |>
+  filter(param == "discrim_diff") |>
+  mutate(
+    condition = "Novel - Learned",
+    condition = factor(condition)
+  )
+
+p_drift_right <- ggplot(
+  pv_drift_diff,
+  aes(x = r, y = "")
+) +
+  stat_halfeye(alpha = 0.7, .width = c(0.5, 0.95),
+               fill = "#1A7A7A") +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "darkgrey") +
+  facet_wrap(~predictor, ncol = 1) +
+  labs(
+    x = "Plausible r", y = NULL,
+    title = "Drift difference\n(Novel - Learned)",
+    fill = NULL, colour = NULL
+  ) +
+  theme(legend.position = "none")
+
+# combine
+p_drift <- (p_drift_left | p_drift_mid | p_drift_right) +
+  plot_layout(axes = "collect") 
+
+p_drift
+
+ggsave(here("figures", "corr", "pv_drift.jpeg"), 
+       width = 12, height = 6)
+```
+

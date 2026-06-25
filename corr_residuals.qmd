@@ -1,0 +1,522 @@
+---
+title: "corr_gender"
+date: "`r Sys.Date()`"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+This file calculates, visualises and summarises the correlational analyses from  the individual differences face familiarity study with controlled influence of Gender on the CCMT scores.
+
+```{r}
+#| label: setup
+#| include: false
+
+pkgs <- c(
+  "EMC2", "tidyverse", "tidybayes", "patchwork", "paletteer", "here",
+  "corrplot", "ggdist", "RColorBrewer", "parallel", "future", "brms"
+  )
+vapply(
+  pkgs, library, logical(1), character.only = TRUE, logical.return = TRUE
+  )
+
+theme_set(
+  theme_bw() +
+    theme(
+      text  = element_text(size = 15, face = "bold"),
+      title = element_text(size = 15, face = "bold"),
+      legend.position = "none"
+    )
+)
+
+## set options
+options(mc.cores = parallel::detectCores(),
+        future.fork.enable = TRUE,
+        future.rng.onMisuse = "ignore") ## automatically set in RStudio
+
+supportsMulticore()
+
+detectCores()
+
+plan(multicore)
+
+## make things reproducible where possible 
+set.seed(123)
+
+safe_pal   <- paletteer_d("rcartocolor::Safe", 4)
+mycolors <- c("novel" = safe_pal[1], "learned" = safe_pal[2])
+```
+
+
+```{r}
+#| label: read-cambridge-data
+
+## read in the pid data
+cambridge_acc_pid <- read_csv(
+  here("data", "cambridge_acc_scores_pid.csv")
+)
+head(cambridge_acc_pid)
+glimpse(cambridge_acc_pid)
+
+## filter and wrangle
+## face scores
+cam_face <- cambridge_acc_pid |>
+  filter(task == "face") |>
+  rename(face_recog = n_correct) |>
+  mutate(
+    face_recog_centred = face_recog - mean(face_recog, na.rm = TRUE)
+  ) |>
+  select(pid, face_recog, face_recog_centred)
+
+## car scores
+cam_car <- cambridge_acc_pid |>
+  filter(task == "car") |>
+  rename(car_recog = n_correct) |>
+  mutate(
+    car_recog_centred = car_recog - mean(car_recog, na.rm = TRUE)
+  ) |>
+  select(pid, Sex, car_recog, car_recog_centred)
+```
+# 1. Regression model to control for gender effect on CCMT ##
+## set defaults and create a function
+
+```{r}
+#| label: brms-defaults-function
+
+brm_defaults <- list(
+  family = gaussian(),
+  iter = 2000,
+  warmup = 1000,
+  cores = 28,
+  chains = 4,
+  save_pars = save_pars(all = TRUE),
+  seed = 123,
+  control = list(adapt_delta = 0.95, max_treedepth = 15)
+)
+
+fit_model <- function(formula, prior, file, data, ...) {
+  brm(
+    formula = formula,
+    prior = prior,
+    file = file,
+    data = data,  
+    family = brm_defaults$family,
+    iter = brm_defaults$iter,
+    warmup = brm_defaults$warmup,
+    cores = brm_defaults$cores,
+    chains = brm_defaults$chains,
+    save_pars = brm_defaults$save_pars,
+    seed = brm_defaults$seed,
+    control = brm_defaults$control,
+    ...
+  )
+}
+```
+
+## fit model
+```{r}
+#| label: fit-m1-gender
+
+## formula
+formula = bf(car_recog_centred ~ 0 + Sex)
+
+## check priors
+get_prior(formula, data = cam_car, family = gaussian())
+
+## set priors
+priors <- c(
+  set_prior("normal(3, 1)", class = "b"),
+  set_prior("normal(0, 1)", class = "sigma")
+)
+
+## fit the model
+m1_gender <- fit_model(
+  formula = formula,
+  prior = priors,
+  data = cam_car,
+  file = "models/m1_gender",
+)
+
+summary(m1_gender)
+
+#get the residuals of the model
+CCMT_residuals <- as.data.frame(residuals(m1_gender))
+```
+
+## Add residuals to the data
+```{r}
+#add residulas to the data used for future analysis
+cam_car <- cam_car |>
+  mutate(CCMT_residuals = CCMT_residuals$Estimate)
+
+## join together for cor plots
+cam_face_car <- cam_face |> 
+  left_join(cam_car, by = "pid") |>
+  select(pid, face_recog_centred, CCMT_residuals) |>
+  rename(car = "CCMT_residuals", face = "face_recog_centred")
+head(cam_face_car)
+
+write_csv(cam_face_car, here("data", "cambridge_acc_scores_pid_res.csv"))
+```
+
+# 2. Read in posterior params
+
+```{r}
+#| label: read-post
+
+theta_pid <- read_csv(
+  "data/theta_pid.csv",
+  show_col_types = FALSE
+)
+
+theta_pid_q <- read_csv(
+  "data/theta_pid_q.csv",
+  show_col_types = FALSE
+)
+```
+
+# 3. Plot Cambridge test data
+
+## plot face by car corr dot plot ##
+
+```{r}
+#| label: plot-face-car-corr
+
+## face by car cor
+# compute r and CI
+cor_test <- cor.test(cam_face_car$face_recog_centred, cam_face_car$CCMT_residuals)
+r_label  <- sprintf("r = %.2f [%.2f, %.2f]",
+                    cor_test$estimate,
+                    cor_test$conf.int[1],
+                    cor_test$conf.int[2])
+
+# base plot
+p_face_car <- ggplot(cam_face_car, aes(x = face_recog_centred, y = CCMT_residuals)) +
+  geom_point(alpha = 0.4, size = 1.5) +
+  geom_smooth(method = "lm", colour = "blue", fill = "lightblue") +
+  annotate("text",
+           x    = -Inf, y = Inf,
+           hjust = -0.1, vjust = 1.5,
+           label = r_label,
+           size  = 5, fontface = "bold") +
+  labs(
+    x = "Face recognition score centred",
+    y = "Residuals of Car recognition score",
+    title = "Cambridge face vs. car memory scores"
+  )
+
+# add marginal densities
+p_face_car_dens <- ggExtra::ggMarginal(
+  p_face_car,
+  type     = "density",
+  fill     = "steelblue",
+  alpha    = 0.4,
+  colour   = "steelblue"
+)
+p_face_car_dens
+
+png(here("figures", "corr", "face_car-res_corr.png"), 
+    width = 8, height = 6, units = "in", res = 300)
+print(p_face_car_dens)
+dev.off()
+```
+
+# 4. Plot parameter estimates as a function of Cambriddge test scores
+
+## all params
+
+wrangle
+
+```{r}
+#| label: wrangle-correlations
+
+# join median params with cambridge scores
+cor_data <- theta_pid_q |>
+  select(pid, param, value) |>
+  pivot_wider(names_from = param, values_from = value) |>
+  left_join(cam_face, by = "pid") |>
+  left_join(cam_car,  by = "pid") |>
+  # derived contrasts
+  mutate(
+    # drift discrimination (true - false) per condition
+    discrim_novel   = v_Snovel_lMTRUE   - v_Snovel_lMFALSE,
+    discrim_learned = v_Slearned_lMTRUE - v_Slearned_lMFALSE,
+    # cross-condition drift contrast (novel - learned discrimination)
+    discrim_diff    = discrim_novel - discrim_learned,
+    # threshold contrast
+    thresh_diff     = B_lRnovel - B_lRlearned
+  )
+```
+
+plot
+
+```{r}
+#| label: plot-raw-params
+
+param_cols <- c(
+  "v_Snovel_lMTRUE", "v_Snovel_lMFALSE",
+  "v_Slearned_lMTRUE", "v_Slearned_lMFALSE",
+  "sv_lMTRUE", "B_lRnovel", "B_lRlearned", "A", "t0"
+)
+
+# pivot to long with both predictors as a variable
+cor_long <- cor_data |>
+  pivot_longer(
+    cols      = all_of(param_cols),
+    names_to  = "param",
+    values_to = "estimate"
+  ) |>
+  pivot_longer(
+    cols      = c(face_recog_centred, CCMT_residuals),
+    names_to  = "predictor",
+    values_to = "score"
+  ) |>
+  mutate(
+    predictor = if_else(str_detect(predictor, "face"), "Face", "Car"),
+    predictor = factor(predictor, levels = c("Face", "Car"))
+  )
+
+# compute r per param x predictor
+cor_labels <- cor_long |>
+  group_by(param, predictor) |>
+  summarise(
+    r = cor(estimate, score, use = "complete.obs"),
+    .groups = "drop"
+  ) |>
+  mutate(
+    label = sprintf("r = %.2f", r),
+    vjust = if_else(predictor == "Face", 1.5, 3.0)
+  )
+
+# plot
+p_raw_params <- ggplot(cor_long, aes(x = score, y = estimate,
+                                      colour = predictor, fill = predictor)) +
+  geom_point(alpha = 0.3, size = 2) +
+  geom_smooth(method = "lm", se = TRUE, alpha = 0.3) +
+  geom_text(
+    data = cor_labels,
+    aes(label = label, vjust = vjust, colour = predictor),
+    x = -Inf, y = Inf,
+    hjust = -0.1,
+    size = 5, fontface = "bold",
+    show.legend = FALSE
+  ) +
+  facet_wrap(~param, scales = "free_y", ncol = 3) +
+  scale_colour_manual(values = c("Face" = safe_pal[1], "Car" = safe_pal[2])) +
+  scale_fill_manual(values   = c("Face" = safe_pal[1], "Car" = safe_pal[2])) +
+  labs(
+    title   = "Raw parameter estimates vs. recognition scores",
+    x       = "Recognition score (centred)",
+    y       = "Parameter estimate (median)",
+    colour  = NULL, fill = NULL
+  ) +
+  theme(legend.position = "bottom")
+
+p_raw_params
+
+ggsave(here("figures", "corr", "all_params-res.jpeg"), 
+       width = 15, height = 8)
+```
+
+```{r}
+#| label: plot-all-params-grid
+
+# all params + derived contrasts in one long df
+all_params_long <- cor_data |>
+  select(pid, face_recog_centred, car_recog_centred,
+         all_of(param_cols), 
+         discrim_novel, discrim_learned, discrim_diff, thresh_diff) |>
+  pivot_longer(
+    cols      = -c(pid, face_recog_centred, CCMT_residuals),
+    names_to  = "param",
+    values_to = "estimate"
+  )
+
+# r labels per param x predictor
+all_r_face <- all_params_long |>
+  group_by(param) |>
+  summarise(
+    r     = cor(estimate, face_recog_centred, use = "complete.obs"),
+    .groups = "drop"
+  ) |>
+  mutate(label = sprintf("%s\n(r = %.2f)", param, r))
+
+all_r_car <- all_params_long |>
+  group_by(param) |>
+  summarise(
+    r     = cor(estimate, CCMT_residuals, use = "complete.obs"),
+    .groups = "drop"
+  ) |> 
+  mutate(label = sprintf("%s\n(r = %.2f)", param, r))
+
+# join labels back
+face_plot_data <- all_params_long |>
+  left_join(all_r_face, by = "param") |>
+  mutate(param_label = label)
+
+car_plot_data <- all_params_long |>
+  left_join(all_r_car, by = "param") |>
+  mutate(param_label = label)
+
+# face plot
+p_all_face <- ggplot(face_plot_data,
+                      aes(x = face_recog_centred, y = estimate)) +
+  geom_point(alpha = 0.4, size = 2, colour = "grey30") +
+  geom_smooth(method = "lm", se = TRUE, colour = "red", fill = "grey30") +
+  facet_wrap(~param_label, scales = "free_y", ncol = 5) +
+  labs(
+    title = "All parameters: correlations with face recognition",
+    x     = "Face recognition ability (centred)",
+    y     = "Parameter value"
+  )
+
+p_all_face
+
+ggsave(here("figures", "corr", "all_params_face.jpeg"), 
+       width = 15, height = 8)
+
+# car plot
+p_all_car <- ggplot(car_plot_data,
+                     aes(x = CCMT_residuals, y = estimate)) +
+  geom_point(alpha = 0.4, size = 2, colour = "grey30") +
+  geom_smooth(method = "lm", se = TRUE, colour = "red", fill = "grey30") +
+  facet_wrap(~param_label, scales = "free_y", ncol = 5) +
+  labs(
+    title = "All parameters: correlations with car recognition",
+    x     = "Car recognition ability (centred)",
+    y     = "Parameter value"
+  )
+
+p_all_car
+
+ggsave(here("figures", "corr", "all_params_car-res.jpeg"), 
+       width = 15, height = 8)
+```
+
+# 6. Plausible value correlations
+
+```{r}
+#| label: plausible-value-wrangle
+
+all_prereg_params <- c(
+  param_cols,
+  "discrim_novel", "discrim_learned",
+  "discrim_diff", "thresh_diff"
+)
+
+param_labels <- c(
+  B_lRnovel        = "Threshold: Novel",
+  B_lRlearned      = "Threshold: Learned",
+  thresh_diff      = "Threshold: Novel - Learned",
+  v_Snovel_lMTRUE  = "Drift: Novel (true)",
+  v_Snovel_lMFALSE = "Drift: Novel (false)",
+  discrim_novel    = "Drift: Novel (true - false)",
+  v_Slearned_lMTRUE  = "Drift: Learned (true)",
+  v_Slearned_lMFALSE = "Drift: Learned (false)",
+  discrim_learned  = "Drift: Learned (true - false)",
+  discrim_diff     = "Drift: (Novel - Learned) difference"
+)
+
+# join theta_pid (full posterior) with cambridge scores
+# theta_pid has 300 pids x 9 params x 15000 draws
+pv_data <- theta_pid |>
+  pivot_wider(names_from = param, values_from = value) |>
+  mutate(
+    discrim_novel   = v_Snovel_lMTRUE - v_Snovel_lMFALSE,
+    discrim_learned = v_Slearned_lMTRUE - v_Slearned_lMFALSE,
+    discrim_diff    = discrim_novel - discrim_learned,
+    thresh_diff     = B_lRnovel - B_lRlearned
+  ) |>
+  left_join(
+    cam_face |> select(pid, face_recog_centred),
+    by = "pid"
+  ) |>
+  left_join(
+    cam_car |> select(pid, CCMT_residuals),
+    by = "pid"
+  ) |>
+  pivot_longer(
+    cols      = all_of(all_prereg_params),
+    names_to  = "param",
+    values_to = "estimate"
+  )
+
+# compute correlation for each draw x param x predictor
+# this will take a moment with 15000 draws
+pv_cors <- pv_data |>
+  group_by(.draw, param) |>
+  summarise(
+    r_face = cor(estimate, face_recog_centred, use = "complete.obs"),
+    r_car = cor(estimate, CCMT_residuals, use = "complete.obs"),
+    .groups = "drop"
+  ) |>
+  pivot_longer(
+    cols      = c(r_face, r_car),
+    names_to  = "predictor",
+    values_to = "r"
+  ) |>
+  mutate(
+    predictor = if_else(predictor == "r_face", "Face", "Car"),
+    predictor = factor(predictor, levels = c("Face", "Car"))
+  )
+
+# save out — this is a big object
+write_csv(pv_cors, here("data", "pv_cors-res.csv"))
+```
+
+```{r}
+#| label: plausible-value-summary
+
+# summarise
+pv_summary <- pv_cors |>
+  group_by(param, predictor) |>
+  median_qi(r, .width = c(0.95)) |>
+  mutate(label = param_labels[param]) |> 
+  print(n=Inf)
+```
+
+```{r}
+#| label: plot-pv-key-params
+#| fig-width: 12
+#| fig-height: 8
+
+# key params per prereg: drift discriminations + threshold + their differences
+key_params <- c(
+  "discrim_novel", "discrim_learned", "discrim_diff",
+  "B_lRnovel", "B_lRlearned", "thresh_diff"
+)
+
+key_labels <- c(
+  discrim_novel   = "Drift: Novel (true-false)",
+  discrim_learned = "Drift: Learned (true-false)",
+  discrim_diff    = "Drift: Novel - Learned",
+  B_lRnovel       = "Threshold: Novel",
+  B_lRlearned     = "Threshold: Learned",
+  thresh_diff     = "Threshold: Novel - Learned"
+)
+
+pv_cors_key <- pv_cors |>
+  filter(param %in% key_params) |>
+  mutate(
+    param = factor(param, levels = key_params,
+                   labels = key_labels),
+    predictor = factor(predictor, levels = c("Car", "Face"))
+  )
+
+ggplot(pv_cors_key, aes(x = r, y = predictor, 
+                         fill = predictor, colour = predictor)) +
+  stat_halfeye(alpha = 0.7, .width = c(0.5, 0.95)) +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "darkgrey") +
+  scale_fill_manual(values = c("Face" = safe_pal[1], "Car" = safe_pal[2])) +
+  scale_colour_manual(values = c("Face" = safe_pal[1], "Car" = safe_pal[2])) +
+  facet_wrap(~param, ncol = 3) +
+  labs(
+    title = "Posterior correlation distributions — key parameters",
+    x     = "Plausible correlation with recognition score",
+    y     = NULL,
+    fill  = NULL, colour = NULL
+  ) +
+  theme(legend.position = "bottom")
+
+ggsave(here("figures", "pv_cors_key-res.jpeg"), width = 12, height = 8)
+```

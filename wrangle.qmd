@@ -1,0 +1,943 @@
+---
+title: "wrangle"
+author: "Raph & Rich"
+date: "`r Sys.Date()`"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+This file wrangles data for the individual differences face familiarity study.
+
+It produces two cleaned datasets:
+
+- `data/data.csv` — face recognition task.
+- `data/data_cambridge_scores.csv` — Cambridge face/car memory tests.
+
+Exclusion decisions follow the pre-registered criteria.
+
+It also produces one combined raw dataset:
+
+- `data/raw_data.csv` — face recognition task.
+
+```{r}
+#| label: setup
+#| include: false
+
+pkgs <- c(
+  "tidyverse", "here", "patchwork", "paletteer", "ggpubr"
+  )
+vapply(
+  pkgs, library, logical(1), character.only = TRUE, logical.return = TRUE
+  )
+
+theme_set(
+  theme_bw() +
+    theme(
+      text  = element_text(size = 15, face = "bold"),
+      title = element_text(size = 15, face = "bold"),
+      legend.position = "none"
+    )
+)
+
+safe_pal  <- paletteer::paletteer_d("rcartocolor::Safe", 4)
+
+mycolors <- c("novel" = safe_pal[1], "learned" = safe_pal[2])
+
+pd2 <- position_dodge(1)
+```
+
+# 1. Read in data
+
+## read in the raw data
+
+Combine individual CSV files (run once; output cached to `data/raw_data.csv`).
+
+```{r}
+#| label: read-raw
+#| eval: false   # set TRUE on first run to regenerate raw_data.csv
+
+raw <- list.files(
+  path       = here("data", "raw"),
+  pattern    = "^.*\\.csv$",
+  full.names = TRUE,
+  recursive  = TRUE
+) |>
+  set_names() |>
+  map(read_csv, show_col_types = FALSE) |>
+  list_rbind(names_to = "file")
+
+write_csv(raw, here("data", "raw_data.csv"))
+```
+
+```{r}
+#| label: read-combined
+
+raw <- read_csv(here("data", "raw_data.csv"), 
+                show_col_types = FALSE)
+head(raw)
+glimpse(raw)
+```
+
+## read in the clean data
+
+If you read in the clean data below, then skip to section 6 and 7 for summary and plotting.
+
+```{r}
+#| label: read-clean
+#| eval: false
+
+## main task RT and acc data
+data_clean <- read_csv("data/data.csv")
+head(data_clean)
+glimpse(data_clean)
+
+## Cambridge face and car memory task data
+cambridge_tests <- read_csv("data/cambridge_scores.csv")
+head(cambridge_tests)
+glimpse(cambridge_tests)
+
+## Add the gender for clean Cambridge scores
+demo <- read_csv("data/demo.csv")
+cambridge_tests <- cambridge_tests |>
+  left_join(demo, Sex, by = "pid") |>
+  mutate(Sex = as.factor(Sex))
+
+## Save Cambridge scores
+
+write_csv(cambridge_tests, here("data/cambridge_scores.csv"))
+```
+
+---
+
+# 2. Wrangle: face recognition task
+
+```{r}
+#| label: wrangle-face
+
+# NOTE: block assignment via rep() assumes rows are already in trial order
+# within each pid. Verify this holds after read_csv / list_rbind.
+n_blocks      <- 3
+trials_per_block <- 60   # 180 trials total per participant
+
+data <- raw |>
+  filter(!is.na(recognition_loop.thisRepN)) |>
+  rename(
+    keypress = response_recog.keys,
+    acc      = response_recog.corr,
+    rt       = response_recog.rt
+  ) |>
+  select(participant, keypress, acc, rt) |>
+  mutate(
+    pid      = sprintf("%03d", as.integer(factor(participant))),
+    keypress = as.factor(keypress),
+    block    = rep(
+      seq_len(n_blocks),
+      each  = trials_per_block,
+      times = length(unique(pid))
+    ),
+    # cond is fully determined by acc + key mapping:
+    # 'q' = Learned response; 'p' = Novel response
+    # correct Learned trial OR incorrect Novel trial → Learned stimulus
+    cond = if_else(
+      (keypress == "q" & acc == 1) | (keypress == "p" & acc == 0),
+      "learned", "novel"
+    ),
+    cond = factor(cond, levels = c("learned", "novel"))
+  ) |>
+  relocate(pid, block, cond, .before = keypress) |>
+  select(-participant) |> 
+  arrange(pid)
+
+head(data)
+glimpse(data)
+
+cat("Participants before exclusions:", length(unique(data$pid)), "\n")
+```
+
+---
+
+# 3. Exclusions: face recognition task
+
+Each stage below tracks how many participants are removed and why.
+
+```{r}
+#| label: exclusion-tracking
+
+# Helper: count remaining pids
+n_pids <- function(df) length(unique(df$pid))
+
+# Running exclusion log — we'll append to this
+excl_log <- tibble(
+  stage     = character(),
+  criterion = character(),
+  n_removed = integer(),
+  n_remain  = integer()
+)
+
+log_exclusion <- function(log, stage, criterion, before, after) {
+  bind_rows(log, tibble(
+    stage     = stage,
+    criterion = criterion,
+    n_removed = as.integer(before - after),
+    n_remain  = as.integer(after)
+  ))
+}
+
+n_start <- n_pids(data)
+```
+
+## 3.1 Missed trials (> 40% NA rt)
+
+```{r}
+#| label: excl-missed
+
+total_trials   <- n_blocks * trials_per_block  # 180
+missed_thresh  <- 0.40
+
+missed_summary <- data |>
+  group_by(pid) |>
+  summarise(n_missed = sum(is.na(rt)), .groups = "drop") |>
+  mutate(prop_missed = n_missed / total_trials)
+
+pids_missed <- missed_summary |>
+  filter(prop_missed > missed_thresh) |>
+  pull(pid)
+
+data_excl1 <- data |> filter(!pid %in% pids_missed)
+
+excl_log <- log_exclusion(
+  excl_log, "1", 
+  glue::glue("> {missed_thresh * 100}% missed trials"),
+  n_start, n_pids(data_excl1)
+)
+
+# Visualise missed-trial distribution
+missed_trials_plot <- missed_summary |>
+  mutate(excluded = pid %in% pids_missed) |>
+  ggplot(aes(x = prop_missed, fill = excluded)) +
+  geom_histogram(binwidth = 0.02, colour = "white") +
+  geom_rug(data = ~filter(., excluded), 
+           aes(colour = excluded), sides = "b", linewidth = 1) +
+  geom_vline(xintercept = missed_thresh, linetype = "dashed", colour = "red") +
+  scale_fill_manual(values = c("FALSE" = "steelblue", "TRUE" = "tomato"),
+                    labels = c("Retained", "Excluded")) +
+  labs(
+    title = "Proportion of missed trials",
+    x     = "Proportion missed",
+    y     = "Count",
+    fill  = NULL
+  )
+missed_trials_plot
+```
+
+## 3.2 RT range violations (> 25% of trials outside 0.2–2.0 s)
+
+```{r}
+#| label: excl-rt-range
+
+rt_lo   <- 0.2
+rt_hi   <- 2.0
+rt_thresh <- 0.25   # > 25% violations → exclude
+
+rt_check <- data_excl1 |>
+  filter(!is.na(rt)) |>
+  group_by(pid) |>
+  summarise(
+    n_trials      = n(),
+    n_out_of_range = sum(rt < rt_lo | rt > rt_hi),
+    prop_out       = n_out_of_range / n_trials,
+    .groups        = "drop"
+  )
+
+pids_rt <- rt_check |>
+  filter(prop_out > rt_thresh) |>
+  pull(pid)
+
+data_excl2 <- data_excl1 |> filter(!pid %in% pids_rt)
+
+excl_log <- log_exclusion(
+  excl_log, "2",
+  glue::glue("> {rt_thresh * 100}% RT outside [{rt_lo}, {rt_hi}] s"),
+  n_pids(data_excl1), n_pids(data_excl2)
+)
+
+# Visualise RT violation distribution
+rt_check_plot <- rt_check |>
+  mutate(excluded = pid %in% pids_rt) |>
+  ggplot(aes(x = prop_out, fill = excluded)) +
+  geom_histogram(binwidth = 0.02, colour = "white") +
+  geom_rug(data = ~filter(., excluded), 
+           aes(colour = excluded), sides = "b", linewidth = 1) +
+  geom_vline(xintercept = rt_thresh, linetype = "dashed", colour = "red") +
+  scale_fill_manual(values = c("FALSE" = "steelblue", "TRUE" = "tomato"),
+                    labels = c("Retained", "Excluded")) +
+  labs(
+    title = "Proportion of RTs",
+    x     = "Proportion out of range",
+    y     = "Count",
+    fill  = NULL
+  )
+rt_check_plot
+```
+
+## 3.3 Accuracy floor (< 55%) and ceiling (> 95%)
+
+```{r}
+#| label: excl-accuracy
+
+acc_lo <- 55
+acc_hi <- 95
+
+# Remove out-of-range RTs before accuracy check (trial-level filter)
+data_valid_rt <- data_excl2 |>
+  filter(!is.na(rt), rt >= rt_lo, rt <= rt_hi)
+
+acc_check <- data_valid_rt |>
+  group_by(pid) |>
+  summarise(
+    n_trials = n(),
+    n_correct = sum(acc),
+    perc_acc  = n_correct / n_trials * 100,
+    .groups   = "drop"
+  )
+
+pids_acc_floor   <- acc_check |> filter(perc_acc < acc_lo) |> pull(pid)
+pids_acc_ceiling <- acc_check |> filter(perc_acc > acc_hi) |> pull(pid)
+pids_acc         <- union(pids_acc_floor, pids_acc_ceiling)
+
+data_excl3 <- data_valid_rt |> filter(!pid %in% pids_acc)
+
+excl_log <- log_exclusion(
+  excl_log, "3a",
+  glue::glue("Accuracy < {acc_lo}%"),
+  n_pids(data_valid_rt), n_pids(data_valid_rt) - length(pids_acc_floor)
+)
+excl_log <- log_exclusion(
+  excl_log, "3b",
+  glue::glue("Accuracy > {acc_hi}%"),
+  n_pids(data_valid_rt) - length(pids_acc_floor),
+  n_pids(data_excl3)
+)
+
+# Visualise accuracy distribution
+acc_check_plot <- acc_check |>
+  mutate(
+    excluded = case_when(
+      perc_acc < acc_lo ~ "Floor",
+      perc_acc > acc_hi ~ "Ceiling",
+      TRUE              ~ "Retained"
+    ),
+    excluded = factor(excluded, levels = c("Retained", "Floor", "Ceiling"))
+  ) |>
+  ggplot(aes(x = perc_acc, fill = excluded)) +
+  geom_histogram(binwidth = 2, colour = "white") +
+  geom_rug(data = ~filter(., excluded %in% c("Floor", "Ceiling")), 
+           aes(colour = excluded), sides = "b", linewidth = 0.25) +
+  geom_vline(xintercept = c(acc_lo, acc_hi), linetype = "dashed", colour = "red") +
+  scale_fill_manual(
+    values = c("Retained" = "steelblue", "Floor" = "tomato", "Ceiling" = "orange")
+  ) +
+  labs(
+    title = "Accuracy",
+    x     = "Accuracy (%)",
+    y     = "Count",
+    fill  = NULL
+  )
+acc_check_plot
+```
+
+## 3.4 Exclusion summary
+
+```{r}
+#| label: excl-summary
+
+excl_log |>
+  knitr::kable(
+    col.names = c("Stage", "Criterion", "N removed", "N remaining"),
+    caption   = "Participant exclusions — face recognition task"
+  )
+
+cat(
+  "\nFinal N (face recognition task):", n_pids(data_excl3), "\n",
+  "Started with:", n_start, "\n",
+  "Total excluded:", n_start - n_pids(data_excl3), "\n"
+)
+
+## and plot
+p_exclusions <- missed_trials_plot | rt_check_plot | acc_check_plot
+p_exclusions
+
+ggsave("figures/descriptive/data_exclusions.png",
+       width = 15, height = 7)
+```
+
+```{r}
+#| label: finalise-face-data
+
+data_clean <- data_excl3
+  
+#write_csv(data_clean, "data/data.csv")
+```
+
+---
+
+# 4. Wrangle: Cambridge memory tests
+
+```{r}
+#| label: wrangle-cambridge
+
+order_exp <- raw |>
+  filter(!is.na(Title)) |>
+  select(participant, Title) |>
+  mutate(pid   = sprintf("%03d", as.integer(factor(participant))),
+         Title = as.factor(Title)) |>
+  select(-participant) |> 
+  group_by(pid) |>
+  mutate(trial_block = row_number()) |>
+  ungroup() |>
+  mutate(
+    task = fct_recode(factor(Title),
+                      face = "Cambridge Face Memory Test",
+                      car  = "Cambridge Car Memory Test")
+  ) |>
+  select(pid, trial_block, task)
+
+cambridge_tests <- raw |>
+  filter(!is.na(key_resp_12.corr)) |>
+  rename(
+    keypress = key_resp_12.keys,
+    acc      = key_resp_12.corr,
+    rt       = key_resp_12.rt
+  ) |>
+  mutate(pid = sprintf("%03d", as.integer(factor(participant)))) |>
+  group_by(pid) |>
+  mutate(
+    trial_block = if_else(row_number() <= 54, 1L, 2L),
+    stim        = factor(if_else((row_number() - 1) %% 54 < 30, "no_noise", "noise"))
+  ) |>
+  ungroup() |>
+  left_join(order_exp, by = c("pid", "trial_block")) |>
+  select(pid, task, stim, keypress, acc, rt) |>
+  filter(
+    !pid %in% pids_missed,
+    !pid %in% pids_rt,
+    !pid %in% pids_acc
+  ) |>
+  arrange(pid)
+
+cat("Participants in Cambridge data:", n_pids(cambridge_tests), "\n")
+```
+
+some checks
+
+```{r}
+#| label: cambridge-checks
+
+# 1. Each pid should have exactly 108 trials (before exclusions)
+cambridge_tests |> count(pid) |> count(n)
+
+# 2. Each pid x task should have exactly 54 trials per task
+cambridge_tests |> count(pid, task) |> count(task, n)
+
+# 3. stim split should be 30 no_noise + 24 noise per pid x task
+cambridge_tests |> count(pid, task, stim) |> count(task, stim, n)
+```
+
+---
+
+# 5. Save cleaned data
+
+```{r}
+#| label: save-data
+
+write_csv(data_clean, here("data", "data.csv"))
+write_csv(cambridge_tests, here("data", "cambridge_scores.csv"))
+```
+
+---
+
+# 6. Summary statistics
+
+Helper for computing mean ± SEM at any grouping level:
+
+```{r}
+#| label: summary-helpers
+
+summarise_rt <- function(df, ...) {
+  df |>
+    drop_na(rt) |>
+    group_by(...) |>
+    summarise(
+      mean = mean(rt),
+      sd   = sd(rt),
+      n    = n(),
+      .groups = "drop"
+    ) |>
+    mutate(
+      sem = sd / sqrt(n),
+      ci  = sem * 1.96
+    )
+}
+
+summarise_acc <- function(df, ...) {
+  df |>
+    group_by(...) |>
+    summarise(
+      n_correct = sum(acc),
+      n         = n(),
+      .groups   = "drop"
+    ) |>
+    mutate(perc = n_correct / n * 100)
+}
+
+aggregate_acc <- function(acc_pid_df, ...) {
+  acc_pid_df |>
+    group_by(...) |>
+    summarise(
+      perc_mean = mean(perc),
+      perc_sd   = sd(perc),
+      n         = n_distinct(pid),
+      .groups   = "drop"
+    ) |>
+    mutate(
+      perc = perc_mean,
+      sd   = perc_sd,
+      sem  = sd / sqrt(n)
+    ) |>
+    select(-perc_mean, -perc_sd)
+}
+```
+
+## Face recognition task
+
+```{r}
+#| label: summaries-face
+
+# RT
+rt_pid   <- summarise_rt(data_clean, pid, block, cond)
+rt_group <- summarise_rt(data_clean, block, cond)
+
+# Accuracy
+acc_pid   <- summarise_acc(data_clean, pid, block, cond)
+acc_group <- aggregate_acc(acc_pid, block, cond)
+
+# Collapsed across blocks
+rt_pid_cond   <- summarise_rt(data_clean, pid, cond)
+rt_group_cond <- summarise_rt(data_clean, cond)
+
+acc_pid_cond   <- summarise_acc(data_clean, pid, cond)
+acc_group_cond <- aggregate_acc(acc_pid_cond, cond)
+```
+
+## Cambridge tests
+
+```{r}
+#| label: summaries-cambridge
+
+rt_pid_camb   <- summarise_rt(cambridge_tests, pid, task, stim)
+rt_group_camb <- summarise_rt(cambridge_tests, task, stim)
+
+acc_pid_camb   <- summarise_acc(cambridge_tests, pid, task, stim, Sex)
+acc_group_camb <- aggregate_acc(acc_pid_camb, task, stim)
+acc_group_camb_gender <- aggregate_acc(acc_pid_camb, task, Sex, stim)
+
+# Collapsed across stim
+rt_pid_camb_task   <- summarise_rt(cambridge_tests, pid, task)
+rt_group_camb_task <- summarise_rt(cambridge_tests, task)
+
+acc_pid_camb_task   <- summarise_acc(cambridge_tests, pid, task, Sex)
+acc_group_camb_task <- aggregate_acc(acc_pid_camb_task, task)
+acc_group_camb_task_gender <-aggregate_acc(acc_pid_camb, task, Sex)
+
+```
+
+## save out summary data
+
+```{r}
+#| label: save-summaries-cambridge
+
+write_csv(acc_pid_camb_task, "data/cambridge_acc_scores_pid.csv")
+```
+
+
+---
+
+# 7. Plots
+
+## 7.1 Face recognition — RT and accuracy distributions
+
+```{r}
+#| label: plot-face-density
+#| fig-width: 10
+#| fig-height: 5
+
+p_rt_dens <- ggplot(data_clean, aes(x = rt, fill = cond, colour = cond)) +
+  geom_density(alpha = 0.4) +
+  scale_fill_manual(values = mycolors) +
+  scale_colour_manual(values = mycolors) +
+  facet_wrap(~block, labeller = label_both) +
+  xlim(0, 3) +
+  labs(title = "RT distribution by block and condition",
+       x = "Response time (s)", y = "Density", fill = NULL, colour = NULL)
+
+p_acc_bar <- data_clean |>
+  group_by(block, cond) |>
+  summarise(perc = mean(acc) * 100, .groups = "drop") |>
+  ggplot(aes(x = cond, y = perc, fill = cond, colour = cond)) +
+  geom_col(alpha = 0.7) +
+  scale_fill_manual(values = mycolors) +
+  scale_colour_manual(values = mycolors) +
+  facet_wrap(~block, labeller = label_both) +
+  ylim(0, 100) +
+  labs(title = "Accuracy by block and condition",
+       x = NULL, y = "Accuracy (%)", fill = NULL, colour = NULL)
+
+p_rt_dens / p_acc_bar
+
+ggsave("figures/descriptive/rt_acc_block.png",
+       width = 8, height = 6)
+```
+
+## 7.2 Face recognition — group-level RT and accuracy by block
+
+```{r}
+#| label: plot-face-group-block
+#| fig-width: 10
+#| fig-height: 5
+
+p_rt_block <- ggplot(rt_group, aes(x = block, y = mean, colour = cond, fill = cond)) +
+  geom_line(aes(group = cond), position = pd2) +
+  geom_point(position = pd2, size = 2) +
+  geom_errorbar(aes(ymin = mean - sem, ymax = mean + sem),
+                width = 0.2, position = pd2) +
+  scale_fill_manual(values = mycolors) +
+  scale_colour_manual(values = mycolors) +
+  ylim(0, 2) +
+  labs(title = "Mean RT by block", x = "Block",
+       y = "Mean RT (s)", colour = NULL, fill = NULL)
+
+p_acc_block <- ggplot(acc_group, aes(x = block, y = perc, colour = cond, fill = cond)) +
+  geom_line(aes(group = cond), position = pd2) +
+  geom_point(position = pd2, size = 2) +
+  geom_errorbar(aes(ymin = perc - sem, ymax = perc + sem),
+                width = 0.2, position = pd2) +
+  scale_fill_manual(values = mycolors) +
+  scale_colour_manual(values = mycolors) +
+  ylim(0, 100) +
+  labs(title = "Mean accuracy by block", x = "Block",
+       y = "Accuracy (%)", colour = NULL, fill = NULL)
+
+p_rt_block | p_acc_block
+
+ggsave("figures/descriptive/rt_acc_block_means.png",
+       width = 8, height = 6)
+```
+
+## 7.3 Face recognition — collapsed across blocks (pid dots + group mean)
+
+```{r}
+#| label: plot-face-group-cond
+#| fig-width: 8
+#| fig-height: 5
+
+p_rt_cond <- ggplot(rt_group_cond, aes(x = cond, y = mean, fill = cond, colour = cond)) +
+  geom_col(alpha = 0.7, position = pd2) +
+  geom_point(data = rt_pid_cond, aes(y = mean),
+             alpha = 0.4, position = position_jitter(width = 0.1)) +
+  geom_errorbar(aes(ymin = mean - sem, ymax = mean + sem),
+                colour = "black", width = 0.2, position = pd2) +
+  scale_fill_manual(values = mycolors) +
+  scale_colour_manual(values = mycolors) +
+  ylim(0, 2) +
+  labs(title = "RT by condition", x = NULL, y = "Mean RT (s)")
+
+p_acc_cond <- ggplot(acc_group_cond, aes(x = cond, y = perc, fill = cond, colour = cond)) +
+  geom_col(alpha = 0.7, position = pd2) +
+  geom_point(data = acc_pid_cond, aes(y = perc),
+             alpha = 0.4, position = position_jitter(width = 0.1)) +
+  geom_errorbar(aes(ymin = perc - sem, ymax = perc + sem),
+                colour = "black", width = 0.2, position = pd2) +
+  scale_fill_manual(values = mycolors) +
+  scale_colour_manual(values = mycolors) +
+  ylim(0, 100) +
+  labs(title = "Accuracy by condition", x = NULL, y = "Accuracy (%)")
+
+p_rt_cond | p_acc_cond
+
+ggsave("figures/descriptive/rt_acc_bar_dots.png",
+       width = 8, height = 6)
+```
+
+## 7.4 Face recognition — acc and rt paired plots
+
+```{r}
+#| label: plot-face-paired
+#| fig-width: 8
+#| fig-height: 5
+
+## paired plots for summarised RT and accuracy data
+paired_plot <- function(df, yvar, ylab, ylims) {
+  
+  # set consistent jitter for dots and lines
+  pos <- position_jitter(width = 0.06, height = 0, seed = 123)
+  
+  ggplot(df, aes(x = cond, y = {{ yvar }}, 
+                 fill = cond, colour = cond)) +
+    # per-participant lines
+    geom_line(
+      aes(group = pid),
+      position = pos,
+      colour    = "grey70",
+      linewidth = 0.3,
+      alpha     = 0.5
+    ) +
+    # per-participant dots
+    geom_point(
+      position = pos,
+      alpha    = 0.5,
+      size     = 1.5
+    ) +
+    # group mean + 95% CI
+    stat_summary(
+      fun.data  = mean_se,
+      geom      = "pointrange",
+      colour    = "black",
+      size      = 0.4,
+      linewidth = 1.2,
+      fun.args  = list(mult = 1.96)
+    ) +
+    # line connecting group means
+    stat_summary(
+      aes(group = 1),
+      fun       = mean,
+      geom      = "line",
+      colour    = "black",
+      linewidth = 0.8
+    ) +
+    scale_fill_manual(values   = mycolors) +
+    scale_colour_manual(values = mycolors) +
+    coord_cartesian(ylim = ylims) +
+    labs(x = NULL, y = ylab) 
+}
+
+acc_paired <- paired_plot(acc_pid_cond, perc, "Accuracy [%]",  c(0, 100))
+
+rt_paired  <- paired_plot(rt_pid_cond,  mean, "Mean RT [s]",   c(0, 1.75))
+
+acc_paired | rt_paired
+
+ggsave("figures/descriptive/rt_acc_paired_plots.png",
+       width = 8, height = 6)
+```
+
+## 7.5 Cambridge tests — RT and accuracy by task and stim type
+
+```{r}
+#| label: plot-cambridge-stim
+#| fig-width: 10
+#| fig-height: 5
+
+p_rt_camb <- ggplot(rt_group_camb, aes(x = stim, y = mean, fill = stim, colour = stim)) +
+  geom_col(alpha = 0.7, position = pd2) +
+  geom_point(data = rt_pid_camb, aes(y = mean),
+             alpha = 0.4, position = position_jitter(width = 0.1, height=0)) +
+  geom_errorbar(aes(ymin = mean - sem, ymax = mean + sem),
+                colour = "black", width = 0.2, position = pd2) +
+  facet_wrap(~task) +
+  ylim(0, 20) +
+  labs(title = "Cambridge RT by task and stimulus", x = NULL,
+       y = "Mean RT (s)", fill = NULL, colour = NULL)
+
+p_acc_camb <- ggplot(acc_group_camb, aes(x = stim, y = perc, fill = stim, colour = stim)) +
+  geom_col(alpha = 0.7, position = pd2) +
+  geom_point(data = acc_pid_camb, aes(y = perc),
+             alpha = 0.4, position = position_jitter(width = 0.1, height=0)) +
+  geom_errorbar(aes(ymin = perc - sem, ymax = perc + sem),
+                colour = "black", width = 0.2, position = pd2) +
+  facet_wrap(~task) +
+  ylim(0, 100) +
+  labs(title = "Cambridge accuracy by task and stimulus", x = NULL,
+       y = "Accuracy (%)", fill = NULL, colour = NULL)
+
+p_rt_camb | p_acc_camb
+
+ggsave("figures/descriptive/camb_tests_by_noise.png",
+       width = 10, height = 7)
+```
+
+```{r}
+#| label: plot-cambridge-stim-density
+#| fig-width: 10
+#| fig-height: 5
+
+p_rt_camb_dens <- ggplot(rt_pid_camb, aes(x = mean, fill = stim, colour = stim)) +
+  geom_density(alpha = 0.7) +
+  geom_rug() +
+  facet_wrap(~task) +
+  labs(title = "Cambridge RT by task and stimulus",
+       x = "Mean RT (s)", fill = NULL, colour = NULL) +
+  theme(legend.position = "bottom")
+
+p_acc_camb_dens <- ggplot(acc_pid_camb, aes(x = perc, fill = stim, colour = stim)) +
+  geom_density(alpha = 0.7) +
+  geom_rug() +
+  facet_wrap(~task) +
+  labs(title = "Cambridge accuracy by task and stimulus",
+       x = "Accuracy (%)", fill = NULL, colour = NULL) +
+  theme(legend.position = "bottom")
+
+(p_rt_camb_dens | p_acc_camb_dens) +
+  plot_layout(axes = "collect",
+              guides = "collect") &
+  theme(legend.position = "bottom")
+
+ggsave("figures/descriptive/camb_tests_by_noise_density.png",
+       width = 10, height = 7)
+```
+
+## Cambridge tests — accuracy by task and gender
+```{r}
+p_acc_camb_gender <- ggplot(acc_group_camb_task_gender, aes(x = Sex, y = perc, fill = Sex, colour = Sex)) +
+  geom_col(alpha = 0.7, position = pd2) +
+  geom_point(data = acc_pid_camb, aes(y = perc),
+             alpha = 0.4, position = position_jitter(width = 0.1, height=0)) +
+  geom_errorbar(aes(ymin = perc - sem, ymax = perc + sem),
+                colour = "black", width = 0.2, position = pd2) +
+  stat_compare_means(data = acc_pid_camb,
+                     aes(x = Sex, y = perc),
+                     method = "t.test",
+                     comparisons = list(c("Female", "Male")),
+                     label = "p.signif",   # or "p.format" for exact p-value
+                     colour = "black") +
+  facet_wrap(~task) +
+  ylim(0, 110) +
+  scale_y_continuous(breaks=c(0,20,40,60,80,100)) +
+  labs(title = "Cambridge accuracy by task and gender", x = NULL,
+       y = "Accuracy (%)", fill = NULL, colour = NULL)
+
+
+ggsave("figures/descriptive/camb_tests_acc_by_gender.png",
+       width = 10, height = 7)
+```
+
+
+## 7.6 Cambridge tests — collapsed across stim
+
+```{r}
+#| label: plot-cambridge-task
+#| fig-width: 8
+#| fig-height: 5
+
+p_rt_camb_task <- ggplot(rt_group_camb_task,
+                          aes(x = task, y = mean, fill = task, colour = task)) +
+  geom_col(alpha = 0.7) +
+  geom_point(data = rt_pid_camb_task, aes(y = mean),
+             alpha = 0.4, position = position_jitter(width = 0.1, height=0)) +
+  geom_errorbar(aes(ymin = mean - sem, ymax = mean + sem),
+                colour = "black", width = 0.2) +
+  ylim(0, 20) +
+  labs(title = "Cambridge RT by task", x = NULL, y = "Mean RT (s)")
+
+p_acc_camb_task <- ggplot(acc_group_camb_task,
+                           aes(x = task, y = perc, fill = task, colour = task)) +
+  geom_col(alpha = 0.7) +
+  geom_point(data = acc_pid_camb, aes(y = perc),
+             alpha = 0.4, position = position_jitter(width = 0.1, height=0)) +
+  geom_errorbar(aes(ymin = perc - sem, ymax = perc + sem),
+                colour = "black", width = 0.2) +
+  ylim(0, 100) +
+  labs(title = "Cambridge accuracy by task", x = NULL, y = "Accuracy (%)")
+
+p_rt_camb_task | p_acc_camb_task
+
+ggsave("figures/descriptive/camb_tests.png",
+       width = 10, height = 7)
+```
+
+
+```{r}
+#| label: plot-cambridge-task-density
+#| fig-width: 10
+#| fig-height: 5
+
+p_rt_camb_task_dens <- ggplot(rt_pid_camb_task, aes(x = mean, fill = task, colour = task)) +
+  geom_density(alpha = 0.7) +
+  geom_rug() +
+  #facet_wrap(~task) +
+  labs(title = "Cambridge RT by task",
+       x = "Mean RT (s)", fill = NULL, colour = NULL) +
+  theme(legend.position = "bottom")
+
+p_acc_camb_task_dens <- ggplot(acc_pid_camb_task, aes(x = perc, fill = task, colour = task)) +
+  geom_density(alpha = 0.7) +
+  geom_rug() +
+  #facet_wrap(~task) +
+  labs(title = "Cambridge accuracy by task",
+       x = "Accuracy (%)", fill = NULL, colour = NULL) +
+  theme(legend.position = "bottom")
+
+(p_rt_camb_task_dens | p_acc_camb_task_dens) +
+  plot_layout(axes = "collect",
+              guides = "collect") &
+  theme(legend.position = "bottom")
+
+ggsave("figures/descriptive/camb_tests_density.png",
+       width = 10, height = 7)
+```
+
+## 7.7 Cambridge tests - zoom in on longer average RTs
+
+A few PIDs had long average RTs for the Cambridge tests. 
+Let's have a look.
+
+```{r}
+# identify high-RT pids
+high_rt_pids <- rt_pid_camb |> 
+  filter(mean > 20) |> 
+  pull(pid) |> 
+  unique()
+
+# plot trial-level RT distribution for those pids only
+cambridge_tests |>
+  filter(pid %in% high_rt_pids) |>
+  ggplot(aes(x = rt, fill = task, colour = task)) +
+  geom_histogram(binwidth = 5, alpha = 0.7) +
+  geom_vline(xintercept = 20, linetype = "dashed", colour = "red") +
+  facet_wrap(~pid) +
+  labs(title = "Trial-level RT distribution for high-RT participants",
+       x = "RT (s)", y = "Count") +
+  theme(legend.position = "bottom")
+
+ggsave("figures/descriptive/camb_high_rt_pids.png",
+       width = 10, height = 7)
+
+## check how many were extreme
+cambridge_tests |>
+  filter(pid %in% high_rt_pids) |>
+  group_by(pid) |>
+  summarise(
+    mean_rt  = mean(rt, na.rm = TRUE),
+    median_rt = median(rt, na.rm = TRUE),
+    n_over_20 = sum(rt > 20, na.rm = TRUE),
+    n_over_60 = sum(rt > 60, na.rm = TRUE),
+    n_trials  = n()
+  )
+
+## check accuracy for those folks
+cambridge_tests |>
+  filter(pid %in% high_rt_pids) |>
+  group_by(pid) |>
+  summarise(perc = mean(acc) * 100)
+```
+
+---
+
+
+# 9. Session info
+
+```{r}
+#| label: session-info
+
+sessionInfo()
+```
