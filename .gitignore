@@ -8,3 +8,5 @@
 /models
 /datadata/raw_data.csv
 data/theta_pid.csv
+data/raw_data.csv
+data/theta_pid.csv
