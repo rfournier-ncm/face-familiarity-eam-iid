@@ -1,5 +1,5 @@
 ---
-title: ""
+title: "Individual differences in the computational processes of face recognition and their association to face recognition ability"
 running-head: "Decision models of face memory"
 author:
   - name: Raphaël Fournier
@@ -32,7 +32,7 @@ affiliations:
     department: Learning and Instruction Laboratory, Department of Humanities, Social and Political Sciences
 abstract: |
  
-keywords: [face perception, memory, familiarity, person knowledge, decision models, evidence accumulation modelling, individual difference]
+keywords: [face perception, memory, individual difference, familiarity, decision models, evidence accumulation modelling]
 wordcount: true
 date: last-modified
 bibliography: bibliography.bib
@@ -195,13 +195,16 @@ The face recognition task was divided into two distinct parts: a familiarization
 
 In the recognition part, participants completed three blocks of 90 recognition trials. Each block was separated from another by a short break. Half of the trials were learned identities trials and the other half were new, previously unseen identities trials. In each trial, a gray scale image of a face was shown on the screen. Participants were asked to choose if they had previously seen this face in the familiarization part or not. If they did, the should press the "q" key and if they did not, the "p" key. Participants were asked to respond as quickly and accurately as possible. It is important to note that participants never saw two pictures of the same learned identity in the same block and never saw the same picture (3/4 left view, frontal view, or 3/4 right view) of a learned identity during the entire recognition part. Furthermore, each novel identity was only presented once in the entire recognition part. Response time \[s\] and accuracy were collected after each recognition trial. A response time limit of 2 seconds has been set for each recognition trial. If participants took longer than 2 seconds to press a response key, the text "Too late!" appeared in red on the screen and the trial was discarded, but not replaced.
 
-### Cambridge Face Memory Test
+### Cambridge Memory Tests
 
-The CFMT (ref)
+The method of the CFMT was described in Duchaine and Nakayama (ref: 2006). Participants learned 6 Caucasian male faces in three views and had to discriminate them later from distractor faces (no time response limit, three-alternative forced-choice task, @fig-Cambridge a). Regarding the CCMT, the method has been described in Dennett et al. (ref:2012) and has a highly similar structure, format and scoring as the CFMT, but uses cars instead of faces as stimuli. 
 
-### Cambridge Car Memory Test (CCMT)
-
-The CCMT (ref)
+:::: {.place arguments="bottom, scope: \"parent\", float: true"}
+:::{#fig-Cambridge fig-cap = "The two Cambridge Memory Tests"}
+![](figures/Cambridge_tests.png){width="90%"}
+:::
+*Illustration of (a) the Cambridge Face Memory Test (CFMT; ref Duchain & Nakayama, 2006) and (b) the Cambridge Car Memory Test (CCMT; red Dennett et al., 2012a). These two tests are highly similar, differing only in the category of the presented stimuli. Both tests are composed of three stages: Learn (including Study and Test), Novel Images and Novel Images with Noise. In the Learn stage, participants learn target faces/cars and are then tested on the recognition of the identical images to the learned targets. In the Novel Images and Novel Images with Noise stages, recognition targets are different pictures of the same learned targets, but differing in views, lightning or both. For the CCMT (b), the car pictures showed here are not the one used in the CCMT and served only as a representation of the stimuli used in the Learn stage and the Novel stages of the CCMT. This illustration has been taken and slightly modified from (ref: Dennett et al., 2012b). 3AFC = three-alternative forced choice; ISI = interstimulus interval.*
+::::
 
 ## Stimuli
 
@@ -209,18 +212,43 @@ The face images used in the faces recognition task consisted of images selected 
 
 ## Evidence accumulation modeling
 
+The model and priors specification as well as the model estimation are all identical to the one described in (ref: Fournier et al., in press).
 
 ### Model specification
+A hierarchical LBA models was fit to the accuracy and response times of the face recognition task. The model specifications are outlined in our preregistration (@tbl-model-formula). The LBA framework assumes a separate evidence accumulator for each response alternative, with potentially different parameter values. Accordingly, one accumulator corresponded to the "Learned" response and the other to the "Novel" response. Threshold was allowed to vary by participants' response (Learned/Novel) and mean drift rate varied as a function of both stimulus type (Learned/Novel) and weather the accumulator corresponded to the correct response for that stimulus (TRUE vs. FALSE). For example, when a Learned stimulus was presented, the Learned accumulator was designed as TRUE, whereas the Novel accumulator was designed as FALSE. The difference in drift rate between the TRUE and FALSE accumulators reflects the quality of information supporting a decision, with larger differences indicating stronger and more discriminative evidence accumulation [@lewandoskyComputationalModelingCognition2018].
 
+```{r}
+#| label: data-model-formula
+#| include: false
+
+# create a df
+lba_formula <- tribble(
+  ~Parameter, ~Label, ~Condition, ~Response, ~Accuracy, ~Fixed,
+  "Start point", "A", "-", "-", "-", "1",
+  "Mean drift rate", "v", "yes", "no", "yes", "-",
+  "SD drift rate", "sd_v", "no", "no", "yes", "-",
+  "SD false drift rate", "false.sd_v", "-", "-", "-", "1",
+  "Threshold", "b", "yes", "yes", "no", "-",
+  "Non-decision time", "t0", "yes", "no", "no", "-",
+  "SD Non-decision time", "st_0", "-", "-", "-", "0",
+)
+```
+
+```{r}
+#| label: tbl-model-formula
+#| tbl-cap: "Formula specification for the pre-registered linear ballistic accumulator model."
+#| tbl-cap-location: bottom
+#| include: true
+
+lba_formula |>
+   tt(notes = "Condition = training condition (Learned vs. Novel); Response = key-press response (same vs. different); Accuracy = (true/correct vs false/incorrect); SD = standard deviation.")
+```
+
+## Data analysis
 
 
 # Results
 
-:::: {.place arguments='top, scope: "parent", float: true'}
-
-Full page width content goes here.
-
-::::
 
 # Discussion
 
