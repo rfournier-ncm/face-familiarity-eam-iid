@@ -9,8 +9,8 @@
 <meta name="author" content="Raphaël Fournier">
 <meta name="author" content="Paul Downing">
 <meta name="author" content="Richard Ramsey">
-<meta name="dcterms.date" content="2026-06-25">
-<meta name="keywords" content="face perception, memory, familiarity, person knowledge, decision models, evidence accumulation modelling, individual difference">
+<meta name="dcterms.date" content="2026-06-26">
+<meta name="keywords" content="face perception, memory, individual difference, familiarity, decision models, evidence accumulation modelling">
 
 <title>Individual differences in the computational processes of face recognition and their association to face recognition ability</title>
 <style>
@@ -117,10 +117,25 @@ window.Quarto = {
   <li><a href="#evidence-accumulation-modeling" id="toc-evidence-accumulation-modeling" class="nav-link" data-scroll-target="#evidence-accumulation-modeling"><span class="header-section-number">2.6</span> Evidence accumulation modeling</a>
   <ul class="collapse">
   <li><a href="#model-specification" id="toc-model-specification" class="nav-link" data-scroll-target="#model-specification"><span class="header-section-number">2.6.1</span> Model specification</a></li>
+  <li><a href="#model-estimation" id="toc-model-estimation" class="nav-link" data-scroll-target="#model-estimation"><span class="header-section-number">2.6.2</span> Model estimation</a></li>
+  <li><a href="#model-fit" id="toc-model-fit" class="nav-link" data-scroll-target="#model-fit"><span class="header-section-number">2.6.3</span> Model fit</a></li>
   </ul></li>
-  <li><a href="#data-analysis" id="toc-data-analysis" class="nav-link" data-scroll-target="#data-analysis"><span class="header-section-number">2.7</span> Data analysis</a></li>
+  <li><a href="#data-analysis" id="toc-data-analysis" class="nav-link" data-scroll-target="#data-analysis"><span class="header-section-number">2.7</span> Data analysis</a>
+  <ul class="collapse">
+  <li><a href="#lba-parameters" id="toc-lba-parameters" class="nav-link" data-scroll-target="#lba-parameters"><span class="header-section-number">2.7.1</span> LBA parameters</a></li>
+  <li><a href="#classical-correlational-analysis" id="toc-classical-correlational-analysis" class="nav-link" data-scroll-target="#classical-correlational-analysis"><span class="header-section-number">2.7.2</span> Classical correlational analysis</a></li>
+  <li><a href="#bayesian-plausible-value-correlational-analysis" id="toc-bayesian-plausible-value-correlational-analysis" class="nav-link" data-scroll-target="#bayesian-plausible-value-correlational-analysis"><span class="header-section-number">2.7.3</span> Bayesian plausible value correlational analysis</a></li>
+  <li><a href="#linear-regression" id="toc-linear-regression" class="nav-link" data-scroll-target="#linear-regression"><span class="header-section-number">2.7.4</span> Linear regression</a></li>
+  <li><a href="#inferential-criteria" id="toc-inferential-criteria" class="nav-link" data-scroll-target="#inferential-criteria"><span class="header-section-number">2.7.5</span> Inferential criteria</a></li>
   </ul></li>
-  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">3</span> Results</a></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">3</span> Results</a>
+  <ul class="collapse">
+  <li><a href="#lba-parameters-1" id="toc-lba-parameters-1" class="nav-link" data-scroll-target="#lba-parameters-1"><span class="header-section-number">3.1</span> LBA parameters</a></li>
+  <li><a href="#correlations" id="toc-correlations" class="nav-link" data-scroll-target="#correlations"><span class="header-section-number">3.2</span> Correlations</a></li>
+  <li><a href="#bayesian-plausible-value-correlational-analysis-1" id="toc-bayesian-plausible-value-correlational-analysis-1" class="nav-link" data-scroll-target="#bayesian-plausible-value-correlational-analysis-1"><span class="header-section-number">3.3</span> Bayesian plausible value correlational analysis</a></li>
+  <li><a href="#linear-regression-1" id="toc-linear-regression-1" class="nav-link" data-scroll-target="#linear-regression-1"><span class="header-section-number">3.4</span> Linear regression</a></li>
+  </ul></li>
   <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion"><span class="header-section-number">4</span> Discussion</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">5</span> References</a></li>
   <li><a href="#appendix-content-here" id="toc-appendix-content-here" class="nav-link" data-scroll-target="#appendix-content-here"><span class="header-section-number">6</span> Appendix content here</a></li>
@@ -177,7 +192,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">June 25, 2026</p>
+      <p class="date">June 26, 2026</p>
     </div>
   </div>
   
@@ -188,7 +203,7 @@ window.Quarto = {
 <div>
   <div class="keywords">
     <div class="block-title">Keywords</div>
-    <p>face perception, memory, familiarity, person knowledge, decision models, evidence accumulation modelling, individual difference</p>
+    <p>face perception, memory, individual difference, familiarity, decision models, evidence accumulation modelling</p>
   </div>
 </div>
 
@@ -202,7 +217,7 @@ window.Quarto = {
 <p>Paragraph 2: past investigation of individual difference in face identity processing • Investigating individual differences in face identity processing: often measured by different tests. Examples: Cambridge Face Memory test (CFMT) = New face learning / Glasgow Face Matching Test (GFMT): unfamiliar face perception / before They Were Famous task: Familiar face perception -&gt; (McCaffery et al., 2018). These scores are then correlated between them or with different behavioural or physiological measures to assess the strength of the relationship between them. • Description of some results here</p>
 <p>Paragraph 3: Investigating individual differences in latent processes using computational approaches • Behavioural measures remain distant proxies of underlying cognitive processes, thus not ideal for capturing individual differences in these processes (Haines et al., 2020) + make interpretation more errors prone (ex: Ratcliff et al., 2010) -&gt; more cautious, not because better processing. Problem: how to disentangle multiple components of a process.<br>
 • One potential alternative: using computational approaches. Advantage of model-based analysis of individual difference: fitting data from individual participants to disentangle the effects of the different processes driving behaviour. Cleaner measures of the processes of interest and could enhance our understanding how variation in these latent, unobserved processes arise across individuals (White, Curl &amp; Sloane., 2016). Example with Ratcliff (2010) and White et al.&nbsp;(2014).</p>
-<p>Paragraph 4: building upon our past project results summary and application of individual differences in face recognition ability • Past study: we used hierarchical model fitting of evidence-accumulation models to model choice-rt in a face memory old/new task -&gt; better evidence of accumulation for detecting novel faces that recognizing visually learned faces. Novelty pop-out effect of novel faces. Increased threshold as well for novel faces (need more evidence to committing to the novel response compared to the learned one). Using this computational approach, we found that distinct computational processes involved in the decision-making of face recognition are affected by face familiarity. We also found inter-subject variability in the estimated parameters. • Question: are these parameters linked to individual face recognition ability? Does face recognition ability predict the estimation of these parameters? • Help us understanding what do these parameters reflect, from where this inter-subject variability comes from and how specific the inferences that we can make about them are related to the face recognition ability. • Possibility that the variation observed in these parameters reflect a general recognition ability, unspecific to faces.</p>
+<p>Paragraph 4: building upon our past project results summary and application of individual differences in face recognition ability • Past study: we used hierarchical model fitting of evidence-accumulation models to model choice-rt in a face memory old/new task (see figure LBA) -&gt; better evidence of accumulation for detecting novel faces that recognizing visually learned faces. Novelty pop-out effect of novel faces. Increased threshold as well for novel faces (need more evidence to committing to the novel response compared to the learned one). Using this computational approach, we found that distinct computational processes involved in the decision-making of face recognition are affected by face familiarity. We also found inter-subject variability in the estimated parameters. • Question: are these parameters linked to individual face recognition ability? Does face recognition ability predict the estimation of these parameters? • Help us understanding what do these parameters reflect, from where this inter-subject variability comes from and how specific the inferences that we can make about them are related to the face recognition ability. • Possibility that the variation observed in these parameters reflect a general recognition ability, unspecific to faces.</p>
 <p>Paragraph 5: Short description of how we are going to address the questions • How will we do it: estimation of parameter from a face memory task, followed by two Memory ability scores: Cambridge Face Memory Test (CFMT) and Cambridge Car Memory Test (CCMT).</p>
 </section>
 <section id="method-and-materials" class="level1" data-number="2">
@@ -226,10 +241,23 @@ window.Quarto = {
 <h3 data-number="2.4.1" class="anchored" data-anchor-id="face-recognition-task"><span class="header-section-number">2.4.1</span> Face recognition task</h3>
 <p>The face recognition task was divided into two distinct parts: a familiarization part and a recognition part. During the familiarization part, unknown identities were presented on the screen and participants were instructed to memorize the identity of the faces. One familiarization trial consisted of the presentation of 6 face images, one after the other, showing the same identity but varying in viewing points (3/4 left view, frontal view and 3/4 right view) and the colorimetry (colorful image, gray scale image). The duration of each image presentation was set to 0.75 second and each participant underwent 30 familiarization trials (for 30 unknown identities). During the familiarization, we introduced catch trials to ensure participants attention. After some familiarization trials, a gray scale image of a person’s face was presented on the screen. Participants were asked to press the “q” key if the face belonged to the last seen identity or the “p” key if it was not. The faces seen during the familiarization were considered the “Learned faces” within-subject condition.</p>
 <p>In the recognition part, participants completed three blocks of 90 recognition trials. Each block was separated from another by a short break. Half of the trials were learned identities trials and the other half were new, previously unseen identities trials. In each trial, a gray scale image of a face was shown on the screen. Participants were asked to choose if they had previously seen this face in the familiarization part or not. If they did, the should press the “q” key and if they did not, the “p” key. Participants were asked to respond as quickly and accurately as possible. It is important to note that participants never saw two pictures of the same learned identity in the same block and never saw the same picture (3/4 left view, frontal view, or 3/4 right view) of a learned identity during the entire recognition part. Furthermore, each novel identity was only presented once in the entire recognition part. Response time [s] and accuracy were collected after each recognition trial. A response time limit of 2 seconds has been set for each recognition trial. If participants took longer than 2 seconds to press a response key, the text “Too late!” appeared in red on the screen and the trial was discarded, but not replaced.</p>
+<div class="place" data-arguments="bottom, scope: &quot;parent&quot;, float: true">
+<div id="fig-proc-exp" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-proc-exp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/Experimental_procedure_exp.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-proc-exp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Experimental procedure of the face recognition task
+</figcaption>
+</figure>
+</div>
+<p><em>The experimental procedure was divided into two parts: a familiarization part and a recognition part. a) In the familiarization part, participants were asked to memorize the face identity of 30 identities. For each identity, participants looked at 6 pictures depicting the same identity with different face orientation (3/4 left view, frontal view and 3/4 right view) and different colorimetry (color and gray scale images) in the order presented here: 3/4 left view, frontal view and 3/4 right view in color, followed by 3/4 right view, frontal view and 3/4 left view in gray scale. b) In each trial of the recognition part, participants had to decided if they recognize the face shown on the screen from the familiarization part. If they did, they had to press the “q” key and if the did not, the “p” key. They completed three blocks of 60 trials (half of them were from the familiarization part, half were novel faces). For the recognition part, only gray scale images of faces were used (for both learned faces and novel faces).</em></p>
+</div>
 </section>
 <section id="cambridge-memory-tests" class="level3" data-number="2.4.2">
 <h3 data-number="2.4.2" class="anchored" data-anchor-id="cambridge-memory-tests"><span class="header-section-number">2.4.2</span> Cambridge Memory Tests</h3>
-<p>The method of the CFMT was described in Duchaine and Nakayama (ref: 2006). Participants learned 6 Caucasian male faces in three views and had to discriminate them later from distractor faces (no time response limit, three-alternative forced-choice task, <a href="#fig-Cambridge" class="quarto-xref">Figure&nbsp;1</a> a). Regarding the CCMT, the method has been described in Dennett et al.&nbsp;(ref:2012) and has a highly similar structure, format and scoring as the CFMT, but uses cars instead of faces as stimuli.</p>
+<p>The method of the CFMT was described in Duchaine and Nakayama (ref: 2006). Participants learned 6 Caucasian male faces in three views and had to discriminate them later from distractor faces (no time response limit, three-alternative forced-choice task, <a href="#fig-Cambridge" class="quarto-xref">Figure&nbsp;2</a> a). Regarding the CCMT, the method has been described in Dennett et al.&nbsp;(ref:2012) and has a highly similar structure, format and scoring as the CFMT, but uses cars instead of faces as stimuli.</p>
 <div class="place" data-arguments="bottom, scope: &quot;parent&quot;, float: true">
 <div id="fig-Cambridge" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -237,7 +265,7 @@ window.Quarto = {
 <img src="figures/Cambridge_tests.png" class="img-fluid figure-img" style="width:90.0%">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-Cambridge-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: The two Cambridge Memory Tests
+Figure&nbsp;2: The two Cambridge Memory Tests
 </figcaption>
 </figure>
 </div>
@@ -247,17 +275,21 @@ Figure&nbsp;1: The two Cambridge Memory Tests
 </section>
 <section id="stimuli" class="level2" data-number="2.5">
 <h2 data-number="2.5" class="anchored" data-anchor-id="stimuli"><span class="header-section-number">2.5</span> Stimuli</h2>
-<p>The face images used in the faces recognition task consisted of images selected from two different data sets of face images: the Face Research Lab London Set (DeBruine, Lisa; Jones, Benedict (2017). Face Research Lab London Set. figshare. Data set. <a href="https://doi.org/10.6084/m9.figshare.5047666.v5" class="uri">https://doi.org/10.6084/m9.figshare.5047666.v5</a>) and the Color FERET Database (<a href="https://www.nist.gov/itl/products-and-services/color-feret-database" class="uri">https://www.nist.gov/itl/products-and-services/color-feret-database</a>). Each of these data sets is composed of images of different identities faces taken from different angle points. 102 identities were selected from the Face Research Lab London Set and 51 from the Color FERET Database. For each selected identity, three pictures of the face at three different view points (3/4 left view, frontal view and 3/4 right view) were cropped following the outline of the face. To ensure that the stimuli that we used are reproducible, we used the webmorphR R Package (version?) -&gt; NEED info from Rich here.</p>
+<p>The face images used in the faces recognition task consisted of images selected from two different data sets of face images: the Face Research Lab London Set (DeBruine, Lisa; Jones, Benedict (2017). Face Research Lab London Set. figshare. Data set. <a href="https://doi.org/10.6084/m9.figshare.5047666.v5" class="uri">https://doi.org/10.6084/m9.figshare.5047666.v5</a>) and the Color FERET Database (<a href="https://www.nist.gov/itl/products-and-services/color-feret-database" class="uri">https://www.nist.gov/itl/products-and-services/color-feret-database</a>). Each of these data sets is composed of images of different identities faces taken from different angle points. 102 identities were selected from the Face Research Lab London Set and 51 from the Color FERET Database. For each selected identity, three pictures of the face at three different view points (3/4 left view, frontal view and 3/4 right view) were cropped following the outline of the face.</p>
+<p>To ensure that the stimuli that we used are reproducible, we used the webmorphR R Package (version?) -&gt; NEED info from Rich here.</p>
 </section>
 <section id="evidence-accumulation-modeling" class="level2" data-number="2.6">
 <h2 data-number="2.6" class="anchored" data-anchor-id="evidence-accumulation-modeling"><span class="header-section-number">2.6</span> Evidence accumulation modeling</h2>
 <p>The model and priors specification as well as the model estimation are all identical to the one described in (ref: Fournier et al., in press).</p>
 <section id="model-specification" class="level3" data-number="2.6.1">
 <h3 data-number="2.6.1" class="anchored" data-anchor-id="model-specification"><span class="header-section-number">2.6.1</span> Model specification</h3>
-<p>A hierarchical LBA models was fit to the accuracy and response times of the face recognition task. The model specifications are outlined in our preregistration (<a href="#tbl-model-formula" class="quarto-xref">Table&nbsp;1</a>). The LBA framework assumes a separate evidence accumulator for each response alternative, with potentially different parameter values. Accordingly, one accumulator corresponded to the “Learned” response and the other to the “Novel” response. Threshold was allowed to vary by participants’ response (Learned/Novel) and mean drift rate varied as a function of both stimulus type (Learned/Novel) and weather the accumulator corresponded to the correct response for that stimulus (TRUE vs.&nbsp;FALSE). For example, when a Learned stimulus was presented, the Learned accumulator was designed as TRUE, whereas the Novel accumulator was designed as FALSE. The difference in drift rate between the TRUE and FALSE accumulators reflects the quality of information supporting a decision, with larger differences indicating stronger and more discriminative evidence accumulation <span class="citation" data-cites="lewandoskyComputationalModelingCognition2018">(<a href="#ref-lewandoskyComputationalModelingCognition2018" role="doc-biblioref"><strong>lewandoskyComputationalModelingCognition2018?</strong></a>)</span>.</p>
-<div class="cell" data-tbl-cap-location="bottom">
-<div id="tbl-model-formula" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-cap-location="bottom">
+<p>A hierarchical LBA models was fit to the accuracy and response times of the face recognition task. The model specifications are outlined in our preregistration (<a href="#tbl-model-formula" class="quarto-xref">Table&nbsp;1</a>). The LBA framework assumes a separate evidence accumulator for each response alternative, with potentially different parameter values. Accordingly, one accumulator corresponded to the “Learned” response and the other to the “Novel” response. Threshold was allowed to vary by participants’ response (Learned/Novel) and mean drift rate varied as a function of both stimulus type (Learned/Novel) and weather the accumulator corresponded to the correct response for that stimulus (TRUE vs.&nbsp;FALSE). For example, when a Learned stimulus was presented, the Learned accumulator was designed as TRUE, whereas the Novel accumulator was designed as FALSE. The difference in drift rate between the TRUE and FALSE accumulators reflects the quality of information supporting a decision, with larger differences indicating stronger and more discriminative evidence accumulation <span class="citation" data-cites="lewandoskyComputationalModelingCognition2018">(<a href="#ref-lewandoskyComputationalModelingCognition2018" role="doc-biblioref"><strong>lewandoskyComputationalModelingCognition2018?</strong></a>)</span>. The standard deviation of the TRUE accumulator was allowed to vary according to accumulator match status, whereas the standard deviation of the FALSE accumulator was constrained to be constant to ensure model identifiability <span class="citation" data-cites="donkinGettingMoreAccuracy2009">(<a href="#ref-donkinGettingMoreAccuracy2009" role="doc-biblioref"><strong>donkinGettingMoreAccuracy2009?</strong></a>)</span>. In the preregistered model, a single start-point parameter (A), and single non-decision time parameter (t0) were estimated. Alternative model specifications that permitted variation in these parameters are reported in the Supplementary Materials.</p>
+<div class="cell">
+<div id="tbl-model-formula" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-model-formula-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Formula specification for the pre-registered linear ballistic accumulator model.
+</figcaption>
 <div aria-describedby="tbl-model-formula-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
 <!-- preamble start -->
@@ -266,19 +298,19 @@ Figure&nbsp;1: The two Cambridge Memory Tests
 
     <script>
       // Create table-specific functions using external factory
-      const tableFns_eyjgfpbtosbnku0nqogf = TinyTable.createTableFunctions("tinytable_eyjgfpbtosbnku0nqogf");
+      const tableFns_b4ay8bsumk5vcogv8jbr = TinyTable.createTableFunctions("tinytable_b4ay8bsumk5vcogv8jbr");
       // tinytable span after
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: '7', j: 1 }, { i: '7', j: 2 }, { i: '7', j: 3 }, { i: '7', j: 4 }, { i: '7', j: 5 }, { i: '7', j: 6 } ], css_id: 'tinytable_css_tz3ngp8xgq8ibkhhw5fr',}, 
-          { positions: [ { i: '0', j: 1 }, { i: '0', j: 2 }, { i: '0', j: 3 }, { i: '0', j: 4 }, { i: '0', j: 5 }, { i: '0', j: 6 } ], css_id: 'tinytable_css_jg1noenyupz02cl6wm8f',}, 
+          { positions: [ { i: '7', j: 1 }, { i: '7', j: 2 }, { i: '7', j: 3 }, { i: '7', j: 4 }, { i: '7', j: 5 }, { i: '7', j: 6 } ], css_id: 'tinytable_css_h8gc9im41npaauctxj5m',}, 
+          { positions: [ { i: '0', j: 1 }, { i: '0', j: 2 }, { i: '0', j: 3 }, { i: '0', j: 4 }, { i: '0', j: 5 }, { i: '0', j: 6 } ], css_id: 'tinytable_css_q6xkev41eten33noxw43',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  tableFns_eyjgfpbtosbnku0nqogf.styleCell(cell.i, cell.j, group.css_id);
+                  tableFns_b4ay8bsumk5vcogv8jbr.styleCell(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -287,11 +319,11 @@ Figure&nbsp;1: The two Cambridge Memory Tests
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.css">
     <style>
     /* tinytable css entries after */
-    #tinytable_eyjgfpbtosbnku0nqogf td.tinytable_css_tz3ngp8xgq8ibkhhw5fr, #tinytable_eyjgfpbtosbnku0nqogf th.tinytable_css_tz3ngp8xgq8ibkhhw5fr {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.08em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%;  }
-    #tinytable_eyjgfpbtosbnku0nqogf td.tinytable_css_jg1noenyupz02cl6wm8f, #tinytable_eyjgfpbtosbnku0nqogf th.tinytable_css_jg1noenyupz02cl6wm8f {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%;  }
+    #tinytable_b4ay8bsumk5vcogv8jbr td.tinytable_css_h8gc9im41npaauctxj5m, #tinytable_b4ay8bsumk5vcogv8jbr th.tinytable_css_h8gc9im41npaauctxj5m {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.08em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%;  }
+    #tinytable_b4ay8bsumk5vcogv8jbr td.tinytable_css_q6xkev41eten33noxw43, #tinytable_b4ay8bsumk5vcogv8jbr th.tinytable_css_q6xkev41eten33noxw43 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%;  }
     </style>
     <div class="container">
-      <table class="tinytable" id="tinytable_eyjgfpbtosbnku0nqogf" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="tinytable" id="tinytable_b4ay8bsumk5vcogv8jbr" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         
         <thead>
               <tr>
@@ -367,23 +399,142 @@ Figure&nbsp;1: The two Cambridge Memory Tests
 <!-- hack to avoid NA insertion in last line -->
 </div>
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-model-formula-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;1: Formula specification for the pre-registered linear ballistic accumulator model.
+</figure>
+</div>
+</div>
+</section>
+<section id="model-estimation" class="level3" data-number="2.6.2">
+<h3 data-number="2.6.2" class="anchored" data-anchor-id="model-estimation"><span class="header-section-number">2.6.2</span> Model estimation</h3>
+<p>Bayesian model estimated was carried using the EMC2 R package. Priors were chosen to be weakly-informative, meaning that they have little influence on the estimation (for more details regarding the priors of each model, see Supplementary Materials). Two sampling steps were used to estimate the parameters. First, a separate estimation of the fixed effects for each participant was conducted. Parameter estimations were then used as the starting point for the full hierarchical parameter estimation.</p>
+</section>
+<section id="model-fit" class="level3" data-number="2.6.3">
+<h3 data-number="2.6.3" class="anchored" data-anchor-id="model-fit"><span class="header-section-number">2.6.3</span> Model fit</h3>
+<p>To ensure that the fit of our model can capture most of the main trends in the data, graphical summaries of the posterior predictions were examined. (Check fit of the model, Supplementary Materials)</p>
+<p>If the model is reasonable, it should be able to generate data that looks sensibly similar to the accuracy and response times data.</p>
+</section>
+</section>
+<section id="data-analysis" class="level2" data-number="2.7">
+<h2 data-number="2.7" class="anchored" data-anchor-id="data-analysis"><span class="header-section-number">2.7</span> Data analysis</h2>
+<p>Regarding the general analytical strategy, two main approaches were considered. Correlations and data visualizations were used to characterize the zero-order relationships between parameters of interest (drift rate and threshold) from the LBA model with face and object recognition ability. Linear regression was then used to estimate how much LBA parameters vary as a function of face recognition ability, as well as how much these parameters vary after adjusting for car recognition ability. The details of the analytical strategy were preregistered (<a href="https://osf.io/b74gt/overview" class="uri">https://osf.io/b74gt/overview</a>).</p>
+<section id="lba-parameters" class="level3" data-number="2.7.1">
+<h3 data-number="2.7.1" class="anchored" data-anchor-id="lba-parameters"><span class="header-section-number">2.7.1</span> LBA parameters</h3>
+<p>Median and interval estimates (95% quantile intervals) of the posterior distributions of each parameters were examined. Contrasts between the parameters of interest were</p>
+</section>
+<section id="classical-correlational-analysis" class="level3" data-number="2.7.2">
+<h3 data-number="2.7.2" class="anchored" data-anchor-id="classical-correlational-analysis"><span class="header-section-number">2.7.2</span> Classical correlational analysis</h3>
+<p>The median value of each parameter’s posterior distribution was correlated with the two centred scores of each of the Cambridge Memory Tests to assess the relationship between these variables.</p>
+</section>
+<section id="bayesian-plausible-value-correlational-analysis" class="level3" data-number="2.7.3">
+<h3 data-number="2.7.3" class="anchored" data-anchor-id="bayesian-plausible-value-correlational-analysis"><span class="header-section-number">2.7.3</span> Bayesian plausible value correlational analysis</h3>
+<p>In addition to the classical correlational analysis described above, we conducted a Bayesian plausible value correlation approach (ref: Ly et al., 2017; Matzke et al., 2017). Instead of using point estimates (median value of each parameter’s posterior distribution), this approach permits the estimation of uncertainty in likely correlational values by correlating the parameter estimation from each sample (or “draw”) from the posterior distribution with the memory scores. A distribution of the plausible correlations between each parameter and the memory scores can then obtained. These distributions can compared between stimuli conditions (Learned vs Novel) or memory scores (face vs car) using difference contrasts. It allowed us to estimate if the strength of the correlation differs or not between conditions of interest.</p>
+</section>
+<section id="linear-regression" class="level3" data-number="2.7.4">
+<h3 data-number="2.7.4" class="anchored" data-anchor-id="linear-regression"><span class="header-section-number">2.7.4</span> Linear regression</h3>
+<p>Two Bayesian linear regression models were fit to quantify the extent to which parameters of interest of the LBA model vary as a function of face recognition ability alone and when accounting for car recognition ability. In total, four regression models were fitted, two for the drift rate parameter and two for the threshold parameter (see <a href="#tbl-regression-model-formula" class="quarto-xref">Table&nbsp;2</a> for the details of each regression models).</p>
+<div class="cell" data-tbl-cap-location="bottom">
+<div id="tbl-regression-model-formula" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-cap-location="bottom">
+<figure class="quarto-float quarto-float-tbl figure">
+<div aria-describedby="tbl-regression-model-formula-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script src="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.js"></script>
+
+    <script>
+      // Create table-specific functions using external factory
+      const tableFns_ofkiewopztjptctudlmh = TinyTable.createTableFunctions("tinytable_ofkiewopztjptctudlmh");
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: '4', j: 1 }, { i: '4', j: 2 }, { i: '4', j: 3 }, { i: '4', j: 4 } ], css_id: 'tinytable_css_te5nsjv4nbkbr3yusnk5',}, 
+          { positions: [ { i: '0', j: 1 }, { i: '0', j: 2 }, { i: '0', j: 3 }, { i: '0', j: 4 } ], css_id: 'tinytable_css_w8bn094bgsk1ziaycgaz',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  tableFns_ofkiewopztjptctudlmh.styleCell(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.css">
+    <style>
+    /* tinytable css entries after */
+    #tinytable_ofkiewopztjptctudlmh td.tinytable_css_te5nsjv4nbkbr3yusnk5, #tinytable_ofkiewopztjptctudlmh th.tinytable_css_te5nsjv4nbkbr3yusnk5 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.08em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%;  }
+    #tinytable_ofkiewopztjptctudlmh td.tinytable_css_w8bn094bgsk1ziaycgaz, #tinytable_ofkiewopztjptctudlmh th.tinytable_css_w8bn094bgsk1ziaycgaz {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%;  }
+    </style>
+    <div class="container">
+      <table class="tinytable" id="tinytable_ofkiewopztjptctudlmh" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        
+        <thead>
+              <tr>
+                <th scope="col" data-row="0" data-col="1">Parameter</th>
+                <th scope="col" data-row="0" data-col="2">Condition</th>
+                <th scope="col" data-row="0" data-col="3">Ability</th>
+                <th scope="col" data-row="0" data-col="4">Formula</th>
+              </tr>
+        </thead>
+        <tfoot><tr><td colspan="4">condition = training condition (Learned vs. Novel); accuracy = response accuracy (TRUE vs. FALSE)</td></tr></tfoot>
+        <tbody>
+                <tr>
+                  <td data-row="1" data-col="1">Median drift rate</td>
+                  <td data-row="1" data-col="2">condition:accuracy</td>
+                  <td data-row="1" data-col="3">Face</td>
+                  <td data-row="1" data-col="4">Median drift rate ~ 0 + condition:accuracy + face_ability + (0|participant)</td>
+                </tr>
+                <tr>
+                  <td data-row="2" data-col="1">Median drift rate</td>
+                  <td data-row="2" data-col="2">condition:accuracy</td>
+                  <td data-row="2" data-col="3">Face + Car</td>
+                  <td data-row="2" data-col="4">Median drift rate ~ 0 + condition:accuracy + face_ability + car_ability + (0|participant)</td>
+                </tr>
+                <tr>
+                  <td data-row="3" data-col="1">Median threshold</td>
+                  <td data-row="3" data-col="2">condition</td>
+                  <td data-row="3" data-col="3">Face</td>
+                  <td data-row="3" data-col="4">Median threshold ~ 0 + condition + face_ability + (0|participant)</td>
+                </tr>
+                <tr>
+                  <td data-row="4" data-col="1">Median threshold</td>
+                  <td data-row="4" data-col="2">condition</td>
+                  <td data-row="4" data-col="3">Face + Car</td>
+                  <td data-row="4" data-col="4">Median threshold ~ 0 + condition + face_ability + car_ability + (0|participant)</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-regression-model-formula-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Formula specification for the pre-registered linear regression models.
 </figcaption>
 </figure>
 </div>
 </div>
 </section>
+<section id="inferential-criteria" class="level3" data-number="2.7.5">
+<h3 data-number="2.7.5" class="anchored" data-anchor-id="inferential-criteria"><span class="header-section-number">2.7.5</span> Inferential criteria</h3>
 </section>
-<section id="data-analysis" class="level2" data-number="2.7">
-<h2 data-number="2.7" class="anchored" data-anchor-id="data-analysis"><span class="header-section-number">2.7</span> Data analysis</h2>
 </section>
 </section>
 <section id="results" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> Results</h1>
-<div class="place" data-arguments="top, scope: &quot;parent&quot;, float: true">
-<p>Full page width content goes here.</p>
-</div>
+<section id="lba-parameters-1" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="lba-parameters-1"><span class="header-section-number">3.1</span> LBA parameters</h2>
+</section>
+<section id="correlations" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="correlations"><span class="header-section-number">3.2</span> Correlations</h2>
+</section>
+<section id="bayesian-plausible-value-correlational-analysis-1" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="bayesian-plausible-value-correlational-analysis-1"><span class="header-section-number">3.3</span> Bayesian plausible value correlational analysis</h2>
+</section>
+<section id="linear-regression-1" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="linear-regression-1"><span class="header-section-number">3.4</span> Linear regression</h2>
+</section>
 </section>
 <section id="discussion" class="level1" data-number="4">
 <h1 data-number="4"><span class="header-section-number">4</span> Discussion</h1>

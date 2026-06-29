@@ -1,0 +1,20 @@
+---
+title: "Notes"
+format: html
+editor: visual
+---
+
+Friday 26 June: Raph notes
+
+Introduction
+
+
+Methods:
+- Figure of the face recognition task: this is not the correct figure since we used different face stimuli (cropped by the webmorph R Package). But it was just to show you that I am planning to add a figure there. I am currently working on the actual figure. 
+- Data analysis: I don't really know into how much details I should go here. Should I mention all the correlations and plausible value correlations that we did? Or is what I wrote there enough?
+- Regression models: we did not preregistered the regression models for the threshold parameter (only for drift rate). Should I add in the description of the regression models the threshold models or not? Now it is added into the table describing the regression models.
+
+
+Results:
+- Since we only preregistered the drift rate models, should I add the predictions of the threshold models here or in Supplementary Materials? In the discussion we are planning to interpret the results of threshold and drift rate together, so it seems kind of weird to show them only in the Supplementary Materials. But then we only preregistered drift rate models... I don't really know how to tackle this. 
+
