@@ -830,6 +830,15 @@ Visual inspections of these correlations seemed to show that the accumulation of
 A similar conclusion could be drawn from the inspection of the response caution (threshold) towards the "Learned" response.
 However the strength of these relationship remains weak (the highest *r* value is 0.24) and we used a Bayesian plausible value correlational approach to determine the uncertainty linked to these associations.
 
+
+:::: {.place arguments="bottom, scope: \"parent\", float: true"}
+:::{#fig-corr_param_face fig-cap = "Correlations between face recognition ability and LBA parameters"}
+![](figures/param_face.jpeg){width="90%"}
+:::
+
+*Pearson's correlations between the median of the posterior distribution of the LBA parameters of interest and face recognition ability (centred). The six upper panels illustrate the correlations between face recognition ability and the 6 estimated parameters for drift rate and the two lower panel between face recognition ability and the 2 estimated parameters for threshold.* 
+::::
+
 ## Bayesian plausible value correlational analysis
 
 To estimate the uncertainty linked to the relationships between LBA estimated parameters and face recognition ability, we used a Bayesian plausible value correlational analysis.
@@ -1209,3 +1218,4 @@ Paragraph 6: Conclusive paragraph
 #show: appendix.with()
 ```
 # Appendix content here
+

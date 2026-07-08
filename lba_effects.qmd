@@ -102,6 +102,13 @@ theta_group_q <- theta_group |>
 theta_pid_q <- theta_pid |>
   group_by(pid, param) |>
   median_qi(value)
+
+# save some files
+write_csv(theta_group, "data/theta_group.csv")
+write_csv(theta_group_q, "data/theta_group_q.csv")
+write_csv(theta_pid, "data/theta_pid.csv")
+write_csv(theta_pid_q, "data/theta_pid_q.csv")
+
 ```
 
 # 3. All parameters overview

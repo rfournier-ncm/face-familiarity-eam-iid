@@ -295,7 +295,8 @@ plot
 param_cols <- c(
   "v_Snovel_lMTRUE", "v_Snovel_lMFALSE",
   "v_Slearned_lMTRUE", "v_Slearned_lMFALSE",
-  "sv_lMTRUE", "B_lRnovel", "B_lRlearned", "A", "t0"
+  "B_lRnovel", "B_lRlearned", "discrim_learned",
+  "discrim_novel"
 )
 
 # pivot to long with both predictors as a variable
@@ -312,11 +313,15 @@ cor_long <- cor_data |>
   ) |>
   mutate(
     predictor = if_else(str_detect(predictor, "face"), "Face", "Car"),
-    predictor = factor(predictor, levels = c("Face", "Car"))
-  )
+    predictor = factor(predictor, levels = c("Face", "Car")),
+    param = fct_recode(param, "Drift rate learned (TRUE)" = "v_Slearned_lMTRUE", "Drift rate learned (FALSE)" = "v_Slearned_lMFALSE", "Drift rate novel (TRUE)" = "v_Snovel_lMTRUE", "Drift rate novel (FALSE)" = "v_Snovel_lMFALSE", "Threshold novel" = "B_lRnovel", "Threshold learned" = "B_lRlearned", "Drift rate learned" = "discrim_learned", "Drift rate novel" = "discrim_novel"
+  ))
 
 # compute r per param x predictor
-cor_labels <- cor_long |>
+cor_long_thresh <- cor_long |>
+  filter(param %in% c("Threshold learned","Threshold novel"))
+
+cor_labels_thresh <- cor_long_thresh |>
   group_by(param, predictor) |>
   summarise(
     r = cor(estimate, score, use = "complete.obs"),
@@ -327,13 +332,61 @@ cor_labels <- cor_long |>
     vjust = if_else(predictor == "Face", 1.5, 3.0)
   )
 
-# plot
-p_raw_params <- ggplot(cor_long, aes(x = score, y = estimate,
+cor_long_drift <- cor_long |>
+  filter(param %in%  c("Drift rate learned (TRUE)","Drift rate learned (FALSE)", "Drift rate learned", "Drift rate novel (TRUE)",
+                       "Drift rate novel (FALSE)", "Drift rate novel")) |>
+  mutate(param = fct_relevel(param, "Drift rate learned (TRUE)","Drift rate learned (FALSE)", "Drift rate learned", "Drift rate novel (TRUE)",
+                       "Drift rate novel (FALSE)", "Drift rate novel"))
+
+cor_labels_drift <- cor_long_drift |>
+  group_by(param, predictor) |>
+  summarise(
+    r = cor(estimate, score, use = "complete.obs"),
+    .groups = "drop"
+  ) |>
+  mutate(
+    label = sprintf("r = %.2f", r),
+    vjust = if_else(predictor == "Face", 1.5, 3.0),
+    param = fct_relevel(param, "Drift rate learned (TRUE)","Drift rate learned (FALSE)", "Drift rate learned", "Drift rate novel (TRUE)",
+                       "Drift rate novel (FALSE)", "Drift rate novel")
+  )
+# plot thresh
+p_raw_params_thresh <- ggplot(cor_long_thresh, aes(x = score, y = estimate,
                                       colour = predictor, fill = predictor)) +
   geom_point(alpha = 0.3, size = 2) +
   geom_smooth(method = "lm", se = TRUE, alpha = 0.3) +
   geom_text(
-    data = cor_labels,
+    data = cor_labels_thresh,
+    aes(label = label, vjust = vjust, colour = predictor),
+    x = -Inf, y = Inf,
+    hjust = -0.1,
+    size = 5, fontface = "bold",
+    show.legend = FALSE
+  ) +
+  facet_wrap(~param, scales = "free_y", ncol = 2) +
+  scale_colour_manual(values = c("Face" = safe_pal[1], "Car" = safe_pal[2])) +
+  scale_fill_manual(values   = c("Face" = safe_pal[1], "Car" = safe_pal[2])) +
+  labs(
+    title   = "Raw parameter estimates vs. recognition scores",
+    x       = "Recognition score (centred)",
+    y       = "Parameter estimate (median)",
+    colour  = NULL, fill = NULL
+  ) +
+  theme(legend.position = "bottom")
+
+p_raw_params_thresh
+
+ggsave(here("figures", "corr", "all_params_thresh.jpeg"), 
+       width = 15, height = 8)
+
+
+# plot drift
+p_raw_params_drift <- ggplot(cor_long_drift, aes(x = score, y = estimate,
+                                      colour = predictor, fill = predictor)) +
+  geom_point(alpha = 0.3, size = 2) +
+  geom_smooth(method = "lm", se = TRUE, alpha = 0.3) +
+  geom_text(
+    data = cor_labels_drift,
     aes(label = label, vjust = vjust, colour = predictor),
     x = -Inf, y = Inf,
     hjust = -0.1,
@@ -351,9 +404,9 @@ p_raw_params <- ggplot(cor_long, aes(x = score, y = estimate,
   ) +
   theme(legend.position = "bottom")
 
-p_raw_params
+p_raw_params_drift
 
-ggsave(here("figures", "corr", "all_params.jpeg"), 
+ggsave(here("figures", "corr", "all_params_drift.jpeg"), 
        width = 15, height = 8)
 ```
 
@@ -371,7 +424,8 @@ all_params_long <- cor_data |>
     cols      = -c(pid, face_recog_centred, car_recog_centred),
     names_to  = "param",
     values_to = "estimate"
-  )
+  ) |>
+  mutate(param = fct_recode(param, "Drift rate learned (TRUE)" = "v_Slearned_lMTRUE", "Drift rate learned (FALSE)" = "v_Slearned_lMFALSE", "Drift rate novel (TRUE)" = "v_Snovel_lMTRUE", "Drift rate novel (FALSE)" = "v_Snovel_lMFALSE", "Threshold novel" = "B_lRnovel", "Threshold learned" = "B_lRlearned", "Drift rate learned" = "discrim_learned", "Drift rate novel" = "discrim_novel"))
 
 # r labels per param x predictor
 all_r_face <- all_params_long |>
@@ -435,43 +489,84 @@ ggsave(here("figures", "corr", "all_params_car.jpeg"),
 
 
 #Meaningful correlations
-# face plot
-discrim_learned <- face_plot_data |>
-  filter(param == c("discrim_learned", "discrim_novel"))
-p_drift_face <- ggplot(discrim_learned,
+# face plot drift rate
+drift_rate_face <- face_plot_data |>
+  filter(param %in% c("Drift rate learned (TRUE)", "Drift rate learned (FALSE)", "Drift rate novel (TRUE)", "Drift rate learned", "Drift rate novel (FALSE)", "Drift rate novel"))
+p_drift_face <- ggplot(drift_rate_face,
                       aes(x = face_recog_centred, y = estimate)) +
   geom_point(alpha = 0.4, size = 2, colour = "grey30") +
   geom_smooth(method = "lm", se = TRUE, colour = "red", fill = "grey30") +
-  facet_wrap(~param_label, scales = "free_y", ncol = 2) +
+  facet_wrap(~param_label, scales = "free_y", ncol = 3) +
   labs(
-    title = "Drift rate (TRUE-FALSE) correlations with face recognition",
     x     = "Face recognition ability (centred)",
     y     = "Drift rate"
   )
 
 p_drift_face
 ggsave(here("figures", "corr", "drift_face.jpeg"), 
-       width = 8, height = 6)
+       width = 8, height = 10)
 
-# car plot
-discrim_learned <- car_plot_data |>
-  filter(param == c("discrim_learned", "discrim_novel"))
-p_drift_car <- ggplot(discrim_learned,
-                     aes(x = car_recog_centred, y = estimate)) +
+# face plot threshold face
+threshold_face <-face_plot_data |>
+  filter(param %in% c("Threshold learned", "Threshold novel"))
+p_threshold_face <- ggplot(threshold_face,
+                      aes(x = face_recog_centred, y = estimate)) +
   geom_point(alpha = 0.4, size = 2, colour = "grey30") +
   geom_smooth(method = "lm", se = TRUE, colour = "red", fill = "grey30") +
-  facet_wrap(~param_label, scales = "free_y", ncol = 5) +
+  facet_wrap(~param_label, scales = "free_y", ncol = 3) +
   labs(
-    title = "Drift rate (TRUE-FALSE) correlations with car recognition",
+    x     = "Face recognition ability (centred)",
+    y     = "Threshold"
+  )
+p_threshold_face
+ggsave(here("figures", "corr", "threshold_face.jpeg"), 
+       width = 8, height = 10)
+
+#Combine plots
+face_cor_plots <- p_drift_face /p_threshold_face
+face_cor_plots
+
+ggsave(here("figures", "corr", "param_face.jpeg"), 
+       width = 10, height = 12)
+
+# car plot drift rate
+drift_rate_car <- car_plot_data |>
+  filter(param %in% c("Drift rate learned (TRUE)", "Drift rate learned (FALSE)", "Drift rate novel (TRUE)", "Drift rate learned", "Drift rate novel (FALSE)", "Drift rate novel"))
+p_drift_car <- ggplot(drift_rate_car,
+                      aes(x = car_recog_centred, y = estimate)) +
+  geom_point(alpha = 0.4, size = 2, colour = "grey30") +
+  geom_smooth(method = "lm", se = TRUE, colour = "red", fill = "grey30") +
+  facet_wrap(~param_label, scales = "free_y", ncol = 3) +
+  labs(
     x     = "Car recognition ability (centred)",
     y     = "Drift rate"
   )
 
 p_drift_car
-
 ggsave(here("figures", "corr", "drift_car.jpeg"), 
-       width = 8, height = 6)
+       width = 8, height = 10)
 
+# face plot threshold car
+threshold_car <-car_plot_data |>
+  filter(param %in% c("Threshold learned", "Threshold novel"))
+p_threshold_car <- ggplot(threshold_car,
+                      aes(x = car_recog_centred, y = estimate)) +
+  geom_point(alpha = 0.4, size = 2, colour = "grey30") +
+  geom_smooth(method = "lm", se = TRUE, colour = "red", fill = "grey30") +
+  facet_wrap(~param_label, scales = "free_y", ncol = 3) +
+  labs(
+    x     = "Car recognition ability (centred)",
+    y     = "Threshold"
+  )
+p_threshold_car
+ggsave(here("figures", "corr", "threshold_car.jpeg"), 
+       width = 8, height = 10)
+
+#Combine plots
+car_cor_plots <- p_drift_car /p_threshold_car
+car_cor_plots
+ggsave(here("figures", "corr", "param_car.jpeg"), 
+       width = 10, height = 12)
 ```
 
 ## plot pre-registered relationships
@@ -1056,8 +1151,8 @@ ggplot(pv_cors_key, aes(x = r, y = predictor,
                          fill = predictor, colour = predictor)) +
   stat_halfeye(alpha = 0.7, .width = c(0.5, 0.95)) +
   geom_vline(xintercept = 0, linetype = "dashed", colour = "darkgrey") +
-  scale_fill_manual(values = c("Face" = safe_pal[1], "Car" = safe_pal[2])) +
-  scale_colour_manual(values = c("Face" = safe_pal[1], "Car" = safe_pal[2])) +
+  scale_fill_manual(values = c("Face" = safe_pal[2], "Car" = safe_pal[4])) +
+  scale_colour_manual(values = c("Face" = safe_pal[2], "Car" = safe_pal[4])) +
   facet_wrap(~param, ncol = 3) +
   labs(
     title = "Posterior correlation distributions — key parameters",
