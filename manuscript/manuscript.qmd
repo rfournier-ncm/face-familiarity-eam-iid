@@ -88,7 +88,8 @@ knitr:
 
 pkgs <- c(
   "tidyverse", "RColorBrewer", "patchwork", "paletteer", "here", "EMC2", 
-  "tidybayes", "tinytable", "osfr", "svglite", "gt"
+  "tidybayes", "tinytable", "osfr", "svglite", "gt", "brms", "rstantool",
+  "corrplot", "ggdist", "parallel", "future"
 )
 vapply(
   pkgs, library, logical(1),
@@ -106,6 +107,7 @@ theme_set(
 ## plot settings ##
 ## Plot colors
 safe_pal <- paletteer_d("rcartocolor::Safe", 4)
+dark_pal <- paletteer_d("RColorBrewer::Dark2", 2)
 
 myColors_3 <- c(
   "novel"   = safe_pal[1],
@@ -116,6 +118,11 @@ myColors_4 <- c(
   "Learned" = safe_pal[2]
 )
 
+#Accuracy colors
+myColors_acc <- c(
+  "true"   = dark_pal[1],
+  "false" = dark_pal[2]
+)
 # Subsets for single-experiment plots if still needed
 myColors_1 <- myColors_3[c("novel", "learned")]
 
@@ -382,7 +389,8 @@ It allowed us to estimate if the strength of the correlation differs or not betw
 
 ### Linear regression
 
-Based on our pilot results, we preregistered two Bayesian linear regression models to quantify the extent to which drift rate vary as a function of face recognition ability alone and when accounting for car recognition ability. The results of the linear regresison for the threshold parameter are available in the Supplementary materials.An index coding approach was used (no grand interecept) where each condition of interest has its own intercept (see @tbl-regression-model-formula for the details of each regression models).
+Based on our pilot results, we preregistered two Bayesian linear regression models to quantify the extent to which drift rate vary as a function of face recognition ability alone and when accounting for car recognition ability.
+The results of the linear regresison for the threshold parameter are available in the Supplementary materials.An index coding approach was used (no grand interecept) where each condition of interest has its own intercept (see @tbl-regression-model-formula for the details of each regression models).
 
 ```{r}
 #| label: regression-model-formula
@@ -407,11 +415,19 @@ regression_formula |>
 
 ### Inferential criteria
 
+Using a Bayesian approach in our regression analysis allow us to evaluate the posterior distributions of the parameter of our predictor of interest (Face Memory score).
+To evaluate these posterior distributions, we will use three complementary criteria: sign, size and precision [@cummingNewStatisticsWhy2014; @kruschkeBayesianDataAnalysis2018; @mcelreathStatisticalRethinkingBayesian].
+To address the sign (or direction) of the effect, we will report if the median value is positive or negative.
+Second, we will evaluate the size or magnitude of the posterior distribution by considering the size of the median value as well as the extent to which lower or upper bounds of the 95% quantile interval approach zero (no relationship).
+For example, if the 95% quantile interval excludes zero, we could be reasonably confident in our inference of a non-zero effect.
+Furthermore, we will use the width of the 95% quantile intervals as an indicator of estimation precision.
+Whereas narrow estimates indicate precise estimates, wider intervals indicate substantial uncertainty about the estimated parameter value, which may warrant a more cautious interpretation.
+
 # Results
 
 ## LBA parameters
 
-Posterior distributions for drift rate and threshold parameters are visualised in @fig-threshold and @fig-drift and the medians and 95% quantile intervals are summarised in @tbl-lba-params.
+Posterior distributions for drift rate and threshold parameters are visualized in @fig-threshold and @fig-drift and the medians and 95% quantile intervals are summarised in @tbl-lba-params.
 
 *Threshold:* Inspection of the posterior distribution shows that there is an effect of familiarity on the threshold parameter.
 
@@ -645,6 +661,12 @@ lba_table |>
 
 ## Correlations
 
+We examined point-wise recognition ability linear relationship with point estimates (median) of the posterior distribution of each of the LBA parameters of interest.
+These relationships can been see in @fig-corr-point-estimates for both recognition ability.
+Visual inspections of these correlations seemed to show that the accumulation of evidence (drift rate) for learned and novel faces increases as face recognition ability increases.
+A similar conclusion could be drawn from the inspection of the response caution (threshold) towards the "Learned" response.
+However the strength of these relationship remains weak (the highest *r* value is 0.24) and we used a Bayesian plausible value correlational approach to determine the uncertainty linked to these associations.
+
 ```{r}
 #| label: load-Cambridge-test
 #| include: false
@@ -757,7 +779,6 @@ cor_labels_drift <- cor_long_drift |>
   )
 ```
 
-
 ```{r}
 #| label: prepare-plot-corr-point-estimate
 #| include: false
@@ -811,7 +832,7 @@ p_raw_params_drift <- ggplot(cor_long_drift, aes(x = score, y = estimate,
 ```
 
 ```{r}
-#| label: plot-corr-point-estimate
+#| label: fig-corr-point-estimate
 #| fig-cap: "Point estimates correlations with recognition scores"
 #| fig-subcap: 
 #|  - "Median threshold correlations with recognition ability"
@@ -824,23 +845,19 @@ p_raw_params_thresh
 p_raw_params_drift
 ```
 
-We examined point-wise recognition ability linear relationship with point estimates (median) of the posterior distribution of each of the LBA parameters of interest.
-These relationships can been see in @plot-corr-point-estimates for both recognition ability.
-Visual inspections of these correlations seemed to show that the accumulation of evidence (drift rate) for learned and novel faces increases as face recognition ability increases.
-A similar conclusion could be drawn from the inspection of the response caution (threshold) towards the "Learned" response.
-However the strength of these relationship remains weak (the highest *r* value is 0.24) and we used a Bayesian plausible value correlational approach to determine the uncertainty linked to these associations.
-
 ## Bayesian plausible value correlational analysis
 
 To estimate the uncertainty linked to the relationships between LBA estimated parameters and face recognition ability, we used a Bayesian plausible value correlational analysis.
 Like described above (see Methods), instead of using a single point estimate to assess the strength of the relationship between our variables of interest, the posterior distribution of the LBA parameters allow us to use the entire sampling distribution to do it.
 We calculated the Person's *r* between each sample value from our posterior distribution for each parameter of each subject and their face recognition ability.
-The posterior distributions of plausible correlation values and their contrast are shown in @fig-plausible-corr-thresh for threshold and @fig-plausible-corr-drift for drift rate. @tbl-plausible-cor provides a summary of these distributions.
+The posterior distributions of plausible correlation values and their contrast are shown in @fig-plausible-corr-thresh for threshold and @fig-plausible-corr-drift for drift rate.
+@tbl-plausible-cor provides a summary of these distributions.
 
-*Threshold:* There is a positive relationship between response caution for both learned and novel faces and recognition ability. Regarding face recognition ability, people with a higher face recognition ability have a higher response caution for learned faces whereas people with a higher car recognition ability have a higher threshold for both learned and novel faces. 
+*Threshold:* There is a positive relationship between response caution for both learned and novel faces and recognition ability.
+Regarding face recognition ability, people with a higher face recognition ability have a higher response caution for learned faces whereas people with a higher car recognition ability have a higher threshold for both learned and novel faces.
 
-*Drift rate:* A higher face recognition ability is associated with a greater drift rate for both novel and learned faces. However, a higher car recognition ability is only associated with an increase drift rate for novel faces. 
-
+*Drift rate:* A higher face recognition ability is associated with a greater drift rate for both novel and learned faces.
+However, a higher car recognition ability is only associated with an increase drift rate for novel faces.
 
 ```{r}
 #| label: plausible-value-wrangle
@@ -1026,7 +1043,6 @@ p_drift <- (p_drift_mid | p_drift_right) +
   theme(legend.position = "bottom")
 ```
 
-
 ```{r}
 #| label: fig-plausible-corr-thresh
 #| fig-cap: "Plausible correlation values distributions between threshold and recognition abilities. Points denote the median of the distribution and error bars represent 95% quantile intervals."
@@ -1055,8 +1071,6 @@ p_thresh_right
 p_drift_mid
 p_drift_right
 ```
-
-Text here
 
 ```{r}
 #| label: tbl-plausible-cor
@@ -1139,7 +1153,160 @@ tt_table <- tt(as.data.frame(table_data_tt |> select(-Car_color, -Face_color)),
 tt_table
 ```
 
-## Linear regression
+## Bayesian linear regression
+
+Following our preregistration, the predictions of the two regression models for drift rate can be seen in @fig-prediction. 
+
+```{r}
+#| label: read-models
+#| include: false
+
+b1_drift <- readRDS(here("models/b1_drift.rds"))
+b2_drift <- readRDS(here("models/b2_drift.rds"))
+```
+
+```{r}
+#| label: ppreds-drift-wrangle
+#| include: false
+# --- all newdata grids ---
+
+# b1: face only
+newdata_b1 <- expand_grid(
+  condition = factor(
+    c("learned.false", "learned.true", "novel.false", "novel.true"),
+    levels = c("learned.false", "learned.true", "novel.false", "novel.true")
+  ),
+  face = seq(-15, 15, by = 1)
+)
+
+# b2: face + car at three car levels
+newdata_b2 <- expand_grid(
+  condition = factor(
+    c("learned.false", "learned.true", "novel.false", "novel.true"),
+    levels = c("learned.false", "learned.true", "novel.false", "novel.true")
+  ),
+  face = seq(-15, 15, by = 1),
+  car = c(-8, 0, 8)
+)
+
+# --- get posterior preds ---
+preds_b1 <- newdata_b1 |>
+  add_epred_draws(b1_drift, ndraws = 1000) |>
+  mutate(
+    stimulus = if_else(str_detect(as.character(condition), "novel"), "novel", "learned"),
+    accuracy = if_else(str_detect(as.character(condition), "true"), "true", "false"),
+    stimulus = factor(stimulus, levels = c("learned", "novel")),
+    accuracy = factor(accuracy, levels = c("false", "true")),
+    model    = "Face only"
+  )
+
+preds_b2 <- newdata_b2 |>
+  add_epred_draws(b2_drift, ndraws = 1000) |>
+  mutate(
+    stimulus = if_else(str_detect(as.character(condition), "novel"), "novel", "learned"),
+    accuracy = if_else(str_detect(as.character(condition), "true"), "true", "false"),
+    stimulus = factor(stimulus, levels = c("learned", "novel")),
+    accuracy = factor(accuracy, levels = c("false", "true")),
+    model = "Face + Car",
+    car_label = factor(car,
+      levels = c(-8, 0, 8),
+      labels = c("Low car (-8)", "Average car (0)", "High car (+8)")
+    )
+  )
+
+# filter b2 at car = 0 only (for direct comparison with b1)
+preds_b2_car0 <- preds_b2 |> filter(car == 0)
+
+# shared y range across all predictions
+y_range_drift <- range(c(preds_b1$.epred, preds_b2$.epred))
+
+# --- contrast data ---
+contrasts_drift <- bind_rows(
+  preds_b1 |>
+    filter(face %in% c(-15, 15)) |>
+    ungroup() |>
+    mutate(face_level = if_else(face == 15, "high", "low")),
+  preds_b2_car0 |>
+    filter(face %in% c(-15, 15)) |>
+    ungroup() |>
+    mutate(face_level = if_else(face == 15, "high", "low"))
+) |>
+  select(model, condition, stimulus, accuracy, .draw, .epred, face_level) |>
+  pivot_wider(names_from = face_level, values_from = .epred) |>
+  mutate(
+    diff  = high - low,
+    model = factor(model, levels = c("Face only", "Face + Car"))
+  )
+
+# discrimination (true - false) per condition at high vs low face
+discrim_contrast <- bind_rows(
+  preds_b1 |>
+    filter(face %in% c(-15, 15)) |>
+    ungroup() |>
+    mutate(face_level = if_else(face == 15, "high", "low"), car = 0),
+  preds_b2_car0 |>
+    filter(face %in% c(-15, 15)) |>
+    ungroup() |>
+    mutate(face_level = if_else(face == 15, "high", "low"))
+) |>
+  select(model, stimulus, accuracy, .draw, .epred, face_level) |>
+  # create a combined key so we pivot both dimensions at once
+  mutate(key = paste(accuracy, face_level, sep = "_")) |>
+  select(-accuracy, -face_level) |>
+  pivot_wider(names_from = key, values_from = .epred) |>
+  mutate(
+    discrim_high = true_high - false_high,
+    discrim_low  = true_low - false_low,
+    discrim_diff = discrim_high - discrim_low,
+    model        = factor(model, levels = c("Face only", "Face + Car"))
+  )
+
+# novel - learned discrimination contrast
+# i.e., does face ability affect discrimination more for novel than learned?
+learned_novel_contrast <- discrim_contrast |>
+  select(model, stimulus, .draw, discrim_diff) |>
+  pivot_wider(names_from = stimulus, values_from = discrim_diff) |>
+  mutate(novel_vs_learned = novel - learned)
+```
+
+```{r}
+#| label: ppreds-drift-plot-2x2
+#| include: false
+plot_preds_2x2 <- function(preds, title) {
+  ggplot(preds, aes(
+    x = face, y = .epred,
+    fill = accuracy, colour = accuracy
+  )) +
+    stat_lineribbon(alpha = 0.4, .width = c(0.66, 0.95)) +
+    scale_fill_manual(values = myColors_acc) +
+    scale_colour_manual(values = myColors_acc) +
+    facet_wrap(~stimulus, nrow = 1) +
+    coord_cartesian(ylim = y_range_drift) +
+    labs(
+      title = title,
+      x = "Face recognition (centred)", y = "Predicted drift rate",
+      fill = NULL, colour = NULL
+    ) +
+    theme(legend.position = "bottom")
+}
+
+p_2x2_b1 <- plot_preds_2x2(preds_b1, "")
+p_2x2_b2 <- plot_preds_2x2(preds_b2_car0, "")
+```
+
+```{r}
+#| label: fig-prediction
+#| fig-cap: "Predicted drift rate values (TRUE and FALSE) from face recognition ability scores"
+#| fig-subcap: 
+#|  - "Face model"
+#|  - "Face and Car model"
+#| layout-ncol: 2
+#| warning: false
+#| fig-width: 7
+#| fig-height: 4
+p_2x2_b1
+p_2x2_b2
+```
 
 # Discussion
 
