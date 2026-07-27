@@ -154,22 +154,24 @@ Several tests have been designed to measure performance on defined set of tasks 
 Using correlational approaches, past research has derived quantitative measures of the association between the performances at these tests or between test scores and other broader perceptual and cognitive processes [@mccafferyIndividualDifferencesFace2018; @noyesFaceRecognitionAbility2018].
 This individual difference approach provides an opportunity to investigate the relationships between fundamental processes that are difficult to uncover using group-level analyses.
 
+*Paragraph 3: key question: domain-specific vs domain-general*
+
 For example, one key question that association studies have investigated is to what extend individual difference in face processing reflect domain-general differences in other perceptual and cognitive abilities [@mccafferyIndividualDifferencesFace2018; @verhallenGeneralSpecificFactors2017].
 Using tests scores as variables of interest, some studies have shown that face and general object perception ability are positively associated but with modest effect sizes [@dennettCambridgeCarMemory2012; @richlerIndividualDifferencesObject; @wilmerCapturingSpecificAbilities2012].
 However, these associations remains constantly weaker than those between different face or object recognition task [@fyshDifferencesIndividualsSubprocesses2020; @mccafferyIndividualDifferencesFace2018; @wilmerHumanFaceRecognition2010], suggesting that domain-specific processing explains at least some part of the variance between these tasks (@richlerIndividualDifferencesObject).
 
-*Paragraph 3: Investigating individual differences in latent processes using computational approaches*
+*Paragraph 4: Investigating individual differences in latent processes using computational approaches*
 
 While the associations between manifest measures like test scores remains important to understand relationship between fundamental processes, performance remains a distant proxy of the underlying cognitive processes at work during face recognition, thus could not be ideal for capturing individual differences in these processes (@hainesTheoreticallyInformedGenerative2020).
 Using a computational approach to disentangle the multiple components of these processes could provide meaningful information regarding the relationships between the specific parts of the face recognition process and face recognition ability [@yarkoniGeneralizabilityCrisis2022].
 Analyzing individual differences in these components could provide meaningful insights about cognitive variability in general as well and as how variation in these latent unobserved processes, which are driving behavior, is related to individual face recognition ability.(@whiteUsingDecisionModels2016).
 
-*Paragraph 4: building upon our past project results summary and application of individual differences in face recognition ability*
+*Paragraph 5: building upon our past project results summary and application of individual differences in face recognition ability*
 
 One of our previous work (Fournier, Downing & Ramsey, in press) has used Bayesian hierarchical evidence-accumulation models (see @fig-LBA) to fit choice-rt data in a face recognition (old/new) task (for a review on evidence-accumulation models see @ratcliffDiffusionDecisionModel2016).
 We found that distinct computational processes involved in the decision-making process of face recognition are affected by face familiarity.
 Compared to learned faces, novel faces induced a great accumulation of evidence (drift rate) and the response caution (threshold) towards the novel response was higher as well.
-However these conclusions were drawn from the group-average posterior distributions of these two parameter and the between-subject variability in these estimated parameters was important.
+However these conclusions were drawn from an experimental psychology approach (i.e. from the group-average posterior distributions of these two parameters) and this approach did not consider the fact that the between-subject variability in these estimated parameters was important.
 In the present study, we used an individual difference approach to investigate the between-subject variability found in these estimated parameters.
 More specifically, we were interested to see if the estimated parameters computed from choice-rt data in a face memory task were associated with face recognition ability specifically or if they reflect a general recognition ability unspecific to faces.
 We think that this approach could give precious insights about what do the parameters reflect and how specific to face recognition the inferences which are drawn from their investigation are.
@@ -182,7 +184,7 @@ We think that this approach could give precious insights about what do the param
 *This diagram represents the accumulation process one trial of a perceptual decision task for the linear ballistic accumulator (LBA;* @brownSimplestCompleteModel2008*). Participants are required to chose between two options (Response 1 and Response 2). In a LBA model, there is a separated accumulation of evidence (v) for each response option. In this example, the correct response is Response 1. The accumulator on the left is the accumulator for the correct response (Response 1), and the green line in represents the rate at which the evidence accumulates in favor of that response option. The accumulator on the right is the accumulator for the incorrect response (Response 2), and the dash red line represents the rate at which the evidence accumulates in favor of this response option. Once the accumulated evidence crosses the threshold (b) of a response option, the corresponding response is chosen (in this case Response 1).* 
 ::::
 
-*Paragraph 5: Short description of how we are going to address the questions*
+*Paragraph 6: Short description of how we are going to address the questions*
 
 We used a similar face memory task to the one described in Fournier et al. (in press) to compute the threshold and drift rate parameter for both learned and novel faces.
 In addition to this task, face recognition ability was assessed using the Cambridge Face Memory Test (CFMT) and general object recognition ability was assessed by using the Cambridge Car Memory Test (CCMT).
@@ -258,7 +260,7 @@ Participants always first underwent the face recognition task and the order of t
 
 The face recognition task was divided into two distinct parts: a familiarization part and a recognition part.
 During the familiarization part, unknown identities were presented on the screen and participants were instructed to memorize the identity of the faces.
-One familiarization trial consisted of the presentation of 6 face images, one after the other, showing the same identity but varying in viewing points (3/4 left view, frontal view and 3/4 right view) and the colorimetry (colorful image, gray scale image).
+One familiarization trial consisted of the presentation of 6 face images, one after the other, showing the same identity but varying in viewing points (3/4 left view, frontal view and 3/4 right view) and the colorimetry (colorful image, gray scale image). 
 The duration of each image presentation was set to 0.75 second and each participant underwent 30 familiarization trials (for 30 unknown identities).
 During the familiarization, we introduced catch trials to ensure participants attention.
 After some familiarization trials, a gray scale image of a person's face was presented on the screen.
@@ -280,7 +282,7 @@ If participants took longer than 2 seconds to press a response key, the text "To
 
 :::: {.place arguments="bottom, scope: \"parent\", float: true"}
 :::{#fig-proc-exp fig-cap = "Experimental procedure of the face recognition task"}
-![](figures/Experimental_procedure_exp.png)
+![](figures/Experimental_procedure_IID.png)
 :::
 
 *The experimental procedure was divided into two parts: a familiarization part and a recognition part. a) In the familiarization part, participants were asked to memorize the face identity of 30 identities. For each identity, participants looked at 6 pictures depicting the same identity with different face orientation (3/4 left view, frontal view and 3/4 right view) and different colorimetry (color and gray scale images) in the order presented here: 3/4 left view, frontal view and 3/4 right view in color, followed by 3/4 right view, frontal view and 3/4 left view in gray scale. b) In each trial of the recognition part, participants had to decided if they recognize the face shown on the screen from the familiarization part. If they did, they had to press the "q" key and if the did not, the "p" key. They completed three blocks of 60 trials (half of them were from the familiarization part, half were novel faces). For the recognition part, only gray scale images of faces were used (for both learned faces and novel faces).* 
@@ -529,7 +531,7 @@ drift_cond_diff_pid_q   <- drift_cond_diff_pid   |> group_by(pid) |> median_qi(d
 #|   - "Threshold by response"
 #|   - "Threshold (novel - learned) contrast"
 #| layout-ncol: 2
-#| fig-height: 5
+#| fig-height: 3
 #| fig-width: 3.5
 
 # Left panel: condition distributions
@@ -541,7 +543,8 @@ ggplot(thresh_group, aes(x = value, y = fct_rev(response), fill = response)) +
   theme(
     text       = element_text(size = 5, face = "bold"),
     strip.text = element_text(size = 5, face = "bold"),
-    axis.text  = element_text(size = 10, face = "bold")
+    axis.text  = element_text(size = 10, face = "bold"), 
+    axis.title = element_text(size = 13, face = "bold")
   ) +
   labs(x = "Threshold", y = "Response") 
 
@@ -552,7 +555,8 @@ ggplot(thresh_diff_group, aes(x = diff, y = "")) +
   theme(
     text       = element_text(size = 5, face = "bold"),
     strip.text = element_text(size = 5, face = "bold"),
-    axis.text  = element_text(size = 10, face = "bold")
+    axis.text  = element_text(size = 10, face = "bold"),
+    axis.title = element_text(size = 13, face = "bold")
   ) +
   labs(x = "Threshold (novel - learned)", y = "")
 ```
@@ -564,7 +568,7 @@ ggplot(thresh_diff_group, aes(x = diff, y = "")) +
 #|   - "Drift rate (TRUE - FALSE) by condition"
 #|   - "Drift rate (novel - learned) contrast"
 #| layout-ncol: 2
-#| fig-height: 5
+#| fig-height: 3
 #| fig-width: 3.5
 
 # Left panel: condition distributions
@@ -576,7 +580,8 @@ ggplot(drift_acc_diff_group, aes(x = diff, y = fct_rev(condition), fill = condit
   theme(
     text       = element_text(size = 5, face = "bold"),
     strip.text = element_text(size = 5, face = "bold"),
-    axis.text  = element_text(size = 10, face = "bold")
+    axis.text  = element_text(size = 9, face = "bold"),
+    axis.title = element_text(size = 12, face = "bold")
   ) +
   labs(x = "Drift rate (TRUE - FALSE)", y = "Condition") 
 
@@ -587,7 +592,8 @@ ggplot(drift_cond_diff_group, aes(x = diff, y = "")) +
   theme(
     text       = element_text(size = 5, face = "bold"),
     strip.text = element_text(size = 5, face = "bold"),
-    axis.text  = element_text(size = 10, face = "bold")
+    axis.text  = element_text(size = 9, face = "bold"),
+    axis.title = element_text(size = 12, face = "bold")
   ) +
   labs(x = "Drift rate (novel - learned)", y = "")
 ```
@@ -806,7 +812,8 @@ p_raw_params_thresh <- ggplot(cor_long_thresh, aes(x = score, y = estimate,
     y       = "Parameter estimate (median)",
     colour  = NULL, fill = NULL
   ) +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") 
+  
 
 
 # plot drift
@@ -834,12 +841,12 @@ p_raw_params_drift <- ggplot(cor_long_drift, aes(x = score, y = estimate,
 ```
 
 ```{r}
-#| label: fig-corr-point-estimate
+#| label: fig-corr-point-estimates
 #| fig-cap: "Point estimates correlations with recognition scores"
 #| fig-subcap: 
 #|  - "Median threshold correlations with recognition ability"
 #|  - "Median drift rate correlations with recognition ability"
-#| layout-ncol: 2
+#| layout-ncol: 1
 #| warning: false
 #| fig-width: 10
 #| fig-height: 7
@@ -852,8 +859,7 @@ p_raw_params_drift
 To estimate the uncertainty linked to the relationships between LBA estimated parameters and face recognition ability, we used a Bayesian plausible value correlational analysis.
 Like described above (see Methods), instead of using a single point estimate to assess the strength of the relationship between our variables of interest, the posterior distribution of the LBA parameters allow us to use the entire sampling distribution to do it.
 We calculated the Person's *r* between each sample value from our posterior distribution for each parameter of each subject and their face recognition ability.
-The posterior distributions of plausible correlation values and their contrast are shown in @fig-plausible-corr-thresh for threshold and @fig-plausible-corr-drift for drift rate.
-@tbl-plausible-cor provides a summary of these distributions.
+The posterior distributions of threshold plausible correlation values and their contrast are shown in @fig-plausible-corr-thresh. Posterior correlations with true and false drift rate for both conditions and recognition abilities can be found in @fig-plausible-corr-drift-true-false, and correlations with drift rate differences (true-false) by conditions as well as drift rate contrast (novel-false) in @fig-plausible-corr-drift-diff. @tbl-plausible-cor provides a summary of these distributions.
 
 *Threshold:* There is a positive relationship between response caution for both learned and novel faces and recognition ability.
 Regarding face recognition ability, people with a higher face recognition ability have a higher response caution for learned faces whereas people with a higher car recognition ability have a higher threshold for both learned and novel faces.
@@ -966,7 +972,13 @@ p_thresh_left <- ggplot(
     x = "Plausible r value", y = NULL,
     fill = NULL, colour = NULL
   ) +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom",
+    text       = element_text(size = 10, face = "bold"),
+    strip.text = element_text(size = 10, face = "bold"),
+    axis.text  = element_text(size = 18, face = "bold"),
+    axis.title = element_text(size = 24, face = "bold"),
+    legend.text = element_text(size = 24, face = "bold")
+  ) 
 
 # right panel — difference
 pv_thresh_diff <- pv_cors |>
@@ -985,13 +997,12 @@ p_thresh_right <- ggplot(
     x = "Plausible r value", y = NULL,
     fill = NULL, colour = NULL
   ) +
-  theme(legend.position = "bottom")
-
-p_thresh <- (p_thresh_left | p_thresh_right) +
-  plot_layout(guides = "collect",
-              axes = "collect") &
-  theme(legend.position = "bottom")
-
+  theme(legend.position = "bottom",
+    text       = element_text(size = 10, face = "bold"),
+    strip.text = element_text(size = 10, face = "bold"),
+    axis.text  = element_text(size = 18, face = "bold"),
+    axis.title = element_text(size = 24, face = "bold")
+  )
 ```
 
 ```{r}
@@ -999,6 +1010,34 @@ p_thresh <- (p_thresh_left | p_thresh_right) +
 #| include: false
 
 drift_colors <- c("Novel" = safe_pal[1], "Learned" = safe_pal[2])
+
+# first panel - drift rate true and false
+pv_drift_true_false <- pv_cors |>
+  filter(param %in% c("v_Slearned_lMTRUE", "v_Slearned_lMFALSE", "v_Snovel_lMTRUE", "v_Snovel_lMFALSE")) |>
+  mutate(condition = if_else(param == "v_Slearned_lMTRUE", "Learned",
+                             if_else(param == "v_Slearned_lMFALSE", "Learned", "Novel")),
+         accuracy = if_else(param == "v_Slearned_lMTRUE", "true",
+                            if_else(param == "v_Snovel_lMTRUE", "true", "false")))
+
+p_drift_first <- ggplot(
+  pv_drift_true_false,
+  aes(x = r, y = predictor, fill = accuracy, colour = accuracy)
+) +
+  stat_halfeye(alpha = 0.7, .width = c(0.5, 0.95)) +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "darkgrey") +
+  scale_fill_manual(values = myColors_acc) +
+  scale_colour_manual(values = myColors_acc) +
+  labs(
+    x = "Plausible r value", y = NULL,
+    fill = NULL, colour = NULL
+  ) +
+  facet_wrap(~condition, scales = "free_y", ncol = 2) +
+  theme(legend.position = "bottom",
+    text       = element_text(size = 5, face = "bold"),
+    strip.text = element_text(size = 12, face = "bold"),
+    axis.text  = element_text(size = 9, face = "bold"),
+    axis.title = element_text(size = 12, face = "bold"),
+    legend.text = element_text(size = 12, face = "bold"))
 
 # middle panel — discrimination (true - false) per condition
 pv_drift_discrim <- pv_cors |>
@@ -1020,8 +1059,12 @@ p_drift_mid <- ggplot(
     x = "Plausible r value", y = NULL,
     fill = NULL, colour = NULL
   ) +
-  theme(legend.position = "bottom") +
-  theme(plot.title = element_text(size=10))
+  theme(legend.position = "bottom",
+    text       = element_text(size = 10, face = "bold"),
+    strip.text = element_text(size = 10, face = "bold"),
+    axis.text  = element_text(size = 18, face = "bold"),
+    axis.title = element_text(size = 24, face = "bold"),
+    legend.text = element_text(size = 24, face = "bold"))
 
 # right panel — novel-learned difference of discriminations
 pv_drift_diff <- pv_cors |>
@@ -1037,51 +1080,63 @@ p_drift_right <- ggplot(
     x = "Plausible r value", y = NULL,
     fill = NULL, colour = NULL
   ) +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom",
+    text       = element_text(size = 10, face = "bold"),
+    strip.text = element_text(size = 10, face = "bold"),
+    axis.text  = element_text(size = 18, face = "bold"),
+    axis.title = element_text(size = 24, face = "bold"))
 
-p_drift <- (p_drift_mid | p_drift_right) +
-  plot_layout(guides = "collect",
-              axes = "collect") &
-  theme(legend.position = "bottom")
 ```
 
 ```{r}
 #| label: fig-plausible-corr-thresh
 #| fig-cap: "Plausible correlation values distributions between threshold and recognition abilities. Points denote the median of the distribution and error bars represent 95% quantile intervals."
-#| 
 #| fig-subcap: 
-#|  - "Threshold by response"
-#|  - "Threshold (novel - learned)"
+#|  - "Posterior correlations values distributions between threshold by response and recognition abilities"
+#|  - "Posterior correlations values distribution between threshold difference (novel-learned) and recognition abilities"
 #| layout-ncol: 2
 #| warning: false
-#| fig-width: 7
-#| fig-height: 4
+#| fig-width: 10
+#| fig-height: 5
 p_thresh_left
 p_thresh_right
 ```
 
 ```{r}
-#| label: fig-plausible-corr-drift
-#| fig-cap: "Plausible correlation values distributions between drif rate and recognition abilities. Points denote the median of the distribution and error bars represent 95% quantile intervals."
-#| fig-subcap: 
-#|  - "Drift rate (TRUE - FALSE) by condition"
-#|  - "Drift rate (novel - learned) contrast"
-#| layout-ncol: 2
+#| label: fig-plausible-corr-drift-true-false
+#| fig-cap: "Plausible correlation values distributions between drift rate TRUE and FALSE by stimulus and recognition abilities. Points denote the median of the distribution and error bars represent 95% quantile intervals."
 #| warning: false
-#| fig-width: 7
-#| fig-height: 4
+#| fig-width: 10
+#| fig-height: 5
+p_drift_first
+```
+
+
+```{r}
+#| label: fig-plausible-corr-drift-diff
+#| fig-cap: "Plausible correlation values distributions between drift rate differences and recognition abilities. Points denote the median of the distribution and error bars represent 95% quantile intervals."
+#| fig-subcap: 
+#|  - "Posterior correlations values distributions between drift rate by stimulus (TRUE - FALSE) and recognition abilities"
+#|  - "Posterior correlations values distribution between drift rate difference (novel-learned) and recognition abilities"
+#| warning: false
+#| layout-ncol: 2
+#| fig-width: 10
+#| fig-height: 7
 p_drift_mid
 p_drift_right
 ```
+
+
 
 ```{r}
 #| label: tbl-plausible-cor
 #| tbl-cap: "Median r and 95% quantile intervals of the plausible value correlations between LBA parameters and recogntion ability scores."
 #| include: true
+#| tbl-height: 10
+#| tbl-width: 15
 table_data <- pv_summary |>
   filter(!is.na(label)) |>
-  # drop only pure true/false rows, but keep (true - false) difference rows
-  filter(!grepl("\\((true|false)\\)$", label, ignore.case = TRUE)) |>
+  # no longer drop true/false rows
   mutate(
     r_fmt = sprintf("%.2f", r),
     ci_fmt = sprintf("[%.2f, %.2f]", .lower, .upper),
@@ -1089,7 +1144,8 @@ table_data <- pv_summary |>
       .lower > 0 & .upper > 0 ~ "blue",
       .lower < 0 & .upper < 0 ~ "red",
       TRUE ~ "black"
-  )) |>
+    )
+  ) |>
   select(label, predictor, r_fmt, ci_fmt, color) |>
   pivot_wider(
     names_from = predictor,
@@ -1098,60 +1154,66 @@ table_data <- pv_summary |>
   ) |>
   separate(label, into = c("Parameter", "Condition"), sep = ": ", fill = "right") |>
   mutate(
+    # extract accuracy before cleaning condition
+    Accuracy = case_when(
+      grepl("\\(true\\)$", Condition, ignore.case = TRUE)  ~ "True",
+      grepl("\\(false\\)$", Condition, ignore.case = TRUE) ~ "False",
+      TRUE ~ "-"
+    ),
+    # clean up condition labels
     Condition = case_when(
-      Condition == "Learned (true - false)" ~ "Learned",
-      Condition == "Novel (true - false)"   ~ "Novel",
+      Condition == "Learned (true)"            ~ "Learned",
+      Condition == "Learned (false)"           ~ "Learned",
+      Condition == "Novel (true)"              ~ "Novel",
+      Condition == "Novel (false)"             ~ "Novel",
+      Condition == "Learned (true - false)"    ~ "Learned",
+      Condition == "Novel (true - false)"      ~ "Novel",
       Condition == "(Novel - Learned) difference" ~ "Novel-Learned",
-      Condition == "Novel - Learned" ~ "Novel-Learned",
+      Condition == "Novel - Learned"              ~ "Novel-Learned",
       TRUE ~ Condition
     ),
+    # set ordering
+    Parameter = factor(Parameter, levels = c("Threshold", "Drift")),
     Condition = factor(Condition, levels = c("Learned", "Novel", "Novel-Learned")),
-    Parameter = factor(Parameter, levels = c("Threshold", "Drift"))
+    Accuracy  = factor(Accuracy,  levels = c("True", "False", "-"))
   ) |>
-  arrange(Parameter,Condition)
+  arrange(Parameter, Condition, Accuracy)
 
 
 # rename columns to clean display names first
 table_data_tt <- table_data |>
   rename(
-    `median r_Car` = Car_r_fmt,
-    `95% QI_Car` = Car_ci_fmt,
     `median r_Face` = Face_r_fmt,
-    `95% QI_Face` = Face_ci_fmt
-  )
-
+    `95% QI_Face`   = Face_ci_fmt,
+    `median r_Car`  = Car_r_fmt,
+    `95% QI_Car`    = Car_ci_fmt
+  ) |>
+  select(Parameter, Condition, Accuracy,
+         `median r_Face`, `95% QI_Face`,
+         `median r_Car`, `95% QI_Car`,
+         Face_color, Car_color)
 table_data_tt <- as.data.frame(table_data_tt)
 
-table_data_tt <- table_data_tt |>
-  select(Parameter, Condition, 
-         `median r_Face`, `95% QI_Face`, 
-         `median r_Car`, `95% QI_Car`, 
-         Face_color, Car_color)
+tt_table <- tt(table_data_tt |> select(-Face_color, -Car_color),
+               notes = "Note. Blue = 95% QI entirely above zero; red = 95% QI entirely below zero.") |>
+  group_tt(j = list("Face" = 4:5, "Car" = 6:7)) |>
+  style_tt(i = 0,  bold = TRUE) |>
+  style_tt(i = 1:nrow(table_data_tt), fontsize = 0.7) |>
+  style_tt(i = 0, fontsize = 0.8)|>
+  style_tt(i = -1, bold = TRUE, fontsize = 0.8) |>
+  style_tt(
+    i = which(table_data_tt$Face_color == "blue"), j = 4:5, color = "blue"
+  ) |>
+  style_tt(
+    i = which(table_data_tt$Face_color == "red"),  j = 4:5, color = "red"
+  ) |>
+  style_tt(
+    i = which(table_data_tt$Car_color == "blue"),  j = 6:7, color = "blue"
+  ) |>
+  style_tt(
+    i = which(table_data_tt$Car_color == "red"),   j = 6:7, color = "red"
+  ) 
 
-tt_table <- tt(as.data.frame(table_data_tt |> select(-Car_color, -Face_color)), 
-               notes = "Blue indicates a 95% quantile interval entirely above zero; red indicates a 95% quantile interval entirely below zero.") |>
-  # group spanners over Car / Face columns
-  group_tt(
-    j = list("Face" = 3:4, "Car" = 5:6)  # adjust indices to match your actual column order
-  ) |>
-  # bold all header text (column labels + spanner labels)
-  style_tt(i = 0, bold = TRUE) |>
-  style_tt(i = -1, bold = TRUE) |>
-  # color Car r + CI cells based on Car_color
-  style_tt(
-    i = which(table_data_tt$Car_color == "blue"), j = 5:6, color = "blue"
-  ) |>
-  style_tt(
-    i = which(table_data_tt$Car_color == "red"), j = 5:6, color = "red"
-  ) |>
-  # color Face r + CI cells based on Face_color
-  style_tt(
-    i = which(table_data_tt$Face_color == "blue"), j = 3:4, color = "blue"
-  ) |>
-  style_tt(
-    i = which(table_data_tt$Face_color == "red"), j = 3:4, color = "red"
-  ) |>
-  style_tt(fontsize = 0.85)
 tt_table
 ```
 
@@ -1274,6 +1336,8 @@ learned_novel_contrast <- discrim_contrast |>
 ```{r}
 #| label: ppreds-drift-plot-2x2
 #| include: false
+
+condition <- c("novel" = "Novel", "learned" = "Learned")
 plot_preds_2x2 <- function(preds, title) {
   ggplot(preds, aes(
     x = face, y = .epred,
@@ -1282,7 +1346,7 @@ plot_preds_2x2 <- function(preds, title) {
     stat_lineribbon(alpha = 0.4, .width = c(0.66, 0.95)) +
     scale_fill_manual(values = myColors_acc) +
     scale_colour_manual(values = myColors_acc) +
-    facet_wrap(~stimulus, nrow = 1) +
+    facet_wrap(~stimulus, nrow = 1, labeller = labeller(stimulus = condition)) +
     coord_cartesian(ylim = y_range_drift) +
     labs(
       title = title,
@@ -1300,26 +1364,26 @@ p_2x2_b2 <- plot_preds_2x2(preds_b2_car0, "")
 #| label: fig-prediction
 #| fig-cap: "Predicted drift rate values (TRUE and FALSE) from face recognition ability scores"
 #| fig-subcap: 
-#|  - "Face model"
-#|  - "Face and Car model"
-#| layout-ncol: 2
+#|  - "Face model: predicted drift rate (TRUE and FALSE) values from face recognition ability scores"
+#|  - "Face and Car model: predicted drift rate (TRUE and FALSE) values from face recognition ability scores when accounting for car recognition ability"
+#| layout-nrow: 2
 #| warning: false
-#| fig-width: 7
-#| fig-height: 4
+#| fig-width: 10
+#| fig-height: 5
 p_2x2_b1
 p_2x2_b2
 ```
 
 # Discussion
 
-Paragraph 1: Quick summary of results Aim of the project: use evidence accumulation modelling to investigate the relationship between face recognition ability and the cognitive mechanisms involved in the face recognition process.
-Our results showed that individual difference in face recognition ability is associated with different latent computational processes.
-Face recognition ability seems to be positively associated with the rate of evidence accumulation (drift rate parameter) as well as the response caution (threshold parameter) for both learned and novel faces recognition.
-In addition, this association (still holds) when accounting for object recognition ability.
+Paragraph 1: 
+The aim fo this project was to combine experimental, differential and computational approaches to investigate the relationship between face recognition ability and the computational mechanisms involved in the face recognition process. Our results showed that individual differences in face recognition ability are not only related with different latent computational processes (and not only one), but also predict to a certain extend the pattern of these processes. Face recognition ability seems to be positively associated with the rate of evidence accumulation (drift rate parameter) as well as the response caution (threshold parameter) for both learned and novel faces recognition. One key finding is that these predictions still hold when accounting for object recognition ability, demonstrating that these these associations are partially specific to faces and cannot entirely be explained by a more general object recognition ability. 
 
-By joining experimental psychology, individual differences approach and computational models, we bla bla bla.
 
-Paragraph 2: Drift rate and threshold • Effect of individual differences on LBA parameters is multifaceted: effect on across several LBA parameters, not just one.
+Paragraph 2: 
+
+
+Drift rate and threshold • Effect of individual differences on LBA parameters is multifaceted: effect on across several LBA parameters, not just one.
 • Drift rate: Face recognition ability predict an increase in the rate at which evidence accumulates for both novel and visually familiar faces, where people with a better face recognition ability accumulate more recognition signal (drift rate TRUE) and are more capable to ignore noise coming from the stimulus.
 - Finding in accordance with previous research that found that expertise effects are primarily due to a better information extraction (REF: fingerprints examiners (ref: Thompson, Tangen & McCarthy, 2013), medical images perception (van der Gijp et al., 2014, 2016; Litchfiled and Donovan, 2017)).
 - Our results extend these effect that these effects are visible in the “normal” population as well, outside of group-level differences between experts and novice.
