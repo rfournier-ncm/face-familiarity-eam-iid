@@ -145,27 +145,29 @@ Without organic cause (like brain damage), people affected with developmental pr
 The other end of the face recognition ability spectrum regroups the “super-recognizers”.
 These individuals show a remarkably high face recognition ability compared to the average person [@bobakSuperrecognisersActionEvidence2016; @russellSuperrecognizersPeopleExtraordinary2009].
 However, even when ignoring these two extreme cases, face recognition ability remains highly variable in the normal population, especially for unfamiliar faces recognition [@dowsettUnfamiliarFaceMatching2015; @whitePassportOfficersErrors2014].
+In this project, by linking experimental, differential and computational approaches, we tried to build on results from one of our previous work to investigate how individual differences in face recognition ability in the normal population is related to computational processes that support face recognition.
 
 *Paragraph 2: past investigation of individual difference in face identity processing*
 
-There is a growing interest in the value of investigating individual differences across the entire spectrum of face recognition ability, and not only by using group-level comparisons between the two extremes (prosopagnosic patients and “super-recognizers”) and average recognizers [@whiteNeedImproveWay2022].
+Differential psychology can be understood as the "study of the normative individual differences in thought, behavior and ability" @marshEvolutionaryDifferentialPsychology2013. Multiple fields of theoretical and applied psychology have used a differential approach to understand variability within the general population including psychometric assessment, educational and developmental psychology, and even psychopathology @lubinskiScientificSocialSignificance2000. Regarding face recognition, there is a growing interest in the value of investigating individual differences across the entire spectrum of face recognition ability as well, and not only by using group-level comparisons between the two extremes (prosopagnosic patients and “super-recognizers”) and average recognizers [@whiteNeedImproveWay2022].
 Several tests have been designed to measure performance on defined set of tasks like new faces learning (Cambridge Face Memory test, CFMT; @duchaineCambridgeFaceMemory2006), unfamiliar face perception (Glasgow Face Matching Test, GFMT; @burtonGlasgowFaceMatching2010) or familiar face perception (Before They Were Famous, BTWF; @russellSuperrecognizersPeopleExtraordinary2009).
 Using correlational approaches, past research has derived quantitative measures of the association between the performances at these tests or between test scores and other broader perceptual and cognitive processes [@mccafferyIndividualDifferencesFace2018; @noyesFaceRecognitionAbility2018].
-This individual difference approach provide an opportunity to investigate the relationships between fundamental processes that are difficult to uncover using group-level analyses.
-One key question that association studies have investigated is to what extend individual difference in face processing reflect domain-general differences in other perceptual and cognitive abilities [@mccafferyIndividualDifferencesFace2018; @verhallenGeneralSpecificFactors2017].
-Using tests scores as variables of interest, some studies have shown that face and general object perception ability are indeed associated (*r* value ranging from 0.00 to 0.37; @dennettCambridgeCarMemory2012; @richlerIndividualDifferencesObject; @wilmerCapturingSpecificAbilities2012).
+This individual difference approach provides an opportunity to investigate the relationships between fundamental processes that are difficult to uncover using group-level analyses.
+
+For example, one key question that association studies have investigated is to what extend individual difference in face processing reflect domain-general differences in other perceptual and cognitive abilities [@mccafferyIndividualDifferencesFace2018; @verhallenGeneralSpecificFactors2017].
+Using tests scores as variables of interest, some studies have shown that face and general object perception ability are positively associated but with modest effect sizes [@dennettCambridgeCarMemory2012; @richlerIndividualDifferencesObject; @wilmerCapturingSpecificAbilities2012].
 However, these associations remains constantly weaker than those between different face or object recognition task [@fyshDifferencesIndividualsSubprocesses2020; @mccafferyIndividualDifferencesFace2018; @wilmerHumanFaceRecognition2010], suggesting that domain-specific processing explains at least some part of the variance between these tasks (@richlerIndividualDifferencesObject).
 
 *Paragraph 3: Investigating individual differences in latent processes using computational approaches*
 
 While the associations between manifest measures like test scores remains important to understand relationship between fundamental processes, performance remains a distant proxy of the underlying cognitive processes at work during face recognition, thus could not be ideal for capturing individual differences in these processes (@hainesTheoreticallyInformedGenerative2020).
 Using a computational approach to disentangle the multiple components of these processes could provide meaningful information regarding the relationships between the specific parts of the face recognition process and face recognition ability [@yarkoniGeneralizabilityCrisis2022].
-This model-based analysis of individual differences could provide cleaner measures of the processes of interest and could enhance our understanding on how variation in these latent unobserved processes, which are driving behavior, is related to (@whiteUsingDecisionModels2016).
+Analyzing individual differences in these components could provide meaningful insights about cognitive variability in general as well and as how variation in these latent unobserved processes, which are driving behavior, is related to individual face recognition ability.(@whiteUsingDecisionModels2016).
 
 *Paragraph 4: building upon our past project results summary and application of individual differences in face recognition ability*
 
 One of our previous work (Fournier, Downing & Ramsey, in press) has used Bayesian hierarchical evidence-accumulation models (see @fig-LBA) to fit choice-rt data in a face recognition (old/new) task (for a review on evidence-accumulation models see @ratcliffDiffusionDecisionModel2016).
-We found that distinct computational processes involved in the decision-making process of face recognition are affect by face familiarity.
+We found that distinct computational processes involved in the decision-making process of face recognition are affected by face familiarity.
 Compared to learned faces, novel faces induced a great accumulation of evidence (drift rate) and the response caution (threshold) towards the novel response was higher as well.
 However these conclusions were drawn from the group-average posterior distributions of these two parameter and the between-subject variability in these estimated parameters was important.
 In the present study, we used an individual difference approach to investigate the between-subject variability found in these estimated parameters.
@@ -1155,7 +1157,7 @@ tt_table
 
 ## Bayesian linear regression
 
-Following our preregistration, the predictions of the two regression models for drift rate can be seen in @fig-prediction. 
+Following our preregistration, the predictions of the two regression models for drift rate can be seen in @fig-prediction.
 
 ```{r}
 #| label: read-models
