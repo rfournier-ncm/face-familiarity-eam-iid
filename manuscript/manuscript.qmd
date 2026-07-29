@@ -149,7 +149,9 @@ In this project, by linking experimental, differential and computational approac
 
 *Paragraph 2: past investigation of individual difference in face identity processing*
 
-Differential psychology can be understood as the "study of the normative individual differences in thought, behavior and ability" @marshEvolutionaryDifferentialPsychology2013. Multiple fields of theoretical and applied psychology have used a differential approach to understand variability within the general population including psychometric assessment, educational and developmental psychology, and even psychopathology @lubinskiScientificSocialSignificance2000. Regarding face recognition, there is a growing interest in the value of investigating individual differences across the entire spectrum of face recognition ability as well, and not only by using group-level comparisons between the two extremes (prosopagnosic patients and “super-recognizers”) and average recognizers [@whiteNeedImproveWay2022].
+Differential psychology can be understood as the "study of the normative individual differences in thought, behavior and ability" [@marshEvolutionaryDifferentialPsychology2013].
+Multiple fields of theoretical and applied psychology have used a differential approach to understand variability within the general population including psychometric assessment, educational and developmental psychology, and even psychopathology [@lubinskiScientificSocialSignificance2000].
+Regarding face recognition, there is a growing interest in the value of investigating individual differences across the entire spectrum of face recognition ability as well, and not only by using group-level comparisons between the two extremes (prosopagnosic patients and “super-recognizers”) and average recognizers [@whiteNeedImproveWay2022].
 Several tests have been designed to measure performance on defined set of tasks like new faces learning (Cambridge Face Memory test, CFMT; @duchaineCambridgeFaceMemory2006), unfamiliar face perception (Glasgow Face Matching Test, GFMT; @burtonGlasgowFaceMatching2010) or familiar face perception (Before They Were Famous, BTWF; @russellSuperrecognizersPeopleExtraordinary2009).
 Using correlational approaches, past research has derived quantitative measures of the association between the performances at these tests or between test scores and other broader perceptual and cognitive processes [@mccafferyIndividualDifferencesFace2018; @noyesFaceRecognitionAbility2018].
 This individual difference approach provides an opportunity to investigate the relationships between fundamental processes that are difficult to uncover using group-level analyses.
@@ -158,13 +160,13 @@ This individual difference approach provides an opportunity to investigate the r
 
 For example, one key question that association studies have investigated is to what extend individual difference in face processing reflect domain-general differences in other perceptual and cognitive abilities [@mccafferyIndividualDifferencesFace2018; @verhallenGeneralSpecificFactors2017].
 Using tests scores as variables of interest, some studies have shown that face and general object perception ability are positively associated but with modest effect sizes [@dennettCambridgeCarMemory2012; @richlerIndividualDifferencesObject; @wilmerCapturingSpecificAbilities2012].
-However, these associations remains constantly weaker than those between different face or object recognition task [@fyshDifferencesIndividualsSubprocesses2020; @mccafferyIndividualDifferencesFace2018; @wilmerHumanFaceRecognition2010], suggesting that domain-specific processing explains at least some part of the variance between these tasks (@richlerIndividualDifferencesObject).
+However, these associations remains constantly weaker than those between different face or object recognition task [@fyshDifferencesIndividualsSubprocesses2020; @mccafferyIndividualDifferencesFace2018; @wilmerHumanFaceRecognition2010], suggesting that domain-specific processing explains at least some part of the variance between these tasks [@richlerIndividualDifferencesObject].
 
 *Paragraph 4: Investigating individual differences in latent processes using computational approaches*
 
-While the associations between manifest measures like test scores remains important to understand relationship between fundamental processes, performance remains a distant proxy of the underlying cognitive processes at work during face recognition, thus could not be ideal for capturing individual differences in these processes (@hainesTheoreticallyInformedGenerative2020).
+While the associations between manifest measures like test scores remains important to understand relationship between fundamental processes, performance remains a distant proxy of the underlying cognitive processes at work during face recognition, thus could not be ideal for capturing individual differences in these processes [@hainesTheoreticallyInformedGenerative2020].
 Using a computational approach to disentangle the multiple components of these processes could provide meaningful information regarding the relationships between the specific parts of the face recognition process and face recognition ability [@yarkoniGeneralizabilityCrisis2022].
-Analyzing individual differences in these components could provide meaningful insights about cognitive variability in general as well and as how variation in these latent unobserved processes, which are driving behavior, is related to individual face recognition ability.(@whiteUsingDecisionModels2016).
+Analyzing individual differences in these components could provide meaningful insights about cognitive variability in general as well and as how variation in these latent unobserved processes, which are driving behavior, is related to individual face recognition ability [@whiteUsingDecisionModels2016].
 
 *Paragraph 5: building upon our past project results summary and application of individual differences in face recognition ability*
 
@@ -260,7 +262,7 @@ Participants always first underwent the face recognition task and the order of t
 
 The face recognition task was divided into two distinct parts: a familiarization part and a recognition part.
 During the familiarization part, unknown identities were presented on the screen and participants were instructed to memorize the identity of the faces.
-One familiarization trial consisted of the presentation of 6 face images, one after the other, showing the same identity but varying in viewing points (3/4 left view, frontal view and 3/4 right view) and the colorimetry (colorful image, gray scale image). 
+One familiarization trial consisted of the presentation of 6 face images, one after the other, showing the same identity but varying in viewing points (3/4 left view, frontal view and 3/4 right view) and the colorimetry (colorful image, gray scale image).
 The duration of each image presentation was set to 0.75 second and each participant underwent 30 familiarization trials (for 30 unknown identities).
 During the familiarization, we introduced catch trials to ensure participants attention.
 After some familiarization trials, a gray scale image of a person's face was presented on the screen.
@@ -859,7 +861,9 @@ p_raw_params_drift
 To estimate the uncertainty linked to the relationships between LBA estimated parameters and face recognition ability, we used a Bayesian plausible value correlational analysis.
 Like described above (see Methods), instead of using a single point estimate to assess the strength of the relationship between our variables of interest, the posterior distribution of the LBA parameters allow us to use the entire sampling distribution to do it.
 We calculated the Person's *r* between each sample value from our posterior distribution for each parameter of each subject and their face recognition ability.
-The posterior distributions of threshold plausible correlation values and their contrast are shown in @fig-plausible-corr-thresh. Posterior correlations with true and false drift rate for both conditions and recognition abilities can be found in @fig-plausible-corr-drift-true-false, and correlations with drift rate differences (true-false) by conditions as well as drift rate contrast (novel-false) in @fig-plausible-corr-drift-diff. @tbl-plausible-cor provides a summary of these distributions.
+The posterior distributions of threshold plausible correlation values and their contrast are shown in @fig-plausible-corr-thresh.
+Posterior correlations with true and false drift rate for both conditions and recognition abilities can be found in @fig-plausible-corr-drift-true-false, and correlations with drift rate differences (true-false) by conditions as well as drift rate contrast (novel-false) in @fig-plausible-corr-drift-diff.
+@tbl-plausible-cor provides a summary of these distributions.
 
 *Threshold:* There is a positive relationship between response caution for both learned and novel faces and recognition ability.
 Regarding face recognition ability, people with a higher face recognition ability have a higher response caution for learned faces whereas people with a higher car recognition ability have a higher threshold for both learned and novel faces.
@@ -1111,7 +1115,6 @@ p_thresh_right
 p_drift_first
 ```
 
-
 ```{r}
 #| label: fig-plausible-corr-drift-diff
 #| fig-cap: "Plausible correlation values distributions between drift rate differences and recognition abilities. Points denote the median of the distribution and error bars represent 95% quantile intervals."
@@ -1125,8 +1128,6 @@ p_drift_first
 p_drift_mid
 p_drift_right
 ```
-
-
 
 ```{r}
 #| label: tbl-plausible-cor
@@ -1376,69 +1377,63 @@ p_2x2_b2
 
 # Discussion
 
-Paragraph 1: 
-The aim fo this project was to combine experimental, differential and computational approaches to investigate the relationship between face recognition ability and the computational mechanisms involved in the face recognition process. Our results showed that individual differences in face recognition ability are not only related with different latent computational processes (and not only one), but also predict to a certain extend the pattern of these processes. Face recognition ability seems to be positively associated with the rate of evidence accumulation (drift rate parameter) as well as the response caution (threshold parameter) for both learned and novel faces recognition. One key finding is that these predictions still hold when accounting for object recognition ability, demonstrating that these these associations are partially specific to faces and cannot entirely be explained by a more general object recognition ability. 
+*Paragraph 1: Opening paragraph*
 
+The aim of this project was to combine experimental, differential and computational approaches to investigate the relationship between face recognition ability and the computational mechanisms involved in the face recognition process.
+Our results showed that individual differences in face recognition ability are not only related with different latent computational processes (and not only one), but also predict to a certain extend the pattern of these processes.
+Face recognition ability seems to be positively associated with the rate of evidence accumulation (drift rate parameter) as well as the response caution (threshold parameter) for both learned and novel faces recognition.
+One key finding is that these predictions still hold when accounting for object recognition ability, demonstrating that these these associations are partially specific to faces and cannot entirely be explained by a more general object recognition ability.
 
-Paragraph 2: 
+*Paragraph 2: Drift rate and threshold effects*
 
+One important consideration is the fact that the effect of individual differences in face recognition ability on the LBA parameters is multifaceted.
+Drift rate and threshold are both positively associated with face recognition ability.
+Our drift rate results suggest that people who are generally better at recognizing faces accumulates more recognition signal and are more capable to ignore noisy information coming from the stimulus.
+Our findings are in accordance with previous research that showed that expertise effects are primarily due to a better information extraction [@litchfieldFlashpreviewMovingWindow2017; @thompsonExpertiseFingerprintIdentification2013a; @vandergijpInterpretationRadiologicalImages2014].
+We extend these findings by showing that these effects are not limited to group-level differences between experts and novices but concern the range of the "normal" population as well.
+Regarding response caution, previous studies have shown that confidence is itself a decision variable used to regulate future behavior [@flemingNeuralMediatorsChanges2018; @folkeExplicitRepresentationConfidence2016].
+The positive association between threshold and face recognition ability could reflect a better estimation of the task difficulty for people with higher face recognition ability, who voluntary increase their response caution to ensure a better performance given the task demands.However, future research is required to confirm this suggestion.
+Overall, our results suggest that not only does high face recognition ability predict a better ability to extract meaningful information for the recognition success but also predict the voluntary strategic decision of the subject to be more cautious.
 
-Drift rate and threshold • Effect of individual differences on LBA parameters is multifaceted: effect on across several LBA parameters, not just one.
-• Drift rate: Face recognition ability predict an increase in the rate at which evidence accumulates for both novel and visually familiar faces, where people with a better face recognition ability accumulate more recognition signal (drift rate TRUE) and are more capable to ignore noise coming from the stimulus.
-- Finding in accordance with previous research that found that expertise effects are primarily due to a better information extraction (REF: fingerprints examiners (ref: Thompson, Tangen & McCarthy, 2013), medical images perception (van der Gijp et al., 2014, 2016; Litchfiled and Donovan, 2017)).
-- Our results extend these effect that these effects are visible in the “normal” population as well, outside of group-level differences between experts and novice.
-• Threshold: Face recognition ability predict an increase in the response caution for both novel and visually familiar faces.
-- Threshold: higher threshold = more accurate but slower to respond / lower threshold = less accurate but quicker to respond - People with higher face recognition ability are more cautious, prioritizing accuracy over response time.
-However, the quality and speed of evidence accumulation is higher.
-- General metacognition -\> people with higher abilities are more confident in their confidence judgement regarding this ability (ref: Lichtenstein & Fischoff, 1977).
-Previous studies have shown that confidence is itself a decision variable that can regulate future behaviour -\> can adjust their future caution to increase their performance (ref: Folke, Jacobsen, Fleming & De Martino, 2017; Fleming, van der Putten & Daw, 2018).
-Suggestion: People with higher face recognition ability are better at estimating the difficulty of the task, voluntary increasing their threshold to ensure a better performance given the task demands.
-However future research would be required to confirm this proposal.
-• Overall: Our results suggest that not only does high face recognition ability predict a better ability to extract meaningful information for the recognition success but also predict the voluntary strategic decision of the subject to be more cautious.
+*Paragraph 3: Theoretical implications for individual differences investigation*
 
-Paragraph 3: Theoretical implications Our approach provides unusual insight into individual differences in latent computational processes in the domain of face recognition.
-These results have several theoretical implications not only for investigating individual differences and potentially expertise effects but also offer implications regarding models of face perception and memory.
-
-• Implications for studying individual differences and expertise:
-
-Most of investigations of individual differences in face recognition across the entire range of face processing abilities have used associations between different abilities performance scores (ref:), addressing potential association/dissociation of abilities.
+Besides the insights obtained from the associations between individual differences and latent computational processes in the domain of face recognition, our choice of combining experimental, differential and computational methodologies has several implications for future differential studies, as well as for models of face perception and memory.
+On a more general level, it offers a novel approach to investigate individual differences and expertise effects in face processing.
+Most differential studies in face processing have used test scores to estimate different abilities underlying face processing and investigated if these abilities were related to each other or to other predictors of interest [@mccafferyIndividualDifferencesFace2018; @noyesFaceRecognitionAbility2018].
 In this study we used traditional approach of an experimental manipulation in a large sample, extended the separate analysis of response times and accuracy to the estimation of latent variables through computational modelling that we then associated with face recognition ability.
-On a general level, the new insights obtained from evidence-accumulation modelling about individual differences in face recognition would not have been possible using the conventional analysis of response times and accuracy (Parker & Ramsey, 2023b).
-We propose that this approach could be applicable to other types of individual differences in expertise or abilities.
-- One key question in cognitive psychology concern the degree to which an expertise or an ability is domain-specific or domain-general.
-- (here find some examples in which we could apply our approach to other abilities/expertise)
+The important difference with past investigations is that behavioral patterns (accuracy and response times) as well as latent variables patterns (LBA parameters) were associated with ability scores.
+Using this approach allowed more specific hypotheses regarding which parts of the system is related to which type of recognition abilities, potentially aiding the development of theory.
+We think that this approach could benefit future research on individual differences in visual recognition memory or visual perception more generally.
 
-• Theoretical implications about models of face perception and memory
+*Paragraph 4: Theoretical implications for models of face perception and memory*
+
+The insights obtained in this study also have theoretical implications when interpreting them in accordance with existing models of face processing system.
+Existing models of the human face processing system propose different cognitive and neural pathways (Bruce & Young, 1986) for the general processing face...
+Previous studies findings have increased our understanding of the general process by showing...
 
 - Bruce and Young model
 - Individual differences in face recognition: observations from comparing group-levels difference between two different populations (ex: prosopagnosia and control/super-recognizer and control) / individual differences in typical range of face processing ability  While Bruce and Young model describe the face perception process in general, there are some individual variabilities in the outcome of this process (outcome = performance) and in other steps in this  With this study we also contribute to the extension of this model by showing that not only there are individual differences in the outcome, but that there is also individual differences in the cognitive processes that give rise to this outcome.  Future research could use an individual differences approach to investigate how some variations in the components in the Bruce and Young face recognition model could influence estimated latent variables and how are individuals differences in face recognition ability are related to the observed differences of latent variables of interest.
 
-Paragraph 4: Mentioning the car correlations Even if main interest of this paper was to look into the CFMT, the exploratory analysis of the CCMT correlations with LBA parameters reveal interesting associations:
+*Paragraph 5: Mentioning the object recognition ability correlations*
 
-• Drift rate: Cambridge Car Memory score positive association only with Novel faces, not learned faces .
-• Object recognition memory largely relies on featural information processing (REF).
-Does not capture (or should not capture) holistic processing.
-• Since novel faces recognition processing relies more on feature information processing and matching, it would make sense that the CCMT score only correlate to drift rate (accumulation of evidence) for novel faces and not learned faces (combination of holistic processing and feature information processing).
-• When looking at car recognition effect on drift rate: similar direction for TRUE and FALSE and for both type of faces: increased drift rate as the CCMT score increase.
- CCMT does not predict the discrimination between TRUE and FALSE drift rate.
-Would expect that increased recognition ability lead to increase evidence accumulation when TRUE and decreased when FALSE, but not the case here -\> especially regarding learned faces, seems that increased recognition ability for object predict an increased drift rate when participant are wrong and that pattern is different that observed in the prediction of the CFMT regarding learned faces.
-Suggestion: using visual information processing alone help to accumulate meaningful information for the recognition of faces but also contribute to the accumulation of information detrimental to the recognition process (noise).
+While no hypotheses regarding the associations between the LBA parameters and the object recognition ability was preregistered, the exploratory analysis of the these associations reveal interesting patterns.
+Object recognition ability is positively correlated with drift face for novel faces but not for learned faces.
+Furthermore, object recognition does not predict the discrimination between TRUE and FALSE drift rate for learned faces like face recognition ability does.
+Object recognition is known to rely mostly on individual features processing while face recognition combines featural and configural processing [@cabezaFeaturesAreAlso2000; @madoleRoleObjectParts1995; @tverskyObjectsPartsCategories1984].
+Novel faces recognition relies more on feature information matching and, as a novel face becomes more familiar, the reliance on configural processing increases [@schwaningerRoleFeaturalConfigural2002].
+We suggest that relying on visual feature processing alone help to accumulate meaningful information for the recognition of visually familiar faces but also contribute to the accumulation of information detrimental to the recognition process (noise).
 Whereas relying on both (visual information processing and holistic processing) seems to increase the accumulation of meaningful information while decreasing the noise coming from detrimental visual information to the recognition process.
+Future research should investigate if the different patterns of associations between recognition abilities and latent components of the recognition process are related to different types of information processing.
 
-Paragraph 5: Limitations
+*Paragraph 6: Limitations*
 
-• Small effects size (correlations)
+Effect size: Overall, the effect size of the different associations interpreted above are small, even if the posterior plausible values correlation distributions don't overlap with 0...
 
-• Similar limitations to LBA parameter estimation than in the first paper
+Regarding the LBA parameter estimation, previous evidence accumulation model development studies have highlighted how the number of trials per cell of the design influence parameter estimation [@alexandrowiczComparingEightParameter2020; @lercheHowManyTrials2017; @wagenmakersEZdiffusionModelResponse2007].
+Our design (90 trials per condition) and control of error rates in our face recognition task followed the minimum recommendations to apply EAM [@lukenParameterIdentifiabilityEvidenceaccumulation2025].
+Nonetheless, adding more trials per condition (e.g., 200 per condition; @boagExpertGuidePlanning2025) would have increased the robustness of our parameter estimates.
 
-• Object recognition memory vs. Car recognition memory?
-
-Paragraph 6: Conclusive paragraph
+# Conclusion
 
 ::: {#refs}
 :::
-
-```{=typst}
-#show: appendix.with()
-```
-# Appendix content here

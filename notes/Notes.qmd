@@ -6,49 +6,60 @@ editor: visual
 
 Thursday 09 July: Raph notes
 
-Introduction
-- 3rd paragraph: I would like to explain a little more here the advantage of using computational approaches when investigating individual differences. And I don't really like the flow in this paragraph. I think that it is where I should pinpoint gaps in the literature regarding our research question but I don't really know how to tackle this. 
-- 4th paragraph: I think the content is good but again, I think that the flow is strange. 
+Introduction - 3rd paragraph: I would like to explain a little more here the advantage of using computational approaches when investigating individual differences. And I don't really like the flow in this paragraph. I think that it is where I should pinpoint gaps in the literature regarding our research question but I don't really know how to tackle this. - 4th paragraph: I think the content is good but again, I think that the flow is strange.
 
-Methods:
-- Figure of the face recognition task: this is not the correct figure since we used different face stimuli (cropped by the webmorph R Package). But it was just to show you that I am planning to add a figure there. I am currently working on the actual figure. 
-- Data analysis: I don't really know into how much details I should go here. Should I mention all the correlations and plausible value correlations that we did? Or is what I wrote there enough?
+Methods: - Figure of the face recognition task: this is not the correct figure since we used different face stimuli (cropped by the webmorph R Package). But it was just to show you that I am planning to add a figure there. I am currently working on the actual figure. - Data analysis: I don't really know into how much details I should go here. Should I mention all the correlations and plausible value correlations that we did? Or is what I wrote there enough?
 
-Results:
-- Overall, the plots need polishing (plots size, text size...) but the information that we want to show is there. 
-- I don't really know how much details I should add here in the text since I am providing summary tables. I tried to summarize the important results in the text, but not sure if that is enough.
-- Regression models: should I add a summary table with the coefficient from the model? In this section I just described visually the plots but since in the preregistered inferential criteria we decided to make our inferences based on the coefficient, I guess that we should include them as well and make our inferences based on them. What do you think? For now I did not add anything here since it is something that I think we should discuss. 
+Results: - Overall, the plots need polishing (plots size, text size...) but the information that we want to show is there. - I don't really know how much details I should add here in the text since I am providing summary tables. I tried to summarize the important results in the text, but not sure if that is enough. - Regression models: should I add a summary table with the coefficient from the model? In this section I just described visually the plots but since in the preregistered inferential criteria we decided to make our inferences based on the coefficient, I guess that we should include them as well and make our inferences based on them. What do you think? For now I did not add anything here since it is something that I think we should discuss.
 
-
-Supplementary materials: here I am just doing a list of what should go in the supplementary
-- Parameter recovery study?
-- Model fit
-- RT and accuracy plots
-- Some correlations plots: accuracy task X Cambridge tests scores, Camrbidges Face scores X Cambridge Car scores
-- Regression model threshold + predictions 
+Supplementary materials: here I am just doing a list of what should go in the supplementary - Parameter recovery study? - Model fit - RT and accuracy plots - Some correlations plots: accuracy task X Cambridge tests scores, Camrbidges Face scores X Cambridge Car scores - Regression model threshold + predictions
 
 ## July 20th - Rich notes
 
 ### Intro
 
-P1 - consider ending this first para with an active statement about how the paper takes things forward. E.g/., in this paper, we use blah to study how ... One sentence. It might set the scene a little and give context on aims. 
-P2 - r value ranging from 0 to 0.37 seems a little odd. Why not just say positive association but with modest effect sizes or reasonably small? Writing r=0 just seems odd to then say positive association. Make sense?
-Maybe break up para 2, as it is quite long. And connect with a broader and longer history of individual diffs (or differential psychology) in general. We discussed this in our last meeting. I can be brief - 1 or 2 sentences maybe that just makes the point that differntial psychology has a long history beyond face perception. 
-P3 - I like the transition here. It works well. I would just clarify what you mean by "this model-based analysis".
-P4 - I also like this transition in general. Here I would just make the explicit link to this past work being from the experimental psychology tradition. e.g., differences between conditions or groups (rather than variation across individuals). Also, I think the first sentence needs a little work with past tense and grammar, but we can fix that later.
-P5 - This seems fine for now. We can polish later. 
+P1 - consider ending this first para with an active statement about how the paper takes things forward. E.g/., in this paper, we use blah to study how ... One sentence. It might set the scene a little and give context on aims. P2 - r value ranging from 0 to 0.37 seems a little odd. Why not just say positive association but with modest effect sizes or reasonably small? Writing r=0 just seems odd to then say positive association. Make sense? Maybe break up para 2, as it is quite long. And connect with a broader and longer history of individual diffs (or differential psychology) in general. We discussed this in our last meeting. I can be brief - 1 or 2 sentences maybe that just makes the point that differntial psychology has a long history beyond face perception. P3 - I like the transition here. It works well. I would just clarify what you mean by "this model-based analysis". P4 - I also like this transition in general. Here I would just make the explicit link to this past work being from the experimental psychology tradition. e.g., differences between conditions or groups (rather than variation across individuals). Also, I think the first sentence needs a little work with past tense and grammar, but we can fix that later. P5 - This seems fine for now. We can polish later.
 
 ### methods and results
+
 I didn't read the methods and results this time, since we discussed them at length in our past meeting.
 
 ### Discussion
 
-I think the general structure works. But of course, we need a little more flow to make it easier to read. 
+I think the general structure works. But of course, we need a little more flow to make it easier to read.
 
-I would do a few things here. 
+I would do a few things here.
 
-1. Be disciplined in word count for the discussion, as this will make you select carefully which paragraphs are required and which can be relegated to a sentence or just removed. 
-2. Decide on themes to cover as that will help you organise paragraphs. e.g., opening para - main contribution. Then theoretical advance etc. in the next paras, then limitations, future directions. 
-3. As per the feedback for the intro, early on in the discussion, I would connect back to the broader theme of linking together experimental, differential and computational approaches to understand the cognitive processes that underpin face perception. Maybe even in the first para we could say this study shows how knowledge or novel insight can be gained from linking together blah blah and blah approaches. So we would be concluding something about the value of the method for the field, as well as the specific results.
-4. I would read the following Phillips and White paper and cite it. Maybe you meant to cite this already, but I could not see it. https://bpspsychub.onlinelibrary.wiley.com/doi/full/10.1111/bjop.12794
-It is more about deep learning models, but there are many links nonetheless. I am sure it will help you think about the value of estimating latent variables and such like.
+1.  Be disciplined in word count for the discussion, as this will make you select carefully which paragraphs are required and which can be relegated to a sentence or just removed.
+2.  Decide on themes to cover as that will help you organise paragraphs. e.g., opening para - main contribution. Then theoretical advance etc. in the next paras, then limitations, future directions.
+3.  As per the feedback for the intro, early on in the discussion, I would connect back to the broader theme of linking together experimental, differential and computational approaches to understand the cognitive processes that underpin face perception. Maybe even in the first para we could say this study shows how knowledge or novel insight can be gained from linking together blah blah and blah approaches. So we would be concluding something about the value of the method for the field, as well as the specific results.
+4.  I would read the following Phillips and White paper and cite it. Maybe you meant to cite this already, but I could not see it. https://bpspsychub.onlinelibrary.wiley.com/doi/full/10.1111/bjop.12794 It is more about deep learning models, but there are many links nonetheless. I am sure it will help you think about the value of estimating latent variables and such like.
+
+
+## July 29th - Raph notes
+
+I think that a good stab at the manuscript at this point would be appreciated. Feel free to change it wherever you see fit and to add comments/notes as well. 
+
+###Introduction:
+
+I modified the intro in regards of your previous comments on it
+
+Paragraph 4:  I would like to develop this paragraph a bit more but I don't really have any clear idea so some help on this would be great
+
+###Methods:
+- Correct figures for the face recognition task
+
+###Results:
+- Plots size: I think the plot size is good except for the Figure 6. The problem is that quarto does not handle different subfigure size very well. I would like the threshold subfigure to be smaller. I could do two different figures but I feel that it would add another figure and that it is not what we want. If you have any idea regarding this, I take it.
+
+- Table for model summary: I don;t know if I should add a summary table of the linear model parameter after the two model figures. 
+
+Overall I think that we could add some comments in the result section to just describe the results, more particularly for the linear model. But without a summary table to support the comment maybe it is not a good idea. What do you think?
+
+###Discussion:
+I think that the flow of the discussion is pretty good. I just have an issue with Paragraph 4 and one limitation:
+
+- Paragraph 4: I don;t really know how to put this together. The idea here would be to show how our approach can extend previous model of face perception and memory (Ex: Bruce and Young model), but I cannot find a good flow for this paragraph. Also the fact that we did not mention Bruce and Young model in the introduction is bothering me. I find that this paragrpah is very important but cannot find a way to show it.
+
+- Limitations (effect size of correlations): here I would like to say that our effect size are low and that the results presented here should be taken wiht caution.
+
