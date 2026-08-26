@@ -114,11 +114,11 @@ head(thresh_data)
 #| label: read-models
 #| eval: false
 
-b1_drift <- readRDS("models/b1_drift.rds")
-b2_drift <- readRDS("models/b2_drift.rds")
+b1_drift <- readRDS("models/b1_drift_face.rds")
+b2_drift <- readRDS("models/b2_drift_car.rds")
 
-b1_thresh <- readRDS("models/b1_thresh.rds")
-b2_thresh <- readRDS("models/b2_thresh.rds")
+b1_thresh <- readRDS("models/b1_thresh_face.rds")
+b2_thresh <- readRDS("models/b2_thresh_car.rds")
 ```
 
 # 3. fit some models
@@ -130,7 +130,7 @@ b2_thresh <- readRDS("models/b2_thresh.rds")
 
 brm_defaults <- list(
   family = gaussian(),
-  iter = 2000,
+  iter = 4000,
   warmup = 1000,
   cores = 10,
   chains = 4,
@@ -163,10 +163,10 @@ fit_model <- function(formula, prior, file, data, ...) {
 ### fit model b1
 
 ```{r}
-dsic#| label: fit-b1-drift
+#| label: fit-b1-drift
 
 ## formula
-formula = bf(value ~ 0 + condition + condition:face)
+formula = bf(value ~ 0 + condition + condition:face + (1|pid))
 
 ## check priors
 get_prior(formula, data = drift_data, family = gaussian())
@@ -178,6 +178,7 @@ priors <- c(
                                                   "conditionlearned.true:face",
                                                   "conditionnovel.false:face",
                                                   "conditionnovel.true:face")),
+  set_prior("normal(0, 1)", class = "sd", group = "pid"),
   set_prior("normal(0, 1)", class = "sigma")
 )
 
@@ -186,7 +187,7 @@ b1_drift <- fit_model(
   formula = formula,
   prior = priors,
   data = drift_data,
-  file = "models/b1_drift",
+  file = "models/b1_drift_face",
 )
 
 summary(b1_drift)
@@ -198,7 +199,7 @@ summary(b1_drift)
 #| label: fit-b2-drift
 
 ## formula
-formula = bf(value ~ 0 + condition + condition:face + condition:car)
+formula = bf(value ~ 0 + condition + condition:face + condition:car + (1|pid))
 
 ## check priors
 get_prior(formula, data = drift_data, family = gaussian())
@@ -214,6 +215,7 @@ priors <- c(
                                                   "conditionlearned.true:car",
                                                   "conditionnovel.false:car",
                                                   "conditionnovel.true:car")),
+  set_prior("normal(0, 1)", class = "sd", group = "pid"),
   set_prior("normal(0, 1)", class = "sigma")
 )
 
@@ -222,7 +224,7 @@ b2_drift <- fit_model(
   formula = formula,
   prior = priors,
   data = drift_data,
-  file = "models/b2_drift",
+  file = "models/b2_drift_car",
 )
 
 summary(b2_drift)
@@ -236,7 +238,7 @@ summary(b2_drift)
 #| label: fit-b1-thresh
 
 ## formula
-formula = bf(value ~ 0 + response + response:face)
+formula = bf(value ~ 0 + response + response:face + (1|pid))
 
 ## check priors
 get_prior(formula, data = thresh_data, family = gaussian())
@@ -246,6 +248,7 @@ priors <- c(
   set_prior("normal(2, 1)", class = "b"),
   set_prior("normal(0, 1)", class = "b", coef = c("responselearned:face",
                                                   "responsenovel:face")),
+  set_prior("normal(0, 1)", class = "sd", group = "pid"),
   set_prior("normal(0, 1)", class = "sigma")
 )
 
@@ -254,7 +257,7 @@ b1_thresh <- fit_model(
   formula = formula,
   prior = priors,
   data = thresh_data,
-  file = "models/b1_thresh",
+  file = "models/b1_thresh_face",
 )
 
 summary(b1_thresh)
@@ -266,7 +269,7 @@ summary(b1_thresh)
 #| label: fit-b2-thresh
 
 ## formula
-formula = bf(value ~ 0 + response + response:face + response:car)
+formula = bf(value ~ 0 + response + response:face + response:car + (1|pid))
 
 ## check priors
 get_prior(formula, data = thresh_data, family = gaussian())
@@ -278,6 +281,7 @@ priors <- c(
                                                   "responsenovel:face",
                                                   "responselearned:car",
                                                   "responsenovel:car")),
+  set_prior("normal(0, 1)", class = "sd", group = "pid"),
   set_prior("normal(0, 1)", class = "sigma")
 )
 
@@ -286,7 +290,7 @@ b2_thresh <- fit_model(
   formula = formula,
   prior = priors,
   data = thresh_data,
-  file = "models/b2_thresh",
+  file = "models/b2_thresh_car",
 )
 
 summary(b2_thresh)

@@ -89,7 +89,7 @@ knitr:
 pkgs <- c(
   "tidyverse", "RColorBrewer", "patchwork", "paletteer", "here", "EMC2", 
   "tidybayes", "tinytable", "osfr", "svglite", "gt", "brms", "rstantool",
-  "corrplot", "ggdist", "parallel", "future"
+  "corrplot", "ggdist", "parallel", "future", "ggplot2", "ggh4x"
 )
 vapply(
   pkgs, library, logical(1),
@@ -138,8 +138,8 @@ pd2 <- position_dodge(1)
 
 *Paragraph 1: general comment on face recognition and on the important variability in the “normal” population*
 
-Being able to quickly and accurately identify a face is blabla in every day’s life.
-This ability becomes even more important in several real-life task, like eye-witness identification or passport control.
+Being able to quickly and accurately identify a known face is an important ability in every day’s life.
+It becomes even more important in several real-life task, like eye-witness identification or passport control.
 However, face recognition ability is not distributed equally across the population.
 Without organic cause (like brain damage), people affected with developmental prosopagnosia show a poor face recognition ability throughout their life [@dobelProsopagnosiaApparentCause2007; @mcconachieDevelopmentalProsopagnosiaSingle1976] and report an inability to recognize familiar faces.
 The other end of the face recognition ability spectrum regroups the “super-recognizers”.
@@ -160,11 +160,11 @@ This individual difference approach provides an opportunity to investigate the r
 
 For example, one key question that association studies have investigated is to what extend individual difference in face processing reflect domain-general differences in other perceptual and cognitive abilities [@mccafferyIndividualDifferencesFace2018; @verhallenGeneralSpecificFactors2017].
 Using tests scores as variables of interest, some studies have shown that face and general object perception ability are positively associated but with modest effect sizes [@dennettCambridgeCarMemory2012; @richlerIndividualDifferencesObject; @wilmerCapturingSpecificAbilities2012].
-However, these associations remains constantly weaker than those between different face or object recognition task [@fyshDifferencesIndividualsSubprocesses2020; @mccafferyIndividualDifferencesFace2018; @wilmerHumanFaceRecognition2010], suggesting that domain-specific processing explains at least some part of the variance between these tasks [@richlerIndividualDifferencesObject].
+However, these associations remains constantly weaker than those between different face or object recognition task [@fyshDifferencesIndividualsSubprocesses2020; @mccafferyIndividualDifferencesFace2018; @wilmerHumanFaceRecognition2010], suggesting that domain-specific processing explains at least some part of the variance between these tasks [@richlerIndividualDifferencesObject2019].
 
 *Paragraph 4: Investigating individual differences in latent processes using computational approaches*
 
-While the associations between manifest measures like test scores remains important to understand relationship between fundamental processes, performance remains a distant proxy of the underlying cognitive processes at work during face recognition, thus could not be ideal for capturing individual differences in these processes [@hainesTheoreticallyInformedGenerative2020].
+While the associations between manifest measures like test scores remains important to understand relationship between fundamental processes, performance remains a distant proxy of the underlying cognitive processes at work during face recognition, thus could not be ideal for capturing individual differences in these processes [@hainesTheoreticallyInformedGenerative2020a].
 Using a computational approach to disentangle the multiple components of these processes could provide meaningful information regarding the relationships between the specific parts of the face recognition process and face recognition ability [@yarkoniGeneralizabilityCrisis2022].
 Analyzing individual differences in these components could provide meaningful insights about cognitive variability in general as well and as how variation in these latent unobserved processes, which are driving behavior, is related to individual face recognition ability [@whiteUsingDecisionModels2016].
 
@@ -176,7 +176,7 @@ Compared to learned faces, novel faces induced a great accumulation of evidence 
 However these conclusions were drawn from an experimental psychology approach (i.e. from the group-average posterior distributions of these two parameters) and this approach did not consider the fact that the between-subject variability in these estimated parameters was important.
 In the present study, we used an individual difference approach to investigate the between-subject variability found in these estimated parameters.
 More specifically, we were interested to see if the estimated parameters computed from choice-rt data in a face memory task were associated with face recognition ability specifically or if they reflect a general recognition ability unspecific to faces.
-We think that this approach could give precious insights about what do the parameters reflect and how specific to face recognition the inferences which are drawn from their investigation are.
+We think that this approach could give us precious insights regarding the specificity of these computational processes involved in face recognition.
 
 :::: {.place arguments="bottom, scope: \"parent\", float: true"}
 :::{#fig-LBA fig-cap = "Schematic of the linear ballistic accumulator (LBA) model"}
@@ -190,7 +190,8 @@ We think that this approach could give precious insights about what do the param
 
 We used a similar face memory task to the one described in Fournier et al. (in press) to compute the threshold and drift rate parameter for both learned and novel faces.
 In addition to this task, face recognition ability was assessed using the Cambridge Face Memory Test (CFMT) and general object recognition ability was assessed by using the Cambridge Car Memory Test (CCMT).
-We wanted to investigate to what extend do drift rate and threshold vary as a function of face recognition ability alone and when adjusted bu general object recognition ability.Based on our pilot work, we hypothesized that the accumulation of evidence for learned faces when (drift rate learned-TRUE) will be positively associated with face recognition ability and that this association will remain after adjusting for general object recognition.
+We wanted to investigate to what extend do drift rate and threshold vary as a function of face recognition ability alone and when adjusted by general object recognition ability.
+Based on our pilot work, we hypothesized that the accumulation of evidence for learned faces (drift rate learned-TRUE) will be positively associated with face recognition ability and that this association will remain positive after adjusting for general object recognition.
 
 # Method and Materials
 
@@ -198,7 +199,7 @@ We wanted to investigate to what extend do drift rate and threshold vary as a fu
 
 We report how we determined our sample size, all data exclusions (if any), all manipulations, and all measures in the study [@simonsConstraintsGeneralityCOG2017].
 The research question, hypotheses, experimental design, planned analysis, and exclusion criteria were preregistered (<https://osf.io/b74gt/overview>).
-The raw data, experimental materials, and analysis code are available on GitHub (add link) or the Open Science Framework (add link).
+Raw data and analysis code are available on Github (link github).
 
 ```{r}
 #| label: exclusion-all
@@ -311,11 +312,13 @@ Each of these data sets is composed of images of different identities faces take
 102 identities were selected from the Face Research Lab London Set and 51 from the Color FERET Database.
 For each selected identity, three pictures of the face at three different view points (3/4 left view, frontal view and 3/4 right view) were cropped following the outline of the face.
 
-To ensure that the stimuli that we used are reproducible, we used the webmorphR R Package (version?) -\> NEED info from Rich here.
+To ensure that the stimuli that we used are reproducible, we used the webmorphR R Package (@webmorph) to crop the face images.
+The code used to crop the original pictures can be found on OSF (OSF link).
 
 ## Evidence accumulation modeling
 
 The model and priors specification as well as the model estimation are all identical to the one described in (ref: Fournier et al., in press).
+The priors specifications are described in Supplementary Materials.
 
 ### Model specification
 
@@ -337,13 +340,12 @@ Alternative model specifications that permitted variation in these parameters ar
 # create a table
 lba_formula <- tribble(
   ~Parameter, ~Label, ~Condition, ~Response, ~Accuracy, ~Fixed,
-  "Start point", "A", "-", "-", "-", "1",
+  "Start point", "A", "no", "no", "no", "-",
   "Mean drift rate", "v", "yes", "no", "yes", "-",
   "SD drift rate", "sd_v", "no", "no", "yes", "-",
   "SD false drift rate", "false.sd_v", "-", "-", "-", "1",
-  "Threshold", "b", "yes", "yes", "no", "-",
-  "Non-decision time", "t0", "yes", "no", "no", "-",
-  "SD Non-decision time", "st_0", "-", "-", "-", "0",
+  "Threshold", "b", "no", "yes", "no", "-",
+  "Non-decision time", "t0", "no", "no", "no", "-"
 )
 ```
 
@@ -366,15 +368,14 @@ Parameter estimations were then used as the starting point for the full hierarch
 
 ### Model fit
 
-To ensure that the fit of our model can capture most of the main trends in the data, graphical summaries of the posterior predictions were examined.
-(Check fit of the model, Supplementary Materials)
+To ensure that the fit of our model can capture most of the main trends in the data, graphical summaries of the posterior predictions were examined. Convergence plots and posterior predictive checks can be found in Supplementary Materials.
 
 ## Data analysis
 
 Regarding the general analytical strategy, two main approaches were considered.
 Correlations and data visualizations were used to characterize the zero-order relationships between parameters of interest (drift rate and threshold) from the LBA model with face and object recognition ability.
 Linear regression was then conducted to estimate how much LBA parameters vary as a function of face recognition ability, as well as how much these parameters vary after adjusting for car recognition ability.
-The details of the analytical strategy were preregistered (<https://osf.io/b74gt/overview>).
+The details of the analysis plan were preregistered (<https://osf.io/b74gt/overview>).
 
 ### LBA parameters
 
@@ -405,8 +406,8 @@ The results of the linear regresison for the threshold parameter are available i
 # create a df
 regression_formula <- tribble(
   ~Parameter, ~Condition, ~Ability, ~Formula,
-  "Median drift rate", "familiarity:accuracy", "Face", "Median drift rate ~ 0 + familiarity:accuracy + face_ability + (0|participant)",
-  "Median drift rate", "familiarity:accuracy", "Face + Car", "Median drift rate ~ 0 + familiarity:accuracy + face_ability + car_ability + (0|participant)",
+  "Median drift rate", "familiarity:accuracy", "Face", "Median drift rate:  0 + familiarity:accuracy + face_ability + (0|participant)",
+  "Median drift rate", "familiarity:accuracy", "Face + Car", "Median drift rate: 0 + familiarity:accuracy + face_ability + car_ability + (0|participant)",
 )
 ```
 
@@ -421,12 +422,12 @@ regression_formula |>
 
 ### Inferential criteria
 
-Using a Bayesian approach in our regression analysis allow us to evaluate the posterior distributions of the parameter of our predictor of interest (Face Memory score).
-To evaluate these posterior distributions, we will use three complementary criteria: sign, size and precision [@cummingNewStatisticsWhy2014; @kruschkeBayesianDataAnalysis2018; @mcelreathStatisticalRethinkingBayesian].
-To address the sign (or direction) of the effect, we will report if the median value is positive or negative.
-Second, we will evaluate the size or magnitude of the posterior distribution by considering the size of the median value as well as the extent to which lower or upper bounds of the 95% quantile interval approach zero (no relationship).
-For example, if the 95% quantile interval excludes zero, we could be reasonably confident in our inference of a non-zero effect.
-Furthermore, we will use the width of the 95% quantile intervals as an indicator of estimation precision.
+Using a Bayesian approach in our regression analysis allowed us to evaluate the posterior distributions of the parameter of our predictor of interest (Face Memory score).
+To evaluate these posterior distributions, we used three complementary criteria: sign, size and precision [@cummingNewStatisticsWhy2014; @kruschkeBayesianDataAnalysis2018; @mcelreathStatisticalRethinkingBayesian].
+To address the sign (or direction) of the effect, we reported if the median value is positive or negative.
+Second, we evaluated the size or magnitude of the posterior distribution by considering the size of the median value as well as the extent to which lower or upper bounds of the 95% quantile interval approach zero (no relationship).
+For example, if the 95% quantile interval excluded zero, we would have been reasonably confident in our inference of a non-zero effect.
+Furthermore, we used the width of the 95% quantile intervals as an indicator of estimation precision.
 Whereas narrow estimates indicate precise estimates, wider intervals indicate substantial uncertainty about the estimated parameter value, which may warrant a more cautious interpretation.
 
 # Results
@@ -806,7 +807,8 @@ p_raw_params_thresh <- ggplot(cor_long_thresh, aes(x = score, y = estimate,
     size = 5, fontface = "bold",
     show.legend = FALSE
   ) +
-  facet_wrap(~param, scales = "free_y", ncol = 2) +
+  facet_wrap(~param, scales = "free_y") +
+  force_panelsizes(cols = c(1, 1), rows = 0.5) +
   scale_colour_manual(values = c("Face" = safe_pal[1], "Car" = safe_pal[2])) +
   scale_fill_manual(values   = c("Face" = safe_pal[1], "Car" = safe_pal[2])) +
   labs(
@@ -816,8 +818,7 @@ p_raw_params_thresh <- ggplot(cor_long_thresh, aes(x = score, y = estimate,
   ) +
   theme(legend.position = "bottom") 
   
-
-
+  
 # plot drift
 p_raw_params_drift <- ggplot(cor_long_drift, aes(x = score, y = estimate,
                                       colour = predictor, fill = predictor)) +
@@ -839,7 +840,7 @@ p_raw_params_drift <- ggplot(cor_long_drift, aes(x = score, y = estimate,
     y       = "Parameter estimate (median)",
     colour  = NULL, fill = NULL
   ) +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") 
 ```
 
 ```{r}
@@ -852,6 +853,8 @@ p_raw_params_drift <- ggplot(cor_long_drift, aes(x = score, y = estimate,
 #| warning: false
 #| fig-width: 10
 #| fig-height: 7
+
+dev.new(width = 5, height = 4, unit ="in")
 p_raw_params_thresh
 p_raw_params_drift
 ```
@@ -1070,6 +1073,8 @@ p_drift_mid <- ggplot(
     axis.title = element_text(size = 24, face = "bold"),
     legend.text = element_text(size = 24, face = "bold"))
 
+ggsave(here("figures/corr/drift_plausible_value.jpeg"), height = 10, width = 15)
+
 # right panel — novel-learned difference of discriminations
 pv_drift_diff <- pv_cors |>
   filter(param == "discrim_diff")
@@ -1226,8 +1231,8 @@ Following our preregistration, the predictions of the two regression models for 
 #| label: read-models
 #| include: false
 
-b1_drift <- readRDS(here("models/b1_drift.rds"))
-b2_drift <- readRDS(here("models/b2_drift.rds"))
+b1_drift <- readRDS(here("models/b1_drift_face.rds"))
+b2_drift <- readRDS(here("models/b2_drift_car.rds"))
 ```
 
 ```{r}
@@ -1256,7 +1261,7 @@ newdata_b2 <- expand_grid(
 
 # --- get posterior preds ---
 preds_b1 <- newdata_b1 |>
-  add_epred_draws(b1_drift, ndraws = 1000) |>
+  add_epred_draws(b1_drift, ndraws = 1000, re_formula = NA) |>
   mutate(
     stimulus = if_else(str_detect(as.character(condition), "novel"), "novel", "learned"),
     accuracy = if_else(str_detect(as.character(condition), "true"), "true", "false"),
@@ -1266,7 +1271,7 @@ preds_b1 <- newdata_b1 |>
   )
 
 preds_b2 <- newdata_b2 |>
-  add_epred_draws(b2_drift, ndraws = 1000) |>
+  add_epred_draws(b2_drift, ndraws = 1000, re_formula = NA) |>
   mutate(
     stimulus = if_else(str_detect(as.character(condition), "novel"), "novel", "learned"),
     accuracy = if_else(str_detect(as.character(condition), "true"), "true", "false"),
@@ -1381,7 +1386,7 @@ p_2x2_b2
 
 The aim of this project was to combine experimental, differential and computational approaches to investigate the relationship between face recognition ability and the computational mechanisms involved in the face recognition process.
 Our results showed that individual differences in face recognition ability are not only related with different latent computational processes (and not only one), but also predict to a certain extend the pattern of these processes.
-Face recognition ability seems to be positively associated with the rate of evidence accumulation (drift rate parameter) as well as the response caution (threshold parameter) for both learned and novel faces recognition.
+Face recognition ability seems to be positively associated with the rate of evidence accumulation (drift rate parameter) for both learned and novel faces as well as the response caution (threshold parameter) for learned faces. 
 One key finding is that these predictions still hold when accounting for object recognition ability, demonstrating that these these associations are partially specific to faces and cannot entirely be explained by a more general object recognition ability.
 
 *Paragraph 2: Drift rate and threshold effects*
@@ -1407,15 +1412,12 @@ We think that this approach could benefit future research on individual differen
 
 *Paragraph 4: Theoretical implications for models of face perception and memory*
 
-The insights obtained in this study also have theoretical implications when interpreting them in accordance with existing models of face processing system.
-Existing models of the human face processing system propose different cognitive and neural pathways (Bruce & Young, 1986) for the general processing face...
-Previous studies findings have increased our understanding of the general process by showing...
-
-- Bruce and Young model
-- Individual differences in face recognition: observations from comparing group-levels difference between two different populations (ex: prosopagnosia and control/super-recognizer and control) / individual differences in typical range of face processing ability  While Bruce and Young model describe the face perception process in general, there are some individual variabilities in the outcome of this process (outcome = performance) and in other steps in this  With this study we also contribute to the extension of this model by showing that not only there are individual differences in the outcome, but that there is also individual differences in the cognitive processes that give rise to this outcome.  Future research could use an individual differences approach to investigate how some variations in the components in the Bruce and Young face recognition model could influence estimated latent variables and how are individuals differences in face recognition ability are related to the observed differences of latent variables of interest.
+Furthermore, we think that the insights obtained from this study could have theoretical implications for models of face perception and memory.
+Previous individual differences studies in face recognition have investigated how different facets of the face recognition ability are associated across the normal population or differ between groups (ex: prosopagnosia and control/super-recognizer and control).
+These findings extended the general cognitive model of the human face processing system (Bruce & Young, 1986), by showing that the performance (i.e response times and accuracy) to a face recognition task varies as a function of individual face recognition ability.
+With this study we also contribute to the extension of this model by showing that not only there are individual differences in the performance, but that there is also individual differences in the cognitive processes that give rise to this outcome. Furthermore these differences vary to certain degree as function of individual face recognition ability. Cognitive processes are not measurable *per se* but cognitive models can be used to estimate certain of them. In order to extend our understanding of the different cognitive processes involved in face recognition and the potential differences across individuals in these processes, future research could benefit from combining different approaches (i.e. experimental, differential...) and different computational models.
 
 *Paragraph 5: Mentioning the object recognition ability correlations*
-
 While no hypotheses regarding the associations between the LBA parameters and the object recognition ability was preregistered, the exploratory analysis of the these associations reveal interesting patterns.
 Object recognition ability is positively correlated with drift face for novel faces but not for learned faces.
 Furthermore, object recognition does not predict the discrimination between TRUE and FALSE drift rate for learned faces like face recognition ability does.
@@ -1426,14 +1428,15 @@ Whereas relying on both (visual information processing and holistic processing) 
 Future research should investigate if the different patterns of associations between recognition abilities and latent components of the recognition process are related to different types of information processing.
 
 *Paragraph 6: Limitations*
-
-Effect size: Overall, the effect size of the different associations interpreted above are small, even if the posterior plausible values correlation distributions don't overlap with 0...
-
 Regarding the LBA parameter estimation, previous evidence accumulation model development studies have highlighted how the number of trials per cell of the design influence parameter estimation [@alexandrowiczComparingEightParameter2020; @lercheHowManyTrials2017; @wagenmakersEZdiffusionModelResponse2007].
 Our design (90 trials per condition) and control of error rates in our face recognition task followed the minimum recommendations to apply EAM [@lukenParameterIdentifiabilityEvidenceaccumulation2025].
 Nonetheless, adding more trials per condition (e.g., 200 per condition; @boagExpertGuidePlanning2025) would have increased the robustness of our parameter estimates.
 
+Another limitations would be the use of the scores to the Cambridge Car Memory Test as an estimate of object recognition ability. While numerous studies have used this score for this motive (ref:), it can be argued like recognizing pictures of a specific object like cars might no encompass the depth and complexity of object recognition ability. We decided to use this test because of the direct comparison it offers to the score of the Cambridge Face Memory Test as well the fact the instructions and task structure are almost identical in the two tests.       
+ 
 # Conclusion
+
+
 
 ::: {#refs}
 :::

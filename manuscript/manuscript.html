@@ -9,7 +9,7 @@
 <meta name="author" content="Raphaël Fournier">
 <meta name="author" content="Paul Downing">
 <meta name="author" content="Richard Ramsey">
-<meta name="dcterms.date" content="2026-06-26">
+<meta name="dcterms.date" content="2026-08-20">
 <meta name="keywords" content="face perception, memory, individual difference, familiarity, decision models, evidence accumulation modelling">
 
 <title>Individual differences in the computational processes of face recognition and their association to face recognition ability</title>
@@ -134,11 +134,10 @@ window.Quarto = {
   <li><a href="#lba-parameters-1" id="toc-lba-parameters-1" class="nav-link" data-scroll-target="#lba-parameters-1"><span class="header-section-number">3.1</span> LBA parameters</a></li>
   <li><a href="#correlations" id="toc-correlations" class="nav-link" data-scroll-target="#correlations"><span class="header-section-number">3.2</span> Correlations</a></li>
   <li><a href="#bayesian-plausible-value-correlational-analysis-1" id="toc-bayesian-plausible-value-correlational-analysis-1" class="nav-link" data-scroll-target="#bayesian-plausible-value-correlational-analysis-1"><span class="header-section-number">3.3</span> Bayesian plausible value correlational analysis</a></li>
-  <li><a href="#linear-regression-1" id="toc-linear-regression-1" class="nav-link" data-scroll-target="#linear-regression-1"><span class="header-section-number">3.4</span> Linear regression</a></li>
+  <li><a href="#bayesian-linear-regression" id="toc-bayesian-linear-regression" class="nav-link" data-scroll-target="#bayesian-linear-regression"><span class="header-section-number">3.4</span> Bayesian linear regression</a></li>
   </ul></li>
   <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion"><span class="header-section-number">4</span> Discussion</a></li>
-  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">5</span> References</a></li>
-  <li><a href="#appendix-content-here" id="toc-appendix-content-here" class="nav-link" data-scroll-target="#appendix-content-here"><span class="header-section-number">6</span> Appendix content here</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><span class="header-section-number">5</span> Conclusion</a></li>
   </ul>
 <div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="manuscript.pdf"><i class="bi bi-file-pdf"></i>Typst (preprint)</a></li><li><a href="manuscript.docx"><i class="bi bi-file-word"></i>MS Word (preprint)</a></li></ul></div><div class="quarto-other-links"><h2>Other Links</h2><ul><li><a href="https://osf.io/preprints/psyarxiv/"><i class="bi bi-file-pdf"></i>Preprint (PsyArXiv)</a></li><li><a href="https://rich-ramsey.github.io/preprint-example"><i class="bi bi-globe2"></i>Online supplement</a></li><li><a href="supplementary.pdf"><i class="bi bi-file-pdf"></i>Supplementary Materials (PDF)</a></li><li><a href="https://github.com/rich-ramsey/"><i class="bi bi-github"></i>GitHub Repository</a></li><li><a href="https://osf.io/65bt2"><i class="bi bi-archive"></i>OSF Repository</a></li></ul></div></nav>
 </div>
@@ -192,7 +191,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">June 26, 2026</p>
+      <p class="date">August 20, 2026</p>
     </div>
   </div>
   
@@ -213,18 +212,37 @@ window.Quarto = {
 <div style="page-break-after: always;"></div>
 <section id="introduction" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
-<p>Paragraph 1: general comment on face recognition and on the important variability in the “normal” population • Face recognition: importance in daily life/ real-life tasks from eye-witness identification to passport control (for example). • Variability in the population in face recognition ability. Prosopagnosia or super recognizers example (ref: Noyes, Phillips, &amp; O’Toole, 2017 for super recognizers/Kress &amp; Daum, 2003 for prosopagnosia patients), but even in the normal population (Burton, White, McNeill., 2016; Dowsett &amp; Burton, 2015; White et al., 2014), more specifically for tasks involving unfamiliar faces.</p>
-<p>Paragraph 2: past investigation of individual difference in face identity processing • Investigating individual differences in face identity processing: often measured by different tests. Examples: Cambridge Face Memory test (CFMT) = New face learning / Glasgow Face Matching Test (GFMT): unfamiliar face perception / before They Were Famous task: Familiar face perception -&gt; (McCaffery et al., 2018). These scores are then correlated between them or with different behavioural or physiological measures to assess the strength of the relationship between them. • Description of some results here</p>
-<p>Paragraph 3: Investigating individual differences in latent processes using computational approaches • Behavioural measures remain distant proxies of underlying cognitive processes, thus not ideal for capturing individual differences in these processes (Haines et al., 2020) + make interpretation more errors prone (ex: Ratcliff et al., 2010) -&gt; more cautious, not because better processing. Problem: how to disentangle multiple components of a process.<br>
-• One potential alternative: using computational approaches. Advantage of model-based analysis of individual difference: fitting data from individual participants to disentangle the effects of the different processes driving behaviour. Cleaner measures of the processes of interest and could enhance our understanding how variation in these latent, unobserved processes arise across individuals (White, Curl &amp; Sloane., 2016). Example with Ratcliff (2010) and White et al.&nbsp;(2014).</p>
-<p>Paragraph 4: building upon our past project results summary and application of individual differences in face recognition ability • Past study: we used hierarchical model fitting of evidence-accumulation models to model choice-rt in a face memory old/new task (see figure LBA) -&gt; better evidence of accumulation for detecting novel faces that recognizing visually learned faces. Novelty pop-out effect of novel faces. Increased threshold as well for novel faces (need more evidence to committing to the novel response compared to the learned one). Using this computational approach, we found that distinct computational processes involved in the decision-making of face recognition are affected by face familiarity. We also found inter-subject variability in the estimated parameters. • Question: are these parameters linked to individual face recognition ability? Does face recognition ability predict the estimation of these parameters? • Help us understanding what do these parameters reflect, from where this inter-subject variability comes from and how specific the inferences that we can make about them are related to the face recognition ability. • Possibility that the variation observed in these parameters reflect a general recognition ability, unspecific to faces.</p>
-<p>Paragraph 5: Short description of how we are going to address the questions • How will we do it: estimation of parameter from a face memory task, followed by two Memory ability scores: Cambridge Face Memory Test (CFMT) and Cambridge Car Memory Test (CCMT).</p>
+<p><em>Paragraph 1: general comment on face recognition and on the important variability in the “normal” population</em></p>
+<p>Being able to quickly and accurately identify a known face is an important ability in every day’s life. It becomes even more important in several real-life task, like eye-witness identification or passport control. However, face recognition ability is not distributed equally across the population. Without organic cause (like brain damage), people affected with developmental prosopagnosia show a poor face recognition ability throughout their life <span class="citation" data-cites="dobelProsopagnosiaApparentCause2007 mcconachieDevelopmentalProsopagnosiaSingle1976">(<a href="#ref-dobelProsopagnosiaApparentCause2007" role="doc-biblioref">Dobel et al. 2007</a>; <a href="#ref-mcconachieDevelopmentalProsopagnosiaSingle1976" role="doc-biblioref">McConachie 1976</a>)</span> and report an inability to recognize familiar faces. The other end of the face recognition ability spectrum regroups the “super-recognizers”. These individuals show a remarkably high face recognition ability compared to the average person <span class="citation" data-cites="bobakSuperrecognisersActionEvidence2016 russellSuperrecognizersPeopleExtraordinary2009">(<a href="#ref-bobakSuperrecognisersActionEvidence2016" role="doc-biblioref">Bobak et al. 2016</a>; <a href="#ref-russellSuperrecognizersPeopleExtraordinary2009" role="doc-biblioref">Russell et al. 2009</a>)</span>. However, even when ignoring these two extreme cases, face recognition ability remains highly variable in the normal population, especially for unfamiliar faces recognition <span class="citation" data-cites="dowsettUnfamiliarFaceMatching2015 whitePassportOfficersErrors2014">(<a href="#ref-dowsettUnfamiliarFaceMatching2015" role="doc-biblioref">Dowsett and Burton 2015</a>; <a href="#ref-whitePassportOfficersErrors2014" role="doc-biblioref">White et al. 2014</a>)</span>. In this project, by linking experimental, differential and computational approaches, we tried to build on results from one of our previous work to investigate how individual differences in face recognition ability in the normal population is related to computational processes that support face recognition.</p>
+<p><em>Paragraph 2: past investigation of individual difference in face identity processing</em></p>
+<p>Differential psychology can be understood as the “study of the normative individual differences in thought, behavior and ability” <span class="citation" data-cites="marshEvolutionaryDifferentialPsychology2013">(<a href="#ref-marshEvolutionaryDifferentialPsychology2013" role="doc-biblioref">Marsh and Boag 2013</a>)</span>. Multiple fields of theoretical and applied psychology have used a differential approach to understand variability within the general population including psychometric assessment, educational and developmental psychology, and even psychopathology <span class="citation" data-cites="lubinskiScientificSocialSignificance2000">(<a href="#ref-lubinskiScientificSocialSignificance2000" role="doc-biblioref">Lubinski 2000</a>)</span>. Regarding face recognition, there is a growing interest in the value of investigating individual differences across the entire spectrum of face recognition ability as well, and not only by using group-level comparisons between the two extremes (prosopagnosic patients and “super-recognizers”) and average recognizers <span class="citation" data-cites="whiteNeedImproveWay2022">(<a href="#ref-whiteNeedImproveWay2022" role="doc-biblioref">White and Kitchen 2022</a>)</span>. Several tests have been designed to measure performance on defined set of tasks like new faces learning (Cambridge Face Memory test, CFMT; <span class="citation" data-cites="duchaineCambridgeFaceMemory2006">Duchaine and Nakayama (<a href="#ref-duchaineCambridgeFaceMemory2006" role="doc-biblioref">2006</a>)</span>), unfamiliar face perception (Glasgow Face Matching Test, GFMT; <span class="citation" data-cites="burtonGlasgowFaceMatching2010">Burton et al. (<a href="#ref-burtonGlasgowFaceMatching2010" role="doc-biblioref">2010</a>)</span>) or familiar face perception (Before They Were Famous, BTWF; <span class="citation" data-cites="russellSuperrecognizersPeopleExtraordinary2009">Russell et al. (<a href="#ref-russellSuperrecognizersPeopleExtraordinary2009" role="doc-biblioref">2009</a>)</span>). Using correlational approaches, past research has derived quantitative measures of the association between the performances at these tests or between test scores and other broader perceptual and cognitive processes <span class="citation" data-cites="mccafferyIndividualDifferencesFace2018 noyesFaceRecognitionAbility2018">(<a href="#ref-mccafferyIndividualDifferencesFace2018" role="doc-biblioref">McCaffery et al. 2018</a>; <a href="#ref-noyesFaceRecognitionAbility2018" role="doc-biblioref">Noyes et al. 2018</a>)</span>. This individual difference approach provides an opportunity to investigate the relationships between fundamental processes that are difficult to uncover using group-level analyses.</p>
+<p><em>Paragraph 3: key question: domain-specific vs domain-general</em></p>
+<p>For example, one key question that association studies have investigated is to what extend individual difference in face processing reflect domain-general differences in other perceptual and cognitive abilities <span class="citation" data-cites="mccafferyIndividualDifferencesFace2018 verhallenGeneralSpecificFactors2017">(<a href="#ref-mccafferyIndividualDifferencesFace2018" role="doc-biblioref">McCaffery et al. 2018</a>; <a href="#ref-verhallenGeneralSpecificFactors2017" role="doc-biblioref">Verhallen et al. 2017</a>)</span>. Using tests scores as variables of interest, some studies have shown that face and general object perception ability are positively associated but with modest effect sizes <span class="citation" data-cites="dennettCambridgeCarMemory2012 richlerIndividualDifferencesObject wilmerCapturingSpecificAbilities2012">(<a href="#ref-dennettCambridgeCarMemory2012" role="doc-biblioref">Dennett, McKone, Tavashmi, et al. 2012</a>; <a href="#ref-richlerIndividualDifferencesObject" role="doc-biblioref">Richler et al., n.d.</a>; <a href="#ref-wilmerCapturingSpecificAbilities2012" role="doc-biblioref">Wilmer et al. 2012</a>)</span>. However, these associations remains constantly weaker than those between different face or object recognition task <span class="citation" data-cites="fyshDifferencesIndividualsSubprocesses2020 mccafferyIndividualDifferencesFace2018 wilmerHumanFaceRecognition2010">(<a href="#ref-fyshDifferencesIndividualsSubprocesses2020" role="doc-biblioref">Fysh et al. 2020</a>; <a href="#ref-mccafferyIndividualDifferencesFace2018" role="doc-biblioref">McCaffery et al. 2018</a>; <a href="#ref-wilmerHumanFaceRecognition2010" role="doc-biblioref">Wilmer et al. 2010</a>)</span>, suggesting that domain-specific processing explains at least some part of the variance between these tasks <span class="citation" data-cites="richlerIndividualDifferencesObject2019">(<a href="#ref-richlerIndividualDifferencesObject2019" role="doc-biblioref">Richler et al. 2019</a>)</span>.</p>
+<p><em>Paragraph 4: Investigating individual differences in latent processes using computational approaches</em></p>
+<p>While the associations between manifest measures like test scores remains important to understand relationship between fundamental processes, performance remains a distant proxy of the underlying cognitive processes at work during face recognition, thus could not be ideal for capturing individual differences in these processes <span class="citation" data-cites="hainesTheoreticallyInformedGenerative2020a">(<a href="#ref-hainesTheoreticallyInformedGenerative2020a" role="doc-biblioref">Haines et al. 2020</a>)</span>. Using a computational approach to disentangle the multiple components of these processes could provide meaningful information regarding the relationships between the specific parts of the face recognition process and face recognition ability <span class="citation" data-cites="yarkoniGeneralizabilityCrisis2022">(<a href="#ref-yarkoniGeneralizabilityCrisis2022" role="doc-biblioref">Yarkoni 2022</a>)</span>. Analyzing individual differences in these components could provide meaningful insights about cognitive variability in general as well and as how variation in these latent unobserved processes, which are driving behavior, is related to individual face recognition ability <span class="citation" data-cites="whiteUsingDecisionModels2016">(<a href="#ref-whiteUsingDecisionModels2016" role="doc-biblioref">White et al. 2016</a>)</span>.</p>
+<p><em>Paragraph 5: building upon our past project results summary and application of individual differences in face recognition ability</em></p>
+<p>One of our previous work (Fournier, Downing &amp; Ramsey, in press) has used Bayesian hierarchical evidence-accumulation models (see <a href="#fig-LBA" class="quarto-xref">Figure&nbsp;1</a>) to fit choice-rt data in a face recognition (old/new) task (for a review on evidence-accumulation models see <span class="citation" data-cites="ratcliffDiffusionDecisionModel2016">Ratcliff et al. (<a href="#ref-ratcliffDiffusionDecisionModel2016" role="doc-biblioref">2016</a>)</span>). We found that distinct computational processes involved in the decision-making process of face recognition are affected by face familiarity. Compared to learned faces, novel faces induced a great accumulation of evidence (drift rate) and the response caution (threshold) towards the novel response was higher as well. However these conclusions were drawn from an experimental psychology approach (i.e.&nbsp;from the group-average posterior distributions of these two parameters) and this approach did not consider the fact that the between-subject variability in these estimated parameters was important. In the present study, we used an individual difference approach to investigate the between-subject variability found in these estimated parameters. More specifically, we were interested to see if the estimated parameters computed from choice-rt data in a face memory task were associated with face recognition ability specifically or if they reflect a general recognition ability unspecific to faces. We think that this approach could give us precious insights regarding the specificity of these computational processes involved in face recognition.</p>
+<div class="place" data-arguments="bottom, scope: &quot;parent&quot;, float: true">
+<div id="fig-LBA" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-LBA-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/LBA_schematique.png" class="img-fluid figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-LBA-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Schematic of the linear ballistic accumulator (LBA) model
+</figcaption>
+</figure>
+</div>
+<p><em>This diagram represents the accumulation process one trial of a perceptual decision task for the linear ballistic accumulator (LBA;</em> <span class="citation" data-cites="brownSimplestCompleteModel2008">Brown and Heathcote (<a href="#ref-brownSimplestCompleteModel2008" role="doc-biblioref">2008</a>)</span><em>). Participants are required to chose between two options (Response 1 and Response 2). In a LBA model, there is a separated accumulation of evidence (v) for each response option. In this example, the correct response is Response 1. The accumulator on the left is the accumulator for the correct response (Response 1), and the green line in represents the rate at which the evidence accumulates in favor of that response option. The accumulator on the right is the accumulator for the incorrect response (Response 2), and the dash red line represents the rate at which the evidence accumulates in favor of this response option. Once the accumulated evidence crosses the threshold (b) of a response option, the corresponding response is chosen (in this case Response 1).</em></p>
+</div>
+<p><em>Paragraph 6: Short description of how we are going to address the questions</em></p>
+<p>We used a similar face memory task to the one described in Fournier et al.&nbsp;(in press) to compute the threshold and drift rate parameter for both learned and novel faces. In addition to this task, face recognition ability was assessed using the Cambridge Face Memory Test (CFMT) and general object recognition ability was assessed by using the Cambridge Car Memory Test (CCMT). We wanted to investigate to what extend do drift rate and threshold vary as a function of face recognition ability alone and when adjusted by general object recognition ability. Based on our pilot work, we hypothesized that the accumulation of evidence for learned faces (drift rate learned-TRUE) will be positively associated with face recognition ability and that this association will remain positive after adjusting for general object recognition.</p>
 </section>
 <section id="method-and-materials" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Method and Materials</h1>
 <section id="pre-registration-and-open-science" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="pre-registration-and-open-science"><span class="header-section-number">2.1</span> Pre-registration and open science</h2>
-<p>We report how we determined our sample size, all data exclusions (if any), all manipulations, and all measures in the study <span class="citation" data-cites="simonsConstraintsGeneralityCOG2017">(<a href="#ref-simonsConstraintsGeneralityCOG2017" role="doc-biblioref"><strong>simonsConstraintsGeneralityCOG2017?</strong></a>)</span>. The research question, hypotheses, experimental design, planned analysis, and exclusion criteria were preregistered (Experiment: link OSF). The raw data, experimental materials, and analysis code are available on GitHub (link) or the Open Science Framework (link).</p>
+<p>We report how we determined our sample size, all data exclusions (if any), all manipulations, and all measures in the study <span class="citation" data-cites="simonsConstraintsGeneralityCOG2017">(<a href="#ref-simonsConstraintsGeneralityCOG2017" role="doc-biblioref">Simons et al. 2017</a>)</span>. The research question, hypotheses, experimental design, planned analysis, and exclusion criteria were preregistered (<a href="https://osf.io/b74gt/overview" class="uri">https://osf.io/b74gt/overview</a>). Raw data and analysis code are available on Github (link github).</p>
 </section>
 <section id="participants" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="participants"><span class="header-section-number">2.2</span> Participants</h2>
@@ -245,10 +263,10 @@ window.Quarto = {
 <div id="fig-proc-exp" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-proc-exp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/Experimental_procedure_exp.png" class="img-fluid figure-img">
+<img src="figures/Experimental_procedure_IID.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-proc-exp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Experimental procedure of the face recognition task
+Figure&nbsp;2: Experimental procedure of the face recognition task
 </figcaption>
 </figure>
 </div>
@@ -257,7 +275,7 @@ Figure&nbsp;1: Experimental procedure of the face recognition task
 </section>
 <section id="cambridge-memory-tests" class="level3" data-number="2.4.2">
 <h3 data-number="2.4.2" class="anchored" data-anchor-id="cambridge-memory-tests"><span class="header-section-number">2.4.2</span> Cambridge Memory Tests</h3>
-<p>The method of the CFMT was described in Duchaine and Nakayama (ref: 2006). Participants learned 6 Caucasian male faces in three views and had to discriminate them later from distractor faces (no time response limit, three-alternative forced-choice task, <a href="#fig-Cambridge" class="quarto-xref">Figure&nbsp;2</a> a). Regarding the CCMT, the method has been described in Dennett et al.&nbsp;(ref:2012) and has a highly similar structure, format and scoring as the CFMT, but uses cars instead of faces as stimuli.</p>
+<p>The method of the CFMT was described in <span class="citation" data-cites="duchaineCambridgeFaceMemory2006">Duchaine and Nakayama (<a href="#ref-duchaineCambridgeFaceMemory2006" role="doc-biblioref">2006</a>)</span>. Participants learned 6 Caucasian male faces in three views and had to discriminate them later from distractor faces (no time response limit, three-alternative forced-choice task, <a href="#fig-Cambridge" class="quarto-xref">Figure&nbsp;3</a> a). Regarding the CCMT, the method has been described in <span class="citation" data-cites="dennettCambridgeCarMemory2012">Dennett, McKone, Tavashmi, et al. (<a href="#ref-dennettCambridgeCarMemory2012" role="doc-biblioref">2012</a>)</span> and has a highly similar structure, format and scoring as the CFMT, but uses cars instead of faces as stimuli.</p>
 <div class="place" data-arguments="bottom, scope: &quot;parent&quot;, float: true">
 <div id="fig-Cambridge" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -265,25 +283,25 @@ Figure&nbsp;1: Experimental procedure of the face recognition task
 <img src="figures/Cambridge_tests.png" class="img-fluid figure-img" style="width:90.0%">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-Cambridge-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: The two Cambridge Memory Tests
+Figure&nbsp;3: The two Cambridge Memory Tests
 </figcaption>
 </figure>
 </div>
-<p><em>Illustration of (a) the Cambridge Face Memory Test (CFMT; ref Duchain &amp; Nakayama, 2006) and (b) the Cambridge Car Memory Test (CCMT; red Dennett et al., 2012a). These two tests are highly similar, differing only in the category of the presented stimuli. Both tests are composed of three stages: Learn (including Study and Test), Novel Images and Novel Images with Noise. In the Learn stage, participants learn target faces/cars and are then tested on the recognition of the identical images to the learned targets. In the Novel Images and Novel Images with Noise stages, recognition targets are different pictures of the same learned targets, but differing in views, lightning or both. For the CCMT (b), the car pictures showed here are not the one used in the CCMT and served only as a representation of the stimuli used in the Learn stage and the Novel stages of the CCMT. This illustration has been taken and slightly modified from (ref: Dennett et al., 2012b). 3AFC = three-alternative forced choice; ISI = interstimulus interval.</em></p>
+<p><em>Illustration of (a) the Cambridge Face Memory Test (CFMT; ref Duchain &amp; Nakayama, 2006) and (b) the Cambridge Car Memory Test (CCMT; red Dennett et al., 2012a). These two tests are highly similar, differing only in the category of the presented stimuli. Both tests are composed of three stages: Learn (including Study and Test), Novel Images and Novel Images with Noise. In the Learn stage, participants learn target faces/cars and are then tested on the recognition of the identical images to the learned targets. In the Novel Images and Novel Images with Noise stages, recognition targets are different pictures of the same learned targets, but differing in views, lightning or both. For the CCMT (b), the car pictures showed here are not the one used in the CCMT and served only as a representation of the stimuli used in the Learn stage and the Novel stages of the CCMT. This illustration has been taken and slightly modified from</em> <span class="citation" data-cites="dennettFaceAftereffectsPredict2012">Dennett, McKone, Edwards, et al. (<a href="#ref-dennettFaceAftereffectsPredict2012" role="doc-biblioref">2012</a>)</span><em>.</em> <em>3AFC = three-alternative forced choice; ISI = interstimulus interval.</em></p>
 </div>
 </section>
 </section>
 <section id="stimuli" class="level2" data-number="2.5">
 <h2 data-number="2.5" class="anchored" data-anchor-id="stimuli"><span class="header-section-number">2.5</span> Stimuli</h2>
-<p>The face images used in the faces recognition task consisted of images selected from two different data sets of face images: the Face Research Lab London Set (DeBruine, Lisa; Jones, Benedict (2017). Face Research Lab London Set. figshare. Data set. <a href="https://doi.org/10.6084/m9.figshare.5047666.v5" class="uri">https://doi.org/10.6084/m9.figshare.5047666.v5</a>) and the Color FERET Database (<a href="https://www.nist.gov/itl/products-and-services/color-feret-database" class="uri">https://www.nist.gov/itl/products-and-services/color-feret-database</a>). Each of these data sets is composed of images of different identities faces taken from different angle points. 102 identities were selected from the Face Research Lab London Set and 51 from the Color FERET Database. For each selected identity, three pictures of the face at three different view points (3/4 left view, frontal view and 3/4 right view) were cropped following the outline of the face.</p>
-<p>To ensure that the stimuli that we used are reproducible, we used the webmorphR R Package (version?) -&gt; NEED info from Rich here.</p>
+<p>The face images used in the faces recognition task consisted of images selected from two different data sets of face images: the Face Research Lab London Set (DeBruine, Lisa; Jones, Benedict (2017): <a href="https://doi.org/10.6084/m9.figshare.5047666.v5" class="uri">https://doi.org/10.6084/m9.figshare.5047666.v5</a>) and the Color FERET Database (<a href="https://www.nist.gov/itl/products-and-services/color-feret-database" class="uri">https://www.nist.gov/itl/products-and-services/color-feret-database</a>). Each of these data sets is composed of images of different identities faces taken from different angle points. 102 identities were selected from the Face Research Lab London Set and 51 from the Color FERET Database. For each selected identity, three pictures of the face at three different view points (3/4 left view, frontal view and 3/4 right view) were cropped following the outline of the face.</p>
+<p>To ensure that the stimuli that we used are reproducible, we used the webmorphR R Package (<span class="citation" data-cites="webmorph">DeBruine (<a href="#ref-webmorph" role="doc-biblioref">2022</a>)</span>) to crop the face images. The code used to crop the original pictures can be found on OSF (OSF link).</p>
 </section>
 <section id="evidence-accumulation-modeling" class="level2" data-number="2.6">
 <h2 data-number="2.6" class="anchored" data-anchor-id="evidence-accumulation-modeling"><span class="header-section-number">2.6</span> Evidence accumulation modeling</h2>
-<p>The model and priors specification as well as the model estimation are all identical to the one described in (ref: Fournier et al., in press).</p>
+<p>The model and priors specification as well as the model estimation are all identical to the one described in (ref: Fournier et al., in press). The priors specifications are described in Supplementary Materials.</p>
 <section id="model-specification" class="level3" data-number="2.6.1">
 <h3 data-number="2.6.1" class="anchored" data-anchor-id="model-specification"><span class="header-section-number">2.6.1</span> Model specification</h3>
-<p>A hierarchical LBA models was fit to the accuracy and response times of the face recognition task. The model specifications are outlined in our preregistration (<a href="#tbl-model-formula" class="quarto-xref">Table&nbsp;1</a>). The LBA framework assumes a separate evidence accumulator for each response alternative, with potentially different parameter values. Accordingly, one accumulator corresponded to the “Learned” response and the other to the “Novel” response. Threshold was allowed to vary by participants’ response (Learned/Novel) and mean drift rate varied as a function of both stimulus type (Learned/Novel) and weather the accumulator corresponded to the correct response for that stimulus (TRUE vs.&nbsp;FALSE). For example, when a Learned stimulus was presented, the Learned accumulator was designed as TRUE, whereas the Novel accumulator was designed as FALSE. The difference in drift rate between the TRUE and FALSE accumulators reflects the quality of information supporting a decision, with larger differences indicating stronger and more discriminative evidence accumulation <span class="citation" data-cites="lewandoskyComputationalModelingCognition2018">(<a href="#ref-lewandoskyComputationalModelingCognition2018" role="doc-biblioref"><strong>lewandoskyComputationalModelingCognition2018?</strong></a>)</span>. The standard deviation of the TRUE accumulator was allowed to vary according to accumulator match status, whereas the standard deviation of the FALSE accumulator was constrained to be constant to ensure model identifiability <span class="citation" data-cites="donkinGettingMoreAccuracy2009">(<a href="#ref-donkinGettingMoreAccuracy2009" role="doc-biblioref"><strong>donkinGettingMoreAccuracy2009?</strong></a>)</span>. In the preregistered model, a single start-point parameter (A), and single non-decision time parameter (t0) were estimated. Alternative model specifications that permitted variation in these parameters are reported in the Supplementary Materials.</p>
+<p>A hierarchical LBA models was fit to the accuracy and response times of the face recognition task. The model specifications are outlined in our preregistration (<a href="#tbl-model-formula" class="quarto-xref">Table&nbsp;1</a>). The LBA framework assumes a separate evidence accumulator for each response alternative, with potentially different parameter values. Accordingly, one accumulator corresponded to the “Learned” response and the other to the “Novel” response. Threshold was allowed to vary by participants’ response (Learned/Novel) and mean drift rate varied as a function of both stimulus type (Learned/Novel) and weather the accumulator corresponded to the correct response for that stimulus (TRUE vs.&nbsp;FALSE). For example, when a Learned stimulus was presented, the Learned accumulator was designed as TRUE, whereas the Novel accumulator was designed as FALSE. The difference in drift rate between the TRUE and FALSE accumulators reflects the quality of information supporting a decision, with larger differences indicating stronger and more discriminative evidence accumulation (<span class="citation" data-cites="lewandowskyComputationalModelingCognition2018">Lewandowsky and Oberauer (<a href="#ref-lewandowskyComputationalModelingCognition2018" role="doc-biblioref">2018</a>)</span>). The standard deviation of the TRUE accumulator was allowed to vary according to accumulator match status, whereas the standard deviation of the FALSE accumulator was constrained to be constant to ensure model identifiability (<span class="citation" data-cites="donkinGettingMoreAccuracy2009">Donkin et al. (<a href="#ref-donkinGettingMoreAccuracy2009" role="doc-biblioref">2009</a>)</span>). In the preregistered model, a single start-point parameter (A), and single non-decision time parameter (t0) were estimated. Alternative model specifications that permitted variation in these parameters are reported in the Supplementary Materials.</p>
 <div class="cell">
 <div id="tbl-model-formula" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -298,19 +316,19 @@ Table&nbsp;1: Formula specification for the pre-registered linear ballistic accu
 
     <script>
       // Create table-specific functions using external factory
-      const tableFns_b4ay8bsumk5vcogv8jbr = TinyTable.createTableFunctions("tinytable_b4ay8bsumk5vcogv8jbr");
+      const tableFns_vzat4ha34d76wws3s382 = TinyTable.createTableFunctions("tinytable_vzat4ha34d76wws3s382");
       // tinytable span after
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: '7', j: 1 }, { i: '7', j: 2 }, { i: '7', j: 3 }, { i: '7', j: 4 }, { i: '7', j: 5 }, { i: '7', j: 6 } ], css_id: 'tinytable_css_h8gc9im41npaauctxj5m',}, 
-          { positions: [ { i: '0', j: 1 }, { i: '0', j: 2 }, { i: '0', j: 3 }, { i: '0', j: 4 }, { i: '0', j: 5 }, { i: '0', j: 6 } ], css_id: 'tinytable_css_q6xkev41eten33noxw43',}, 
+          { positions: [ { i: '6', j: 1 }, { i: '6', j: 2 }, { i: '6', j: 3 }, { i: '6', j: 4 }, { i: '6', j: 5 }, { i: '6', j: 6 } ], css_id: 'tinytable_css_79de0zp61ndsa4etf2eq',}, 
+          { positions: [ { i: '0', j: 1 }, { i: '0', j: 2 }, { i: '0', j: 3 }, { i: '0', j: 4 }, { i: '0', j: 5 }, { i: '0', j: 6 } ], css_id: 'tinytable_css_38jfhxvu11x7knhxywhy',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  tableFns_b4ay8bsumk5vcogv8jbr.styleCell(cell.i, cell.j, group.css_id);
+                  tableFns_vzat4ha34d76wws3s382.styleCell(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -319,11 +337,11 @@ Table&nbsp;1: Formula specification for the pre-registered linear ballistic accu
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.css">
     <style>
     /* tinytable css entries after */
-    #tinytable_b4ay8bsumk5vcogv8jbr td.tinytable_css_h8gc9im41npaauctxj5m, #tinytable_b4ay8bsumk5vcogv8jbr th.tinytable_css_h8gc9im41npaauctxj5m {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.08em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%;  }
-    #tinytable_b4ay8bsumk5vcogv8jbr td.tinytable_css_q6xkev41eten33noxw43, #tinytable_b4ay8bsumk5vcogv8jbr th.tinytable_css_q6xkev41eten33noxw43 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%;  }
+    #tinytable_vzat4ha34d76wws3s382 td.tinytable_css_79de0zp61ndsa4etf2eq, #tinytable_vzat4ha34d76wws3s382 th.tinytable_css_79de0zp61ndsa4etf2eq {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.08em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%;  }
+    #tinytable_vzat4ha34d76wws3s382 td.tinytable_css_38jfhxvu11x7knhxywhy, #tinytable_vzat4ha34d76wws3s382 th.tinytable_css_38jfhxvu11x7knhxywhy {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%;  }
     </style>
     <div class="container">
-      <table class="tinytable" id="tinytable_b4ay8bsumk5vcogv8jbr" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="tinytable" id="tinytable_vzat4ha34d76wws3s382" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         
         <thead>
               <tr>
@@ -340,10 +358,10 @@ Table&nbsp;1: Formula specification for the pre-registered linear ballistic accu
                 <tr>
                   <td data-row="1" data-col="1">Start point</td>
                   <td data-row="1" data-col="2">A</td>
-                  <td data-row="1" data-col="3">-</td>
-                  <td data-row="1" data-col="4">-</td>
-                  <td data-row="1" data-col="5">-</td>
-                  <td data-row="1" data-col="6">1</td>
+                  <td data-row="1" data-col="3">no</td>
+                  <td data-row="1" data-col="4">no</td>
+                  <td data-row="1" data-col="5">no</td>
+                  <td data-row="1" data-col="6">-</td>
                 </tr>
                 <tr>
                   <td data-row="2" data-col="1">Mean drift rate</td>
@@ -372,7 +390,7 @@ Table&nbsp;1: Formula specification for the pre-registered linear ballistic accu
                 <tr>
                   <td data-row="5" data-col="1">Threshold</td>
                   <td data-row="5" data-col="2">b</td>
-                  <td data-row="5" data-col="3">yes</td>
+                  <td data-row="5" data-col="3">no</td>
                   <td data-row="5" data-col="4">yes</td>
                   <td data-row="5" data-col="5">no</td>
                   <td data-row="5" data-col="6">-</td>
@@ -380,18 +398,10 @@ Table&nbsp;1: Formula specification for the pre-registered linear ballistic accu
                 <tr>
                   <td data-row="6" data-col="1">Non-decision time</td>
                   <td data-row="6" data-col="2">t0</td>
-                  <td data-row="6" data-col="3">yes</td>
+                  <td data-row="6" data-col="3">no</td>
                   <td data-row="6" data-col="4">no</td>
                   <td data-row="6" data-col="5">no</td>
                   <td data-row="6" data-col="6">-</td>
-                </tr>
-                <tr>
-                  <td data-row="7" data-col="1">SD Non-decision time</td>
-                  <td data-row="7" data-col="2">st_0</td>
-                  <td data-row="7" data-col="3">-</td>
-                  <td data-row="7" data-col="4">-</td>
-                  <td data-row="7" data-col="5">-</td>
-                  <td data-row="7" data-col="6">0</td>
                 </tr>
         </tbody>
       </table>
@@ -405,20 +415,19 @@ Table&nbsp;1: Formula specification for the pre-registered linear ballistic accu
 </section>
 <section id="model-estimation" class="level3" data-number="2.6.2">
 <h3 data-number="2.6.2" class="anchored" data-anchor-id="model-estimation"><span class="header-section-number">2.6.2</span> Model estimation</h3>
-<p>Bayesian model estimated was carried using the EMC2 R package. Priors were chosen to be weakly-informative, meaning that they have little influence on the estimation (for more details regarding the priors of each model, see Supplementary Materials). Two sampling steps were used to estimate the parameters. First, a separate estimation of the fixed effects for each participant was conducted. Parameter estimations were then used as the starting point for the full hierarchical parameter estimation.</p>
+<p>Bayesian model estimated was carried using the EMC2 R package <span class="citation" data-cites="EMC2">(<a href="#ref-EMC2" role="doc-biblioref">Stevenson et al. 2026</a>)</span>. Priors were chosen to be weakly-informative, meaning that they have little influence on the estimation (for more details regarding the priors of each model, see Supplementary Materials). Two sampling steps were used to estimate the parameters. First, a separate estimation of the fixed effects for each participant was conducted. Parameter estimations were then used as the starting point for the full hierarchical parameter estimation.</p>
 </section>
 <section id="model-fit" class="level3" data-number="2.6.3">
 <h3 data-number="2.6.3" class="anchored" data-anchor-id="model-fit"><span class="header-section-number">2.6.3</span> Model fit</h3>
-<p>To ensure that the fit of our model can capture most of the main trends in the data, graphical summaries of the posterior predictions were examined. (Check fit of the model, Supplementary Materials)</p>
-<p>If the model is reasonable, it should be able to generate data that looks sensibly similar to the accuracy and response times data.</p>
+<p>To ensure that the fit of our model can capture most of the main trends in the data, graphical summaries of the posterior predictions were examined. Convergence plots and posterior predictive checks can be found in Supplementary Materials.</p>
 </section>
 </section>
 <section id="data-analysis" class="level2" data-number="2.7">
 <h2 data-number="2.7" class="anchored" data-anchor-id="data-analysis"><span class="header-section-number">2.7</span> Data analysis</h2>
-<p>Regarding the general analytical strategy, two main approaches were considered. Correlations and data visualizations were used to characterize the zero-order relationships between parameters of interest (drift rate and threshold) from the LBA model with face and object recognition ability. Linear regression was then used to estimate how much LBA parameters vary as a function of face recognition ability, as well as how much these parameters vary after adjusting for car recognition ability. The details of the analytical strategy were preregistered (<a href="https://osf.io/b74gt/overview" class="uri">https://osf.io/b74gt/overview</a>).</p>
+<p>Regarding the general analytical strategy, two main approaches were considered. Correlations and data visualizations were used to characterize the zero-order relationships between parameters of interest (drift rate and threshold) from the LBA model with face and object recognition ability. Linear regression was then conducted to estimate how much LBA parameters vary as a function of face recognition ability, as well as how much these parameters vary after adjusting for car recognition ability. The details of the analysis plan were preregistered (<a href="https://osf.io/b74gt/overview" class="uri">https://osf.io/b74gt/overview</a>).</p>
 <section id="lba-parameters" class="level3" data-number="2.7.1">
 <h3 data-number="2.7.1" class="anchored" data-anchor-id="lba-parameters"><span class="header-section-number">2.7.1</span> LBA parameters</h3>
-<p>Median and interval estimates (95% quantile intervals) of the posterior distributions of each parameters were examined. Contrasts between the parameters of interest were</p>
+<p>In order to make inference about the magnitude of familiarity effects, differences in parameter estimates across conditions were compared. To summarize the distribution of parameters of interest, we report the median of the posterior distribution together with 95% quantile interval of the posterior distribution.</p>
 </section>
 <section id="classical-correlational-analysis" class="level3" data-number="2.7.2">
 <h3 data-number="2.7.2" class="anchored" data-anchor-id="classical-correlational-analysis"><span class="header-section-number">2.7.2</span> Classical correlational analysis</h3>
@@ -426,14 +435,17 @@ Table&nbsp;1: Formula specification for the pre-registered linear ballistic accu
 </section>
 <section id="bayesian-plausible-value-correlational-analysis" class="level3" data-number="2.7.3">
 <h3 data-number="2.7.3" class="anchored" data-anchor-id="bayesian-plausible-value-correlational-analysis"><span class="header-section-number">2.7.3</span> Bayesian plausible value correlational analysis</h3>
-<p>In addition to the classical correlational analysis described above, we conducted a Bayesian plausible value correlation approach (ref: Ly et al., 2017; Matzke et al., 2017). Instead of using point estimates (median value of each parameter’s posterior distribution), this approach permits the estimation of uncertainty in likely correlational values by correlating the parameter estimation from each sample (or “draw”) from the posterior distribution with the memory scores. A distribution of the plausible correlations between each parameter and the memory scores can then obtained. These distributions can compared between stimuli conditions (Learned vs Novel) or memory scores (face vs car) using difference contrasts. It allowed us to estimate if the strength of the correlation differs or not between conditions of interest.</p>
+<p>In addition to the classical correlational analysis described above, we conducted a Bayesian plausible value correlation approach <span class="citation" data-cites="lyFlexibleEfficientHierarchical2017 matzkeBayesianInferenceCorrelations2017">(<a href="#ref-lyFlexibleEfficientHierarchical2017" role="doc-biblioref">Ly et al. 2017</a>; <a href="#ref-matzkeBayesianInferenceCorrelations2017" role="doc-biblioref">Matzke et al. 2017</a>)</span>. Instead of using point estimates (median value of each parameter’s posterior distribution), this approach permits the estimation of uncertainty in likely correlational values by correlating the parameter estimation from each sample (or “draw”) from the posterior distribution with the memory scores. A distribution of the plausible correlations between each parameter and the memory scores can then obtained. These distributions can compared between stimuli conditions (Learned vs Novel) or memory scores (face vs car) using difference contrasts. It allowed us to estimate if the strength of the correlation differs or not between conditions of interest.</p>
 </section>
 <section id="linear-regression" class="level3" data-number="2.7.4">
 <h3 data-number="2.7.4" class="anchored" data-anchor-id="linear-regression"><span class="header-section-number">2.7.4</span> Linear regression</h3>
-<p>Two Bayesian linear regression models were fit to quantify the extent to which parameters of interest of the LBA model vary as a function of face recognition ability alone and when accounting for car recognition ability. In total, four regression models were fitted, two for the drift rate parameter and two for the threshold parameter (see <a href="#tbl-regression-model-formula" class="quarto-xref">Table&nbsp;2</a> for the details of each regression models).</p>
-<div class="cell" data-tbl-cap-location="bottom">
-<div id="tbl-regression-model-formula" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-cap-location="bottom">
+<p>Based on our pilot results, we preregistered two Bayesian linear regression models to quantify the extent to which drift rate vary as a function of face recognition ability alone and when accounting for car recognition ability. The results of the linear regresison for the threshold parameter are available in the Supplementary materials.An index coding approach was used (no grand interecept) where each condition of interest has its own intercept (see <a href="#tbl-regression-model-formula" class="quarto-xref">Table&nbsp;2</a> for the details of each regression models).</p>
+<div class="cell">
+<div id="tbl-regression-model-formula" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-regression-model-formula-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Formula specification for the pre-registered linear regression models.
+</figcaption>
 <div aria-describedby="tbl-regression-model-formula-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
 <!-- preamble start -->
@@ -442,19 +454,19 @@ Table&nbsp;1: Formula specification for the pre-registered linear ballistic accu
 
     <script>
       // Create table-specific functions using external factory
-      const tableFns_ofkiewopztjptctudlmh = TinyTable.createTableFunctions("tinytable_ofkiewopztjptctudlmh");
+      const tableFns_l1nawsl0boyii30xh0i8 = TinyTable.createTableFunctions("tinytable_l1nawsl0boyii30xh0i8");
       // tinytable span after
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: '4', j: 1 }, { i: '4', j: 2 }, { i: '4', j: 3 }, { i: '4', j: 4 } ], css_id: 'tinytable_css_te5nsjv4nbkbr3yusnk5',}, 
-          { positions: [ { i: '0', j: 1 }, { i: '0', j: 2 }, { i: '0', j: 3 }, { i: '0', j: 4 } ], css_id: 'tinytable_css_w8bn094bgsk1ziaycgaz',}, 
+          { positions: [ { i: '2', j: 1 }, { i: '2', j: 2 }, { i: '2', j: 3 }, { i: '2', j: 4 } ], css_id: 'tinytable_css_sq4k6rk8zbw0uucpnl9l',}, 
+          { positions: [ { i: '0', j: 1 }, { i: '0', j: 2 }, { i: '0', j: 3 }, { i: '0', j: 4 } ], css_id: 'tinytable_css_nv784db2jxt7liubxh4b',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  tableFns_ofkiewopztjptctudlmh.styleCell(cell.i, cell.j, group.css_id);
+                  tableFns_l1nawsl0boyii30xh0i8.styleCell(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -463,11 +475,11 @@ Table&nbsp;1: Formula specification for the pre-registered linear ballistic accu
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.css">
     <style>
     /* tinytable css entries after */
-    #tinytable_ofkiewopztjptctudlmh td.tinytable_css_te5nsjv4nbkbr3yusnk5, #tinytable_ofkiewopztjptctudlmh th.tinytable_css_te5nsjv4nbkbr3yusnk5 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.08em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%;  }
-    #tinytable_ofkiewopztjptctudlmh td.tinytable_css_w8bn094bgsk1ziaycgaz, #tinytable_ofkiewopztjptctudlmh th.tinytable_css_w8bn094bgsk1ziaycgaz {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%;  }
+    #tinytable_l1nawsl0boyii30xh0i8 td.tinytable_css_sq4k6rk8zbw0uucpnl9l, #tinytable_l1nawsl0boyii30xh0i8 th.tinytable_css_sq4k6rk8zbw0uucpnl9l {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.08em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%;  }
+    #tinytable_l1nawsl0boyii30xh0i8 td.tinytable_css_nv784db2jxt7liubxh4b, #tinytable_l1nawsl0boyii30xh0i8 th.tinytable_css_nv784db2jxt7liubxh4b {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%;  }
     </style>
     <div class="container">
-      <table class="tinytable" id="tinytable_ofkiewopztjptctudlmh" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="tinytable" id="tinytable_l1nawsl0boyii30xh0i8" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         
         <thead>
               <tr>
@@ -477,31 +489,19 @@ Table&nbsp;1: Formula specification for the pre-registered linear ballistic accu
                 <th scope="col" data-row="0" data-col="4">Formula</th>
               </tr>
         </thead>
-        <tfoot><tr><td colspan="4">condition = training condition (Learned vs. Novel); accuracy = response accuracy (TRUE vs. FALSE)</td></tr></tfoot>
+        <tfoot><tr><td colspan="4">familiarity = face familiarity (Learned vs. Novel); accuracy = response accuracy (TRUE vs. FALSE)</td></tr></tfoot>
         <tbody>
                 <tr>
                   <td data-row="1" data-col="1">Median drift rate</td>
-                  <td data-row="1" data-col="2">condition:accuracy</td>
+                  <td data-row="1" data-col="2">familiarity:accuracy</td>
                   <td data-row="1" data-col="3">Face</td>
-                  <td data-row="1" data-col="4">Median drift rate ~ 0 + condition:accuracy + face_ability + (0|participant)</td>
+                  <td data-row="1" data-col="4">Median drift rate:  0 + familiarity:accuracy + face_ability + (0|participant)</td>
                 </tr>
                 <tr>
                   <td data-row="2" data-col="1">Median drift rate</td>
-                  <td data-row="2" data-col="2">condition:accuracy</td>
+                  <td data-row="2" data-col="2">familiarity:accuracy</td>
                   <td data-row="2" data-col="3">Face + Car</td>
-                  <td data-row="2" data-col="4">Median drift rate ~ 0 + condition:accuracy + face_ability + car_ability + (0|participant)</td>
-                </tr>
-                <tr>
-                  <td data-row="3" data-col="1">Median threshold</td>
-                  <td data-row="3" data-col="2">condition</td>
-                  <td data-row="3" data-col="3">Face</td>
-                  <td data-row="3" data-col="4">Median threshold ~ 0 + condition + face_ability + (0|participant)</td>
-                </tr>
-                <tr>
-                  <td data-row="4" data-col="1">Median threshold</td>
-                  <td data-row="4" data-col="2">condition</td>
-                  <td data-row="4" data-col="3">Face + Car</td>
-                  <td data-row="4" data-col="4">Median threshold ~ 0 + condition + face_ability + car_ability + (0|participant)</td>
+                  <td data-row="2" data-col="4">Median drift rate: 0 + familiarity:accuracy + face_ability + car_ability + (0|participant)</td>
                 </tr>
         </tbody>
       </table>
@@ -509,15 +509,13 @@ Table&nbsp;1: Formula specification for the pre-registered linear ballistic accu
 <!-- hack to avoid NA insertion in last line -->
 </div>
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-regression-model-formula-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;2: Formula specification for the pre-registered linear regression models.
-</figcaption>
 </figure>
 </div>
 </div>
 </section>
 <section id="inferential-criteria" class="level3" data-number="2.7.5">
 <h3 data-number="2.7.5" class="anchored" data-anchor-id="inferential-criteria"><span class="header-section-number">2.7.5</span> Inferential criteria</h3>
+<p>Using a Bayesian approach in our regression analysis allowed us to evaluate the posterior distributions of the parameter of our predictor of interest (Face Memory score). To evaluate these posterior distributions, we used three complementary criteria: sign, size and precision <span class="citation" data-cites="cummingNewStatisticsWhy2014 kruschkeBayesianDataAnalysis2018 mcelreathStatisticalRethinkingBayesian">(<a href="#ref-cummingNewStatisticsWhy2014" role="doc-biblioref">Cumming 2014</a>; <a href="#ref-kruschkeBayesianDataAnalysis2018" role="doc-biblioref">Kruschke and Liddell 2018</a>; <a href="#ref-mcelreathStatisticalRethinkingBayesian" role="doc-biblioref">McElreath, n.d.</a>)</span>. To address the sign (or direction) of the effect, we reported if the median value is positive or negative. Second, we evaluated the size or magnitude of the posterior distribution by considering the size of the median value as well as the extent to which lower or upper bounds of the 95% quantile interval approach zero (no relationship). For example, if the 95% quantile interval excluded zero, we would have been reasonably confident in our inference of a non-zero effect. Furthermore, we used the width of the 95% quantile intervals as an indicator of estimation precision. Whereas narrow estimates indicate precise estimates, wider intervals indicate substantial uncertainty about the estimated parameter value, which may warrant a more cautious interpretation.</p>
 </section>
 </section>
 </section>
@@ -525,46 +523,674 @@ Table&nbsp;2: Formula specification for the pre-registered linear regression mod
 <h1 data-number="3"><span class="header-section-number">3</span> Results</h1>
 <section id="lba-parameters-1" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="lba-parameters-1"><span class="header-section-number">3.1</span> LBA parameters</h2>
+<p>Posterior distributions for drift rate and threshold parameters are visualized in <a href="#fig-threshold" class="quarto-xref">Figure&nbsp;4</a> and <a href="#fig-drift" class="quarto-xref">Figure&nbsp;5</a> and the medians and 95% quantile intervals are summarised in <a href="#tbl-lba-params" class="quarto-xref">Table&nbsp;3</a>.</p>
+<p><em>Threshold:</em> Inspection of the posterior distribution shows that there is an effect of familiarity on the threshold parameter.</p>
+<p><em>Drift rate:</em> Inspection of the posterior distribution shows that there is a familiarity effect in drift rate difference. The quality of the evidence accumulation was greater for Novel faces compared to Learned faces.</p>
+<div id="fig-threshold" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-threshold-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-threshold" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-threshold-1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-threshold-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="manuscript_files/figure-html/fig-threshold-1.svg" class="img-fluid figure-img" data-ref-parent="fig-threshold" width="336">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-threshold-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) Threshold by response
+</figcaption>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-threshold" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-threshold-2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-threshold-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="manuscript_files/figure-html/fig-threshold-2.svg" class="img-fluid figure-img" data-ref-parent="fig-threshold" width="336">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-threshold-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) Threshold (novel - learned) contrast
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-threshold-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Threshold estimates
+</figcaption>
+</figure>
+</div>
+<div id="fig-drift" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-drift-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-drift" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-drift-1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-drift-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="manuscript_files/figure-html/fig-drift-1.svg" class="img-fluid figure-img" data-ref-parent="fig-drift" width="336">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-drift-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) Drift rate (TRUE - FALSE) by condition
+</figcaption>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-drift" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-drift-2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-drift-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="manuscript_files/figure-html/fig-drift-2.svg" class="img-fluid figure-img" data-ref-parent="fig-drift" width="336">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-drift-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) Drift rate (novel - learned) contrast
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-drift-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Drift rate estimates
+</figcaption>
+</figure>
+</div>
+<div class="cell">
+<div id="tbl-lba-params" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-lba-params-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: Posterior median and 95% quantile intervals for threshold and drift rate parameters.
+</figcaption>
+<div aria-describedby="tbl-lba-params-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script src="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.js"></script>
+
+    <script>
+      // Create table-specific functions using external factory
+      const tableFns_blh0b6izgx21ds5xni8l = TinyTable.createTableFunctions("tinytable_blh0b6izgx21ds5xni8l");
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: '6', j: 1 }, { i: '6', j: 2 }, { i: '6', j: 3 }, { i: '6', j: 4 } ], css_id: 'tinytable_css_d74p23hdc919oo740njd',}, 
+          { positions: [ { i: '1', j: 1 }, { i: '2', j: 1 }, { i: '3', j: 1 }, { i: '4', j: 1 }, { i: '5', j: 1 }, { i: '1', j: 2 }, { i: '2', j: 2 }, { i: '3', j: 2 }, { i: '4', j: 2 }, { i: '5', j: 2 }, { i: '1', j: 3 }, { i: '2', j: 3 }, { i: '3', j: 3 }, { i: '4', j: 3 }, { i: '5', j: 3 }, { i: '1', j: 4 }, { i: '2', j: 4 }, { i: '3', j: 4 }, { i: '4', j: 4 }, { i: '5', j: 4 } ], css_id: 'tinytable_css_u8dqtxre7p9d6godne0l',}, 
+          { positions: [ { i: '0', j: 1 }, { i: '0', j: 2 }, { i: '0', j: 3 }, { i: '0', j: 4 } ], css_id: 'tinytable_css_kv0z45dwxowwvjwnv4xb',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  tableFns_blh0b6izgx21ds5xni8l.styleCell(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.css">
+    <style>
+    /* tinytable css entries after */
+    #tinytable_blh0b6izgx21ds5xni8l td.tinytable_css_d74p23hdc919oo740njd, #tinytable_blh0b6izgx21ds5xni8l th.tinytable_css_d74p23hdc919oo740njd {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.08em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; font-size: 0.85em }
+    #tinytable_blh0b6izgx21ds5xni8l td.tinytable_css_u8dqtxre7p9d6godne0l, #tinytable_blh0b6izgx21ds5xni8l th.tinytable_css_u8dqtxre7p9d6godne0l { font-size: 0.85em }
+    #tinytable_blh0b6izgx21ds5xni8l td.tinytable_css_kv0z45dwxowwvjwnv4xb, #tinytable_blh0b6izgx21ds5xni8l th.tinytable_css_kv0z45dwxowwvjwnv4xb {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; font-size: 0.85em }
+    </style>
+    <div class="container">
+      <table class="tinytable" id="tinytable_blh0b6izgx21ds5xni8l" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        
+        <thead>
+              <tr>
+                <th scope="col" data-row="0" data-col="1">Parameter</th>
+                <th scope="col" data-row="0" data-col="2">Condition</th>
+                <th scope="col" data-row="0" data-col="3">Median</th>
+                <th scope="col" data-row="0" data-col="4">95% QI</th>
+              </tr>
+        </thead>
+        <tfoot><tr><td colspan="4">QI = quantile interval.</td></tr></tfoot>
+        <tbody>
+                <tr>
+                  <td data-row="1" data-col="1">Threshold</td>
+                  <td data-row="1" data-col="2">novel</td>
+                  <td data-row="1" data-col="3">2.25</td>
+                  <td data-row="1" data-col="4">[2.169, 2.323]</td>
+                </tr>
+                <tr>
+                  <td data-row="2" data-col="1">Threshold</td>
+                  <td data-row="2" data-col="2">learned</td>
+                  <td data-row="2" data-col="3">1.89</td>
+                  <td data-row="2" data-col="4">[1.822, 1.96]</td>
+                </tr>
+                <tr>
+                  <td data-row="3" data-col="1">Threshold contrast</td>
+                  <td data-row="3" data-col="2">novel - learned</td>
+                  <td data-row="3" data-col="3">0.35</td>
+                  <td data-row="3" data-col="4">[0.316, 0.394]</td>
+                </tr>
+                <tr>
+                  <td data-row="4" data-col="1">Drift rate</td>
+                  <td data-row="4" data-col="2">novel</td>
+                  <td data-row="4" data-col="3">1.15</td>
+                  <td data-row="4" data-col="4">[1.098, 1.199]</td>
+                </tr>
+                <tr>
+                  <td data-row="5" data-col="1">Drift rate</td>
+                  <td data-row="5" data-col="2">learned</td>
+                  <td data-row="5" data-col="3">0.15</td>
+                  <td data-row="5" data-col="4">[0.097, 0.195]</td>
+                </tr>
+                <tr>
+                  <td data-row="6" data-col="1">Drift rate contrast</td>
+                  <td data-row="6" data-col="2">novel - learned</td>
+                  <td data-row="6" data-col="3">1</td>
+                  <td data-row="6" data-col="4">[0.91, 1.094]</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+</figure>
+</div>
+</div>
 </section>
 <section id="correlations" class="level2" data-number="3.2">
 <h2 data-number="3.2" class="anchored" data-anchor-id="correlations"><span class="header-section-number">3.2</span> Correlations</h2>
+<p>We examined point-wise recognition ability linear relationship with point estimates (median) of the posterior distribution of each of the LBA parameters of interest. These relationships can been see in <a href="#fig-corr-point-estimates" class="quarto-xref">Figure&nbsp;6</a> for both recognition ability. Visual inspections of these correlations seemed to show that the accumulation of evidence (drift rate) for learned and novel faces increases as face recognition ability increases. A similar conclusion could be drawn from the inspection of the response caution (threshold) towards the “Learned” response. However the strength of these relationship remains weak (the highest <em>r</em> value is 0.24) and we used a Bayesian plausible value correlational approach to determine the uncertainty linked to these associations.</p>
+<div id="fig-corr-point-estimates" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-corr-point-estimates-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
+<p>Point estimates correlations with recognition scores</p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-corr-point-estimates-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="bayesian-plausible-value-correlational-analysis-1" class="level2" data-number="3.3">
 <h2 data-number="3.3" class="anchored" data-anchor-id="bayesian-plausible-value-correlational-analysis-1"><span class="header-section-number">3.3</span> Bayesian plausible value correlational analysis</h2>
+<p>To estimate the uncertainty linked to the relationships between LBA estimated parameters and face recognition ability, we used a Bayesian plausible value correlational analysis. Like described above (see Methods), instead of using a single point estimate to assess the strength of the relationship between our variables of interest, the posterior distribution of the LBA parameters allow us to use the entire sampling distribution to do it. We calculated the Person’s <em>r</em> between each sample value from our posterior distribution for each parameter of each subject and their face recognition ability. The posterior distributions of threshold plausible correlation values and their contrast are shown in <a href="#fig-plausible-corr-thresh" class="quarto-xref">Figure&nbsp;7</a>. Posterior correlations with true and false drift rate for both conditions and recognition abilities can be found in <a href="#fig-plausible-corr-drift-true-false" class="quarto-xref">Figure&nbsp;8</a>, and correlations with drift rate differences (true-false) by conditions as well as drift rate contrast (novel-false) in <a href="#fig-plausible-corr-drift-diff" class="quarto-xref">Figure&nbsp;9</a>. <a href="#tbl-plausible-cor" class="quarto-xref">Table&nbsp;4</a> provides a summary of these distributions.</p>
+<p><em>Threshold:</em> There is a positive relationship between response caution for both learned and novel faces and recognition ability. Regarding face recognition ability, people with a higher face recognition ability have a higher response caution for learned faces whereas people with a higher car recognition ability have a higher threshold for both learned and novel faces.</p>
+<p><em>Drift rate:</em> A higher face recognition ability is associated with a greater drift rate for both novel and learned faces. However, a higher car recognition ability is only associated with an increase drift rate for novel faces.</p>
+<div id="fig-plausible-corr-thresh" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-plausible-corr-thresh-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-plausible-corr-thresh" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-plausible-corr-thresh-1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-plausible-corr-thresh-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="manuscript_files/figure-html/fig-plausible-corr-thresh-1.svg" class="img-fluid figure-img" data-ref-parent="fig-plausible-corr-thresh" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-plausible-corr-thresh-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) Posterior correlations values distributions between threshold by response and recognition abilities
+</figcaption>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-plausible-corr-thresh" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-plausible-corr-thresh-2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-plausible-corr-thresh-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="manuscript_files/figure-html/fig-plausible-corr-thresh-2.svg" class="img-fluid figure-img" data-ref-parent="fig-plausible-corr-thresh" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-plausible-corr-thresh-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) Posterior correlations values distribution between threshold difference (novel-learned) and recognition abilities
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-plausible-corr-thresh-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7: Plausible correlation values distributions between threshold and recognition abilities. Points denote the median of the distribution and error bars represent 95% quantile intervals.
+</figcaption>
+</figure>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-plausible-corr-drift-true-false" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-plausible-corr-drift-true-false-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="manuscript_files/figure-html/fig-plausible-corr-drift-true-false-1.svg" class="img-fluid figure-img" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-plausible-corr-drift-true-false-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8: Plausible correlation values distributions between drift rate TRUE and FALSE by stimulus and recognition abilities. Points denote the median of the distribution and error bars represent 95% quantile intervals.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div id="fig-plausible-corr-drift-diff" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-plausible-corr-drift-diff-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-plausible-corr-drift-diff" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-plausible-corr-drift-diff-1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-plausible-corr-drift-diff-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="manuscript_files/figure-html/fig-plausible-corr-drift-diff-1.svg" class="img-fluid figure-img" data-ref-parent="fig-plausible-corr-drift-diff" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-plausible-corr-drift-diff-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) Posterior correlations values distributions between drift rate by stimulus (TRUE - FALSE) and recognition abilities
+</figcaption>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-plausible-corr-drift-diff" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-plausible-corr-drift-diff-2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-plausible-corr-drift-diff-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="manuscript_files/figure-html/fig-plausible-corr-drift-diff-2.svg" class="img-fluid figure-img" data-ref-parent="fig-plausible-corr-drift-diff" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-plausible-corr-drift-diff-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) Posterior correlations values distribution between drift rate difference (novel-learned) and recognition abilities
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-plausible-corr-drift-diff-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9: Plausible correlation values distributions between drift rate differences and recognition abilities. Points denote the median of the distribution and error bars represent 95% quantile intervals.
+</figcaption>
+</figure>
+</div>
+<div class="cell" data-tbl-height="10" data-tbl-width="15">
+<div id="tbl-plausible-cor" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-width="15" data-tbl-height="10">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-plausible-cor-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;4: Median r and 95% quantile intervals of the plausible value correlations between LBA parameters and recogntion ability scores.
+</figcaption>
+<div aria-describedby="tbl-plausible-cor-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script src="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.js"></script>
+
+    <script>
+      // Create table-specific functions using external factory
+      const tableFns_lzf7jcoh2nol8j9yq3wc = TinyTable.createTableFunctions("tinytable_lzf7jcoh2nol8j9yq3wc");
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: '-1', j: 7 } ], css_id: 'tinytable_css_k1seltig0ldvqnqdat9j',}, 
+          { positions: [ { i: '10', j: 6 }, { i: '10', j: 7 } ], css_id: 'tinytable_css_yj7mgetpwpftvgydtfm7',}, 
+          { positions: [ { i: '-1', j: 5 } ], css_id: 'tinytable_css_aljlqup1a071vokc1jli',}, 
+          { positions: [ { i: '3', j: 4 }, { i: '8', j: 4 }, { i: '3', j: 5 }, { i: '8', j: 5 } ], css_id: 'tinytable_css_u3d68cv3uemae1fhcgpq',}, 
+          { positions: [ { i: '1', j: 4 }, { i: '6', j: 4 }, { i: '9', j: 4 }, { i: '1', j: 5 }, { i: '6', j: 5 }, { i: '9', j: 5 }, { i: '1', j: 6 }, { i: '2', j: 6 }, { i: '3', j: 6 }, { i: '4', j: 6 }, { i: '5', j: 6 }, { i: '7', j: 6 }, { i: '9', j: 6 }, { i: '1', j: 7 }, { i: '2', j: 7 }, { i: '3', j: 7 }, { i: '4', j: 7 }, { i: '5', j: 7 }, { i: '7', j: 7 }, { i: '9', j: 7 } ], css_id: 'tinytable_css_x6k581hvhqczt43q05kq',}, 
+          { positions: [ { i: '-1', j: 4 }, { i: '-1', j: 6 } ], css_id: 'tinytable_css_8ugkmkexzmbwswae226r',}, 
+          { positions: [ { i: '10', j: 1 }, { i: '10', j: 2 }, { i: '10', j: 3 }, { i: '10', j: 4 }, { i: '10', j: 5 } ], css_id: 'tinytable_css_a43x363hzop3h6dlsmrh',}, 
+          { positions: [ { i: '1', j: 1 }, { i: '2', j: 1 }, { i: '3', j: 1 }, { i: '4', j: 1 }, { i: '5', j: 1 }, { i: '6', j: 1 }, { i: '7', j: 1 }, { i: '8', j: 1 }, { i: '9', j: 1 }, { i: '1', j: 2 }, { i: '2', j: 2 }, { i: '3', j: 2 }, { i: '4', j: 2 }, { i: '5', j: 2 }, { i: '6', j: 2 }, { i: '7', j: 2 }, { i: '8', j: 2 }, { i: '9', j: 2 }, { i: '1', j: 3 }, { i: '2', j: 3 }, { i: '3', j: 3 }, { i: '4', j: 3 }, { i: '5', j: 3 }, { i: '6', j: 3 }, { i: '7', j: 3 }, { i: '8', j: 3 }, { i: '9', j: 3 }, { i: '2', j: 4 }, { i: '4', j: 4 }, { i: '5', j: 4 }, { i: '7', j: 4 }, { i: '2', j: 5 }, { i: '4', j: 5 }, { i: '5', j: 5 }, { i: '7', j: 5 }, { i: '6', j: 6 }, { i: '8', j: 6 }, { i: '6', j: 7 }, { i: '8', j: 7 } ], css_id: 'tinytable_css_i64vn7mf1gw1rlde8z9m',}, 
+          { positions: [ { i: '0', j: 1 }, { i: '0', j: 2 }, { i: '0', j: 3 }, { i: '0', j: 4 }, { i: '0', j: 5 }, { i: '0', j: 6 }, { i: '0', j: 7 } ], css_id: 'tinytable_css_prydy2dj39qxmy9ddqed',}, 
+          { positions: [ { i: '-1', j: 1 }, { i: '-1', j: 2 }, { i: '-1', j: 3 } ], css_id: 'tinytable_css_ng3kncztzpqv5k5h0rao',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  tableFns_lzf7jcoh2nol8j9yq3wc.styleCell(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.css">
+    <style>
+    /* tinytable css entries after */
+    #tinytable_lzf7jcoh2nol8j9yq3wc td.tinytable_css_k1seltig0ldvqnqdat9j, #tinytable_lzf7jcoh2nol8j9yq3wc th.tinytable_css_k1seltig0ldvqnqdat9j {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: black; --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.03em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; font-weight: bold; text-align: center; font-size: 0.8em }
+    #tinytable_lzf7jcoh2nol8j9yq3wc td.tinytable_css_yj7mgetpwpftvgydtfm7, #tinytable_lzf7jcoh2nol8j9yq3wc th.tinytable_css_yj7mgetpwpftvgydtfm7 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.08em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; font-size: 0.7em; color: #0000FF }
+    #tinytable_lzf7jcoh2nol8j9yq3wc td.tinytable_css_aljlqup1a071vokc1jli, #tinytable_lzf7jcoh2nol8j9yq3wc th.tinytable_css_aljlqup1a071vokc1jli {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: black; --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.03em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 3%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; font-weight: bold; text-align: center; font-size: 0.8em }
+    #tinytable_lzf7jcoh2nol8j9yq3wc td.tinytable_css_u3d68cv3uemae1fhcgpq, #tinytable_lzf7jcoh2nol8j9yq3wc th.tinytable_css_u3d68cv3uemae1fhcgpq { font-size: 0.7em; color: #FF0000 }
+    #tinytable_lzf7jcoh2nol8j9yq3wc td.tinytable_css_x6k581hvhqczt43q05kq, #tinytable_lzf7jcoh2nol8j9yq3wc th.tinytable_css_x6k581hvhqczt43q05kq { font-size: 0.7em; color: #0000FF }
+    #tinytable_lzf7jcoh2nol8j9yq3wc td.tinytable_css_8ugkmkexzmbwswae226r, #tinytable_lzf7jcoh2nol8j9yq3wc th.tinytable_css_8ugkmkexzmbwswae226r {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: black; --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.03em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 3%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; font-weight: bold; text-align: center; font-size: 0.8em }
+    #tinytable_lzf7jcoh2nol8j9yq3wc td.tinytable_css_a43x363hzop3h6dlsmrh, #tinytable_lzf7jcoh2nol8j9yq3wc th.tinytable_css_a43x363hzop3h6dlsmrh {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.08em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; font-size: 0.7em }
+    #tinytable_lzf7jcoh2nol8j9yq3wc td.tinytable_css_i64vn7mf1gw1rlde8z9m, #tinytable_lzf7jcoh2nol8j9yq3wc th.tinytable_css_i64vn7mf1gw1rlde8z9m { font-size: 0.7em }
+    #tinytable_lzf7jcoh2nol8j9yq3wc td.tinytable_css_prydy2dj39qxmy9ddqed, #tinytable_lzf7jcoh2nol8j9yq3wc th.tinytable_css_prydy2dj39qxmy9ddqed {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; font-weight: bold; font-size: 0.8em }
+    #tinytable_lzf7jcoh2nol8j9yq3wc td.tinytable_css_ng3kncztzpqv5k5h0rao, #tinytable_lzf7jcoh2nol8j9yq3wc th.tinytable_css_ng3kncztzpqv5k5h0rao {  position: relative; --border-bottom: 0; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.1em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; font-weight: bold; text-align: center; font-size: 0.8em }
+    </style>
+    <div class="container">
+      <table class="tinytable" id="tinytable_lzf7jcoh2nol8j9yq3wc" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        
+        <thead>
+<tr>
+<th scope="col" align="center" colspan="1" data-row="-1" data-col="1"> </th>
+<th scope="col" align="center" colspan="1" data-row="-1" data-col="2"> </th>
+<th scope="col" align="center" colspan="1" data-row="-1" data-col="3"> </th>
+<th scope="col" align="center" colspan="2" data-row="-1" data-col="4">Face</th>
+<th scope="col" align="center" colspan="2" data-row="-1" data-col="6">Car</th>
+</tr>
+              <tr>
+                <th scope="col" data-row="0" data-col="1">Parameter</th>
+                <th scope="col" data-row="0" data-col="2">Condition</th>
+                <th scope="col" data-row="0" data-col="3">Accuracy</th>
+                <th scope="col" data-row="0" data-col="4">median r_Face</th>
+                <th scope="col" data-row="0" data-col="5">95% QI_Face</th>
+                <th scope="col" data-row="0" data-col="6">median r_Car</th>
+                <th scope="col" data-row="0" data-col="7">95% QI_Car</th>
+              </tr>
+        </thead>
+        <tfoot><tr><td colspan="7">Note. Blue = 95% QI entirely above zero; red = 95% QI entirely below zero.</td></tr></tfoot>
+        <tbody>
+                <tr>
+                  <td data-row="1" data-col="1">Threshold</td>
+                  <td data-row="1" data-col="2">Learned</td>
+                  <td data-row="1" data-col="3">-</td>
+                  <td data-row="1" data-col="4">0.12</td>
+                  <td data-row="1" data-col="5">[0.06, 0.18]</td>
+                  <td data-row="1" data-col="6">0.13</td>
+                  <td data-row="1" data-col="7">[0.08, 0.19]</td>
+                </tr>
+                <tr>
+                  <td data-row="2" data-col="1">Threshold</td>
+                  <td data-row="2" data-col="2">Novel</td>
+                  <td data-row="2" data-col="3">-</td>
+                  <td data-row="2" data-col="4">0.06</td>
+                  <td data-row="2" data-col="5">[-0.00, 0.11]</td>
+                  <td data-row="2" data-col="6">0.18</td>
+                  <td data-row="2" data-col="7">[0.13, 0.24]</td>
+                </tr>
+                <tr>
+                  <td data-row="3" data-col="1">Threshold</td>
+                  <td data-row="3" data-col="2">Novel-Learned</td>
+                  <td data-row="3" data-col="3">-</td>
+                  <td data-row="3" data-col="4">-0.06</td>
+                  <td data-row="3" data-col="5">[-0.11, -0.02]</td>
+                  <td data-row="3" data-col="6">0.10</td>
+                  <td data-row="3" data-col="7">[0.05, 0.14]</td>
+                </tr>
+                <tr>
+                  <td data-row="4" data-col="1">Drift</td>
+                  <td data-row="4" data-col="2">Learned</td>
+                  <td data-row="4" data-col="3">True</td>
+                  <td data-row="4" data-col="4">0.05</td>
+                  <td data-row="4" data-col="5">[-0.02, 0.12]</td>
+                  <td data-row="4" data-col="6">0.13</td>
+                  <td data-row="4" data-col="7">[0.06, 0.19]</td>
+                </tr>
+                <tr>
+                  <td data-row="5" data-col="1">Drift</td>
+                  <td data-row="5" data-col="2">Learned</td>
+                  <td data-row="5" data-col="3">False</td>
+                  <td data-row="5" data-col="4">-0.05</td>
+                  <td data-row="5" data-col="5">[-0.12, 0.02]</td>
+                  <td data-row="5" data-col="6">0.12</td>
+                  <td data-row="5" data-col="7">[0.06, 0.19]</td>
+                </tr>
+                <tr>
+                  <td data-row="6" data-col="1">Drift</td>
+                  <td data-row="6" data-col="2">Learned</td>
+                  <td data-row="6" data-col="3">-</td>
+                  <td data-row="6" data-col="4">0.14</td>
+                  <td data-row="6" data-col="5">[0.07, 0.21]</td>
+                  <td data-row="6" data-col="6">-0.01</td>
+                  <td data-row="6" data-col="7">[-0.08, 0.06]</td>
+                </tr>
+                <tr>
+                  <td data-row="7" data-col="1">Drift</td>
+                  <td data-row="7" data-col="2">Novel</td>
+                  <td data-row="7" data-col="3">True</td>
+                  <td data-row="7" data-col="4">0.05</td>
+                  <td data-row="7" data-col="5">[-0.02, 0.12]</td>
+                  <td data-row="7" data-col="6">0.16</td>
+                  <td data-row="7" data-col="7">[0.09, 0.22]</td>
+                </tr>
+                <tr>
+                  <td data-row="8" data-col="1">Drift</td>
+                  <td data-row="8" data-col="2">Novel</td>
+                  <td data-row="8" data-col="3">False</td>
+                  <td data-row="8" data-col="4">-0.12</td>
+                  <td data-row="8" data-col="5">[-0.19, -0.05]</td>
+                  <td data-row="8" data-col="6">0.06</td>
+                  <td data-row="8" data-col="7">[-0.01, 0.13]</td>
+                </tr>
+                <tr>
+                  <td data-row="9" data-col="1">Drift</td>
+                  <td data-row="9" data-col="2">Novel</td>
+                  <td data-row="9" data-col="3">-</td>
+                  <td data-row="9" data-col="4">0.20</td>
+                  <td data-row="9" data-col="5">[0.14, 0.27]</td>
+                  <td data-row="9" data-col="6">0.13</td>
+                  <td data-row="9" data-col="7">[0.07, 0.19]</td>
+                </tr>
+                <tr>
+                  <td data-row="10" data-col="1">Drift</td>
+                  <td data-row="10" data-col="2">Novel-Learned</td>
+                  <td data-row="10" data-col="3">-</td>
+                  <td data-row="10" data-col="4">0.05</td>
+                  <td data-row="10" data-col="5">[-0.02, 0.12]</td>
+                  <td data-row="10" data-col="6">0.08</td>
+                  <td data-row="10" data-col="7">[0.01, 0.15]</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+</figure>
+</div>
+</div>
 </section>
-<section id="linear-regression-1" class="level2" data-number="3.4">
-<h2 data-number="3.4" class="anchored" data-anchor-id="linear-regression-1"><span class="header-section-number">3.4</span> Linear regression</h2>
+<section id="bayesian-linear-regression" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="bayesian-linear-regression"><span class="header-section-number">3.4</span> Bayesian linear regression</h2>
+<p>Following our preregistration, the predictions of the two regression models for drift rate can be seen in <a href="#fig-prediction" class="quarto-xref">Figure&nbsp;10</a>.</p>
+<div class="cell" data-layout-nrow="2">
+<div id="fig-prediction" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-prediction-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-prediction" style="flex-basis: 100.0%;justify-content: flex-start;">
+<div id="fig-prediction-1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-prediction-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="manuscript_files/figure-html/fig-prediction-1.svg" class="img-fluid figure-img" data-ref-parent="fig-prediction" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-prediction-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) Face model: predicted drift rate (TRUE and FALSE) values from face recognition ability scores
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-prediction" style="flex-basis: 100.0%;justify-content: flex-start;">
+<div id="fig-prediction-2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-prediction-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="manuscript_files/figure-html/fig-prediction-2.svg" class="img-fluid figure-img" data-ref-parent="fig-prediction" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-prediction-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) Face and Car model: predicted drift rate (TRUE and FALSE) values from face recognition ability scores when accounting for car recognition ability
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-prediction-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10: Predicted drift rate values (TRUE and FALSE) from face recognition ability scores
+</figcaption>
+</figure>
+</div>
+</div>
 </section>
 </section>
 <section id="discussion" class="level1" data-number="4">
 <h1 data-number="4"><span class="header-section-number">4</span> Discussion</h1>
-<p>Paragraph 1: Quick summary of results Aim of the project: use evidence accumulation modelling to investigate the relationship between face recognition ability and the cognitive mechanisms involved in the face recognition process. Our results showed that individual difference in face recognition ability is associated with different latent computational processes. Face recognition ability seems to be positively associated with the rate of evidence accumulation (drift rate parameter) as well as the response caution (threshold parameter) for both learned and novel faces recognition. In addition, this association (still holds) when accounting for object recognition ability.</p>
-<p>By joining experimental psychology, individual differences approach and computational models, we bla bla bla.</p>
-<p>Paragraph 2: Drift rate and threshold • Effect of individual differences on LBA parameters is multifaceted: effect on across several LBA parameters, not just one. • Drift rate: Face recognition ability predict an increase in the rate at which evidence accumulates for both novel and visually familiar faces, where people with a better face recognition ability accumulate more recognition signal (drift rate TRUE) and are more capable to ignore noise coming from the stimulus. - Finding in accordance with previous research that found that expertise effects are primarily due to a better information extraction (REF: fingerprints examiners (ref: Thompson, Tangen &amp; McCarthy, 2013), medical images perception (van der Gijp et al., 2014, 2016; Litchfiled and Donovan, 2017)). - Our results extend these effect that these effects are visible in the “normal” population as well, outside of group-level differences between experts and novice. • Threshold: Face recognition ability predict an increase in the response caution for both novel and visually familiar faces. - Threshold: higher threshold = more accurate but slower to respond / lower threshold = less accurate but quicker to respond - People with higher face recognition ability are more cautious, prioritizing accuracy over response time. However, the quality and speed of evidence accumulation is higher. - General metacognition -&gt; people with higher abilities are more confident in their confidence judgement regarding this ability (ref: Lichtenstein &amp; Fischoff, 1977). Previous studies have shown that confidence is itself a decision variable that can regulate future behaviour -&gt; can adjust their future caution to increase their performance (ref: Folke, Jacobsen, Fleming &amp; De Martino, 2017; Fleming, van der Putten &amp; Daw, 2018). Suggestion: People with higher face recognition ability are better at estimating the difficulty of the task, voluntary increasing their threshold to ensure a better performance given the task demands. However future research would be required to confirm this proposal. • Overall: Our results suggest that not only does high face recognition ability predict a better ability to extract meaningful information for the recognition success but also predict the voluntary strategic decision of the subject to be more cautious.</p>
-<p>Paragraph 3: Theoretical implications Our approach provides unusual insight into individual differences in latent computational processes in the domain of face recognition. These results have several theoretical implications not only for investigating individual differences and potentially expertise effects but also offer implications regarding models of face perception and memory.</p>
-<p>• Implications for studying individual differences and expertise:</p>
-<p>Most of investigations of individual differences in face recognition across the entire range of face processing abilities have used associations between different abilities performance scores (ref:), addressing potential association/dissociation of abilities. In this study we used traditional approach of an experimental manipulation in a large sample, extended the separate analysis of response times and accuracy to the estimation of latent variables through computational modelling that we then associated with face recognition ability. On a general level, the new insights obtained from evidence-accumulation modelling about individual differences in face recognition would not have been possible using the conventional analysis of response times and accuracy (Parker &amp; Ramsey, 2023b). We propose that this approach could be applicable to other types of individual differences in expertise or abilities. - One key question in cognitive psychology concern the degree to which an expertise or an ability is domain-specific or domain-general. - (here find some examples in which we could apply our approach to other abilities/expertise)</p>
-<p>• Theoretical implications about models of face perception and memory</p>
-<ul>
-<li>Bruce and Young model</li>
-<li>Individual differences in face recognition: observations from comparing group-levels difference between two different populations (ex: prosopagnosia and control/super-recognizer and control) / individual differences in typical range of face processing ability  While Bruce and Young model describe the face perception process in general, there are some individual variabilities in the outcome of this process (outcome = performance) and in other steps in this  With this study we also contribute to the extension of this model by showing that not only there are individual differences in the outcome, but that there is also individual differences in the cognitive processes that give rise to this outcome.  Future research could use an individual differences approach to investigate how some variations in the components in the Bruce and Young face recognition model could influence estimated latent variables and how are individuals differences in face recognition ability are related to the observed differences of latent variables of interest.</li>
-</ul>
-<p>Paragraph 4: Mentioning the car correlations Even if main interest of this paper was to look into the CFMT, the exploratory analysis of the CCMT correlations with LBA parameters reveal interesting associations:</p>
-<p>• Drift rate: Cambridge Car Memory score positive association only with Novel faces, not learned faces . • Object recognition memory largely relies on featural information processing (REF). Does not capture (or should not capture) holistic processing. • Since novel faces recognition processing relies more on feature information processing and matching, it would make sense that the CCMT score only correlate to drift rate (accumulation of evidence) for novel faces and not learned faces (combination of holistic processing and feature information processing). • When looking at car recognition effect on drift rate: similar direction for TRUE and FALSE and for both type of faces: increased drift rate as the CCMT score increase.  CCMT does not predict the discrimination between TRUE and FALSE drift rate. Would expect that increased recognition ability lead to increase evidence accumulation when TRUE and decreased when FALSE, but not the case here -&gt; especially regarding learned faces, seems that increased recognition ability for object predict an increased drift rate when participant are wrong and that pattern is different that observed in the prediction of the CFMT regarding learned faces. Suggestion: using visual information processing alone help to accumulate meaningful information for the recognition of faces but also contribute to the accumulation of information detrimental to the recognition process (noise). Whereas relying on both (visual information processing and holistic processing) seems to increase the accumulation of meaningful information while decreasing the noise coming from detrimental visual information to the recognition process.</p>
-<p>Paragraph 5: Limitations</p>
-<p>• Small effects size (correlations)</p>
-<p>• Similar limitations to LBA parameter estimation than in the first paper</p>
-<p>• Object recognition memory vs.&nbsp;Car recognition memory?</p>
-<p>Paragraph 6: Conclusive paragraph</p>
+<p><em>Paragraph 1: Opening paragraph</em></p>
+<p>The aim of this project was to combine experimental, differential and computational approaches to investigate the relationship between face recognition ability and the computational mechanisms involved in the face recognition process. Our results showed that individual differences in face recognition ability are not only related with different latent computational processes (and not only one), but also predict to a certain extend the pattern of these processes. Face recognition ability seems to be positively associated with the rate of evidence accumulation (drift rate parameter) for both learned and novel faces as well as the response caution (threshold parameter) for learned faces. One key finding is that these predictions still hold when accounting for object recognition ability, demonstrating that these these associations are partially specific to faces and cannot entirely be explained by a more general object recognition ability.</p>
+<p><em>Paragraph 2: Drift rate and threshold effects</em></p>
+<p>One important consideration is the fact that the effect of individual differences in face recognition ability on the LBA parameters is multifaceted. Drift rate and threshold are both positively associated with face recognition ability. Our drift rate results suggest that people who are generally better at recognizing faces accumulates more recognition signal and are more capable to ignore noisy information coming from the stimulus. Our findings are in accordance with previous research that showed that expertise effects are primarily due to a better information extraction <span class="citation" data-cites="litchfieldFlashpreviewMovingWindow2017 thompsonExpertiseFingerprintIdentification2013a vandergijpInterpretationRadiologicalImages2014">(<a href="#ref-litchfieldFlashpreviewMovingWindow2017" role="doc-biblioref">Litchfield and Donovan 2017</a>; <a href="#ref-thompsonExpertiseFingerprintIdentification2013a" role="doc-biblioref">Thompson et al. 2013</a>; <a href="#ref-vandergijpInterpretationRadiologicalImages2014" role="doc-biblioref">Van Der Gijp et al. 2014</a>)</span>. We extend these findings by showing that these effects are not limited to group-level differences between experts and novices but concern the range of the “normal” population as well. Regarding response caution, previous studies have shown that confidence is itself a decision variable used to regulate future behavior <span class="citation" data-cites="flemingNeuralMediatorsChanges2018 folkeExplicitRepresentationConfidence2016">(<a href="#ref-flemingNeuralMediatorsChanges2018" role="doc-biblioref">Fleming et al. 2018</a>; <a href="#ref-folkeExplicitRepresentationConfidence2016" role="doc-biblioref">Folke et al. 2016</a>)</span>. The positive association between threshold and face recognition ability could reflect a better estimation of the task difficulty for people with higher face recognition ability, who voluntary increase their response caution to ensure a better performance given the task demands.However, future research is required to confirm this suggestion. Overall, our results suggest that not only does high face recognition ability predict a better ability to extract meaningful information for the recognition success but also predict the voluntary strategic decision of the subject to be more cautious.</p>
+<p><em>Paragraph 3: Theoretical implications for individual differences investigation</em></p>
+<p>Besides the insights obtained from the associations between individual differences and latent computational processes in the domain of face recognition, our choice of combining experimental, differential and computational methodologies has several implications for future differential studies, as well as for models of face perception and memory. On a more general level, it offers a novel approach to investigate individual differences and expertise effects in face processing. Most differential studies in face processing have used test scores to estimate different abilities underlying face processing and investigated if these abilities were related to each other or to other predictors of interest <span class="citation" data-cites="mccafferyIndividualDifferencesFace2018 noyesFaceRecognitionAbility2018">(<a href="#ref-mccafferyIndividualDifferencesFace2018" role="doc-biblioref">McCaffery et al. 2018</a>; <a href="#ref-noyesFaceRecognitionAbility2018" role="doc-biblioref">Noyes et al. 2018</a>)</span>. In this study we used traditional approach of an experimental manipulation in a large sample, extended the separate analysis of response times and accuracy to the estimation of latent variables through computational modelling that we then associated with face recognition ability. The important difference with past investigations is that behavioral patterns (accuracy and response times) as well as latent variables patterns (LBA parameters) were associated with ability scores. Using this approach allowed more specific hypotheses regarding which parts of the system is related to which type of recognition abilities, potentially aiding the development of theory. We think that this approach could benefit future research on individual differences in visual recognition memory or visual perception more generally.</p>
+<p><em>Paragraph 4: Theoretical implications for models of face perception and memory</em></p>
+<p>Furthermore, we think that the insights obtained from this study could have theoretical implications for models of face perception and memory. Previous individual differences studies in face recognition have investigated how different facets of the face recognition ability are associated across the normal population or differ between groups (ex: prosopagnosia and control/super-recognizer and control). These findings extended the general cognitive model of the human face processing system (Bruce &amp; Young, 1986), by showing that the performance (i.e response times and accuracy) to a face recognition task varies as a function of individual face recognition ability. With this study we also contribute to the extension of this model by showing that not only there are individual differences in the performance, but that there is also individual differences in the cognitive processes that give rise to this outcome. Furthermore these differences vary to certain degree as function of individual face recognition ability. Cognitive processes are not measurable <em>per se</em> but cognitive models can be used to estimate certain of them. In order to extend our understanding of the different cognitive processes involved in face recognition and the potential differences across individuals in these processes, future research could benefit from combining different approaches (i.e.&nbsp;experimental, differential…) and different computational models.</p>
+<p><em>Paragraph 5: Mentioning the object recognition ability correlations</em> While no hypotheses regarding the associations between the LBA parameters and the object recognition ability was preregistered, the exploratory analysis of the these associations reveal interesting patterns. Object recognition ability is positively correlated with drift face for novel faces but not for learned faces. Furthermore, object recognition does not predict the discrimination between TRUE and FALSE drift rate for learned faces like face recognition ability does. Object recognition is known to rely mostly on individual features processing while face recognition combines featural and configural processing <span class="citation" data-cites="cabezaFeaturesAreAlso2000 madoleRoleObjectParts1995 tverskyObjectsPartsCategories1984">(<a href="#ref-cabezaFeaturesAreAlso2000" role="doc-biblioref">Cabeza and Kato 2000</a>; <a href="#ref-madoleRoleObjectParts1995" role="doc-biblioref">Madole and Cohen 1995</a>; <a href="#ref-tverskyObjectsPartsCategories1984" role="doc-biblioref">Tversky and Hemenway 1984</a>)</span>. Novel faces recognition relies more on feature information matching and, as a novel face becomes more familiar, the reliance on configural processing increases <span class="citation" data-cites="schwaningerRoleFeaturalConfigural2002">(<a href="#ref-schwaningerRoleFeaturalConfigural2002" role="doc-biblioref">Schwaninger et al. 2002</a>)</span>. We suggest that relying on visual feature processing alone help to accumulate meaningful information for the recognition of visually familiar faces but also contribute to the accumulation of information detrimental to the recognition process (noise). Whereas relying on both (visual information processing and holistic processing) seems to increase the accumulation of meaningful information while decreasing the noise coming from detrimental visual information to the recognition process. Future research should investigate if the different patterns of associations between recognition abilities and latent components of the recognition process are related to different types of information processing.</p>
+<p><em>Paragraph 6: Limitations</em> Regarding the LBA parameter estimation, previous evidence accumulation model development studies have highlighted how the number of trials per cell of the design influence parameter estimation <span class="citation" data-cites="alexandrowiczComparingEightParameter2020 lercheHowManyTrials2017 wagenmakersEZdiffusionModelResponse2007">(<a href="#ref-alexandrowiczComparingEightParameter2020" role="doc-biblioref">Alexandrowicz and Gula 2020</a>; <a href="#ref-lercheHowManyTrials2017" role="doc-biblioref">Lerche et al. 2017</a>; <a href="#ref-wagenmakersEZdiffusionModelResponse2007" role="doc-biblioref">Wagenmakers et al. 2007</a>)</span>. Our design (90 trials per condition) and control of error rates in our face recognition task followed the minimum recommendations to apply EAM <span class="citation" data-cites="lukenParameterIdentifiabilityEvidenceaccumulation2025">(<a href="#ref-lukenParameterIdentifiabilityEvidenceaccumulation2025" role="doc-biblioref">Lüken et al. 2025</a>)</span>. Nonetheless, adding more trials per condition (e.g., 200 per condition; <span class="citation" data-cites="boagExpertGuidePlanning2025"><span class="nocase">Boag et al.</span> (<a href="#ref-boagExpertGuidePlanning2025" role="doc-biblioref">2025</a>)</span>) would have increased the robustness of our parameter estimates.</p>
+<p>Another limitations would be the use of the scores to the Cambridge Car Memory Test as an estimate of object recognition ability. While numerous studies have used this score for this motive (ref:), it can be argued like recognizing pictures of a specific object like cars might no encompass the depth and complexity of object recognition ability. We decided to use this test because of the direct comparison it offers to the score of the Cambridge Face Memory Test as well the fact the instructions and task structure are almost identical in the two tests.</p>
 </section>
-<section id="references" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> References</h1>
-<div id="refs" role="list">
-
+<section id="conclusion" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Conclusion</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-alexandrowiczComparingEightParameter2020" class="csl-entry" role="listitem">
+Alexandrowicz, Rainer W., and Bartosz Gula. 2020. <span>“Comparing Eight Parameter Estimation Methods for the Ratcliff Diffusion Model Using Free Software.”</span> <em>Frontiers in Psychology</em> 11: 484737. <a href="https://doi.org/10.3389/fpsyg.2020.484737">https://doi.org/10.3389/fpsyg.2020.484737</a>.
 </div>
-</section>
-<section id="appendix-content-here" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> Appendix content here</h1>
+<div id="ref-boagExpertGuidePlanning2025" class="csl-entry" role="listitem">
+<span class="nocase">Boag, Russell J., Reilly J. Innes, Niek Stevenson, et al.</span> 2025. <span>“An Expert Guide to Planning Experimental Tasks for Evidence-Accumulation Modeling.”</span> <em>Advances in Methods and Practices in Psychological Science</em> 8 (2): 25152459251336127. <a href="https://doi.org/10.1177/25152459251336127">https://doi.org/10.1177/25152459251336127</a>.
+</div>
+<div id="ref-bobakSuperrecognisersActionEvidence2016" class="csl-entry" role="listitem">
+Bobak, Anna K., Peter J. B. Hancock, and Sarah Bate. 2016. <span>“Super‐recognisers in Action: Evidence from Face‐matching and Face Memory Tasks.”</span> <em>Applied Cognitive Psychology</em> 30 (1): 81–91. <a href="https://doi.org/10.1002/acp.3170">https://doi.org/10.1002/acp.3170</a>.
+</div>
+<div id="ref-brownSimplestCompleteModel2008" class="csl-entry" role="listitem">
+Brown, Scott D., and Andrew Heathcote. 2008. <span>“The Simplest Complete Model of Choice Response Time: Linear Ballistic Accumulation.”</span> <em>Cognitive Psychology</em> 57 (3): 153–78. <a href="https://doi.org/10.1016/j.cogpsych.2007.12.002">https://doi.org/10.1016/j.cogpsych.2007.12.002</a>.
+</div>
+<div id="ref-burtonGlasgowFaceMatching2010" class="csl-entry" role="listitem">
+Burton, A. Mike, David White, and Allan McNeill. 2010. <span>“The Glasgow Face Matching Test.”</span> <em>Behavior Research Methods</em> 42 (1): 286–91. <a href="https://doi.org/10.3758/BRM.42.1.286">https://doi.org/10.3758/BRM.42.1.286</a>.
+</div>
+<div id="ref-cabezaFeaturesAreAlso2000" class="csl-entry" role="listitem">
+Cabeza, Roberto, and Takashi Kato. 2000. <span>“Features Are Also Important: Contributions of Featural and Configural Processing to Face Recognition.”</span> <em>Psychological Science</em> 11 (5): 429–33. <a href="https://doi.org/10.1111/1467-9280.00283">https://doi.org/10.1111/1467-9280.00283</a>.
+</div>
+<div id="ref-cummingNewStatisticsWhy2014" class="csl-entry" role="listitem">
+Cumming, Geoff. 2014. <span>“The New Statistics: Why and How.”</span> <em>Psychological Science</em> 25 (1): 7–29. <a href="https://doi.org/10.1177/0956797613504966">https://doi.org/10.1177/0956797613504966</a>.
+</div>
+<div id="ref-webmorph" class="csl-entry" role="listitem">
+DeBruine, Lisa M. 2022. <em>webmorphR : Reproducible Stimuli</em>. Zenodo. <a href="https://doi.org/10.5281/zenodo.6570965">https://doi.org/10.5281/zenodo.6570965</a>.
+</div>
+<div id="ref-dennettFaceAftereffectsPredict2012" class="csl-entry" role="listitem">
+Dennett, Hugh W., Elinor McKone, Mark Edwards, and Tirta Susilo. 2012. <span>“Face Aftereffects Predict Individual Differences in Face Recognition Ability.”</span> <em>Psychological Science</em> 23 (11): 1279–87. <a href="https://doi.org/10.1177/0956797612446350">https://doi.org/10.1177/0956797612446350</a>.
+</div>
+<div id="ref-dennettCambridgeCarMemory2012" class="csl-entry" role="listitem">
+Dennett, Hugh W., Elinor McKone, Raka Tavashmi, et al. 2012. <span>“The Cambridge Car Memory Test: A Task Matched in Format to the Cambridge Face Memory Test, with Norms, Reliability, Sex Differences, Dissociations from Face Memory, and Expertise Effects.”</span> <em>Behavior Research Methods</em> 44 (2): 587–605. <a href="https://doi.org/10.3758/s13428-011-0160-2">https://doi.org/10.3758/s13428-011-0160-2</a>.
+</div>
+<div id="ref-dobelProsopagnosiaApparentCause2007" class="csl-entry" role="listitem">
+Dobel, C, J Bolte, M Aicher, and S Schweinberger. 2007. <span>“Prosopagnosia Without Apparent Cause: Overview and Diagnosis of Six Cases.”</span> <em>Cortex</em> 43 (6): 718–33. <a href="https://doi.org/10.1016/S0010-9452(08)70501-X">https://doi.org/10.1016/S0010-9452(08)70501-X</a>.
+</div>
+<div id="ref-donkinGettingMoreAccuracy2009" class="csl-entry" role="listitem">
+Donkin, Chris, Lee Averell, Scott Brown, and Andrew Heathcote. 2009. <span>“Getting More from Accuracy and Response Time Data: Methods for Fitting the Linear Ballistic Accumulator.”</span> <em>Behavior Research Methods</em> 41 (4): 1095–110. <a href="https://doi.org/10.3758/BRM.41.4.1095">https://doi.org/10.3758/BRM.41.4.1095</a>.
+</div>
+<div id="ref-dowsettUnfamiliarFaceMatching2015" class="csl-entry" role="listitem">
+Dowsett, Andrew J., and A. Mike Burton. 2015. <span>“Unfamiliar Face Matching: Pairs Out‐perform Individuals and Provide a Route to Training.”</span> <em>British Journal of Psychology</em> 106 (3): 433–45. <a href="https://doi.org/10.1111/bjop.12103">https://doi.org/10.1111/bjop.12103</a>.
+</div>
+<div id="ref-duchaineCambridgeFaceMemory2006" class="csl-entry" role="listitem">
+Duchaine, Brad, and Ken Nakayama. 2006. <span>“The Cambridge Face Memory Test: Results for Neurologically Intact Individuals and an Investigation of Its Validity Using Inverted Face Stimuli and Prosopagnosic Participants.”</span> <em>Neuropsychologia</em> 44 (4): 576–85. <a href="https://doi.org/10.1016/j.neuropsychologia.2005.07.001">https://doi.org/10.1016/j.neuropsychologia.2005.07.001</a>.
+</div>
+<div id="ref-flemingNeuralMediatorsChanges2018" class="csl-entry" role="listitem">
+Fleming, Stephen M., Elisabeth J. Van Der Putten, and Nathaniel D. Daw. 2018. <span>“Neural Mediators of Changes of Mind about Perceptual Decisions.”</span> <em>Nature Neuroscience</em> 21 (4): 617–24. <a href="https://doi.org/10.1038/s41593-018-0104-6">https://doi.org/10.1038/s41593-018-0104-6</a>.
+</div>
+<div id="ref-folkeExplicitRepresentationConfidence2016" class="csl-entry" role="listitem">
+Folke, Tomas, Catrine Jacobsen, Stephen M. Fleming, and Benedetto De Martino. 2016. <span>“Explicit Representation of Confidence Informs Future Value-Based Decisions.”</span> <em>Nature Human Behaviour</em> 1 (1): 0002. <a href="https://doi.org/10.1038/s41562-016-0002">https://doi.org/10.1038/s41562-016-0002</a>.
+</div>
+<div id="ref-fyshDifferencesIndividualsSubprocesses2020" class="csl-entry" role="listitem">
+Fysh, Matthew C., Lisa Stacchi, and Meike Ramon. 2020. <span>“Differences Between and Within Individuals, and Subprocesses of Face Cognition: Implications for Theory, Research and Personnel Selection.”</span> <em>Royal Society Open Science</em> 7 (9): 200233. <a href="https://doi.org/10.1098/rsos.200233">https://doi.org/10.1098/rsos.200233</a>.
+</div>
+<div id="ref-hainesTheoreticallyInformedGenerative2020a" class="csl-entry" role="listitem">
+Haines, Nathaniel, Peter Kvam, Louis Irving, et al. 2020. <em>Theoretically Informed Generative Models Can Advance the Psychological and Brain Sciences: Lessons from the Reliability Paradox</em>. August 24. <a href="https://osf.io/xr7y3_v1">https://osf.io/xr7y3_v1</a>.
+</div>
+<div id="ref-kruschkeBayesianDataAnalysis2018" class="csl-entry" role="listitem">
+Kruschke, John K., and Torrin M. Liddell. 2018. <span>“Bayesian Data Analysis for Newcomers.”</span> <em>Psychonomic Bulletin &amp; Review</em> 25 (1): 155–77. <a href="https://doi.org/10.3758/s13423-017-1272-1">https://doi.org/10.3758/s13423-017-1272-1</a>.
+</div>
+<div id="ref-lercheHowManyTrials2017" class="csl-entry" role="listitem">
+Lerche, Veronika, Andreas Voss, and Markus Nagler. 2017. <span>“How Many Trials Are Required for Parameter Estimation in Diffusion Modeling? A Comparison of Different Optimization Criteria.”</span> <em>Behavior Research Methods</em> 49 (2): 513–37. <a href="https://doi.org/10.3758/s13428-016-0740-2">https://doi.org/10.3758/s13428-016-0740-2</a>.
+</div>
+<div id="ref-lewandowskyComputationalModelingCognition2018" class="csl-entry" role="listitem">
+Lewandowsky, Stephan, and Klaus Oberauer. 2018. <span>“Computational Modeling in Cognition and Cognitive Neuroscience.”</span> In <em>Stevens’ Handbook of Experimental Psychology and Cognitive Neuroscience</em>, 1st ed., edited by John T. Wixted. Wiley. <a href="https://doi.org/10.1002/9781119170174.epcn501">https://doi.org/10.1002/9781119170174.epcn501</a>.
+</div>
+<div id="ref-litchfieldFlashpreviewMovingWindow2017" class="csl-entry" role="listitem">
+Litchfield, Damien, and Tim Donovan. 2017. <span>“The Flash-Preview Moving Window Paradigm: Unpacking Visual Expertise One Glimpse at a Time.”</span> <em>Frontline Learning Research</em> 5 (3): 66–80. <a href="https://doi.org/10.14786/flr.v5i3.269">https://doi.org/10.14786/flr.v5i3.269</a>.
+</div>
+<div id="ref-lubinskiScientificSocialSignificance2000" class="csl-entry" role="listitem">
+Lubinski, David. 2000. <span>“Scientific and Social Significance of Assessing Individual Differences: <span>‘Sinking Shafts at a Few Critical Points’</span>.”</span> <em>Annual Review of Psychology</em> 51 (1): 405–44. <a href="https://doi.org/10.1146/annurev.psych.51.1.405">https://doi.org/10.1146/annurev.psych.51.1.405</a>.
+</div>
+<div id="ref-lukenParameterIdentifiabilityEvidenceaccumulation2025" class="csl-entry" role="listitem">
+Lüken, Malte, Andrew Heathcote, Julia M. Haaf, and Dora Matzke. 2025. <span>“Parameter Identifiability in Evidence-Accumulation Models: The Effect of Error Rates on the Diffusion Decision Model and the Linear Ballistic Accumulator.”</span> <em>Psychonomic Bulletin &amp; Review</em> 32 (3): 1411–24. <a href="https://doi.org/10.3758/s13423-024-02621-1">https://doi.org/10.3758/s13423-024-02621-1</a>.
+</div>
+<div id="ref-lyFlexibleEfficientHierarchical2017" class="csl-entry" role="listitem">
+Ly, Alexander, Udo Boehm, Andrew Heathcote, et al. 2017. <span>“A Flexible and Efficient Hierarchical Bayesian Approach to the Exploration of Individual Differences in Cognitive‐model‐based Neuroscience.”</span> In <em>Computational Models of Brain and Behavior</em>, 1st ed., edited by Ahmed A. Moustafa. Wiley. <a href="https://doi.org/10.1002/9781119159193.ch34">https://doi.org/10.1002/9781119159193.ch34</a>.
+</div>
+<div id="ref-madoleRoleObjectParts1995" class="csl-entry" role="listitem">
+Madole, Kelly L., and Leslie B. Cohen. 1995. <span>“The Role of Object Parts in Infants’ Attention to Form-Function Correlations.”</span> <em>Developmental Psychology</em> 31 (4): 637–48. <a href="https://doi.org/10.1037/0012-1649.31.4.637">https://doi.org/10.1037/0012-1649.31.4.637</a>.
+</div>
+<div id="ref-marshEvolutionaryDifferentialPsychology2013" class="csl-entry" role="listitem">
+Marsh, Tim, and Simon Boag. 2013. <span>“Evolutionary and Differential Psychology: Conceptual Conflicts and the Path to Integration.”</span> <em>Frontiers in Psychology</em> 4. <a href="https://doi.org/10.3389/fpsyg.2013.00655">https://doi.org/10.3389/fpsyg.2013.00655</a>.
+</div>
+<div id="ref-matzkeBayesianInferenceCorrelations2017" class="csl-entry" role="listitem">
+Matzke, Dora, Alexander Ly, Ravi Selker, et al. 2017. <span>“Bayesian Inference for Correlations in the Presence of Measurement Error and Estimation Uncertainty.”</span> <em>Collabra: Psychology</em> 3 (1): 25. <a href="https://doi.org/10.1525/collabra.78">https://doi.org/10.1525/collabra.78</a>.
+</div>
+<div id="ref-mccafferyIndividualDifferencesFace2018" class="csl-entry" role="listitem">
+McCaffery, Jennifer M., David J. Robertson, Andrew W. Young, and A. Mike Burton. 2018. <span>“Individual Differences in Face Identity Processing.”</span> <em>Cognitive Research: Principles and Implications</em> 3 (1): 21. <a href="https://doi.org/10.1186/s41235-018-0112-9">https://doi.org/10.1186/s41235-018-0112-9</a>.
+</div>
+<div id="ref-mcconachieDevelopmentalProsopagnosiaSingle1976" class="csl-entry" role="listitem">
+McConachie, Helen R. 1976. <span>“Developmental Prosopagnosia. A Single Case Report.”</span> <em>Cortex</em> 12 (1): 76–82. <a href="https://doi.org/10.1016/S0010-9452(76)80033-0">https://doi.org/10.1016/S0010-9452(76)80033-0</a>.
+</div>
+<div id="ref-mcelreathStatisticalRethinkingBayesian" class="csl-entry" role="listitem">
+McElreath, Richard. n.d. <em>Statistical Rethinking: A Bayesian Course with Examples in r and Stan</em>.
+</div>
+<div id="ref-noyesFaceRecognitionAbility2018" class="csl-entry" role="listitem">
+Noyes, Eilidh, Matthew Q. Hill, and Alice J. O’Toole. 2018. <span>“Face Recognition Ability Does Not Predict Person Identification Performance: Using Individual Data in the Interpretation of Group Results.”</span> <em>Cognitive Research: Principles and Implications</em> 3 (1): 23. <a href="https://doi.org/10.1186/s41235-018-0117-4">https://doi.org/10.1186/s41235-018-0117-4</a>.
+</div>
+<div id="ref-ratcliffDiffusionDecisionModel2016" class="csl-entry" role="listitem">
+Ratcliff, Roger, Philip L. Smith, Scott D. Brown, and Gail McKoon. 2016. <span>“Diffusion Decision Model: Current Issues and History.”</span> <em>Trends in Cognitive Sciences</em> 20 (4): 260–81. <a href="https://doi.org/10.1016/j.tics.2016.01.007">https://doi.org/10.1016/j.tics.2016.01.007</a>.
+</div>
+<div id="ref-richlerIndividualDifferencesObject2019" class="csl-entry" role="listitem">
+Richler, Jennifer J., Andrew J. Tomarken, Mackenzie A. Sunday, et al. 2019. <span>“Individual Differences in Object Recognition.”</span> <em>Psychological Review</em> 126 (2): 226–51. <a href="https://doi.org/10.1037/rev0000129">https://doi.org/10.1037/rev0000129</a>.
+</div>
+<div id="ref-richlerIndividualDifferencesObject" class="csl-entry" role="listitem">
+Richler, Jennifer J, Andrew J Tomarken, Mackenzie A Sunday, et al. n.d. <em>Individual Differences in Object Recognition</em>.
+</div>
+<div id="ref-russellSuperrecognizersPeopleExtraordinary2009" class="csl-entry" role="listitem">
+Russell, Richard, Brad Duchaine, and Ken Nakayama. 2009. <span>“Super-Recognizers: People with Extraordinary Face Recognition Ability.”</span> <em>Psychonomic Bulletin &amp; Review</em> 16 (2): 252–57. <a href="https://doi.org/10.3758/PBR.16.2.252">https://doi.org/10.3758/PBR.16.2.252</a>.
+</div>
+<div id="ref-schwaningerRoleFeaturalConfigural2002" class="csl-entry" role="listitem">
+Schwaninger, Adrian, Janek S. Lobmaier, and Stephan M. Collishaw. 2002. <span>“Role of Featural and Configural Information in Familiar and Unfamiliar Face Recognition.”</span> In <em>Biologically Motivated Computer Vision</em>, edited by Heinrich H. Bülthoff, Christian Wallraven, Seong-Whan Lee, and Tomaso A. Poggio, vol. 2525. Springer Berlin Heidelberg. <a href="https://doi.org/10.1007/3-540-36181-2_64">https://doi.org/10.1007/3-540-36181-2_64</a>.
+</div>
+<div id="ref-simonsConstraintsGeneralityCOG2017" class="csl-entry" role="listitem">
+Simons, Daniel, Yuichi Shoda, and D. Lindsay. 2017. <span>“Constraints on Generality (COG): A Proposed Addition to All Empirical Papers.”</span> <em>Perspectives on Psychological Science</em> 12 (August): 174569161770863. <a href="https://doi.org/10.1177/1745691617708630">https://doi.org/10.1177/1745691617708630</a>.
+</div>
+<div id="ref-EMC2" class="csl-entry" role="listitem">
+Stevenson, Niek, Michelle Donzallaz, Andrew Heathcote, and Steven Miletić. 2026. <em>EMC2: Bayesian Hierarchical Analysis of Cognitive Models of Choice</em>. <a href="https://doi.org/10.32614/CRAN.package.EMC2">https://doi.org/10.32614/CRAN.package.EMC2</a>.
+</div>
+<div id="ref-thompsonExpertiseFingerprintIdentification2013a" class="csl-entry" role="listitem">
+Thompson, Matthew B., Jason M. Tangen, and Duncan J. McCarthy. 2013. <span>“Expertise in Fingerprint Identification.”</span> <em>Journal of Forensic Sciences</em> 58 (6): 1519–30. <a href="https://doi.org/10.1111/1556-4029.12203">https://doi.org/10.1111/1556-4029.12203</a>.
+</div>
+<div id="ref-tverskyObjectsPartsCategories1984" class="csl-entry" role="listitem">
+Tversky, Barbara, and Kathleen Hemenway. 1984. <span>“Objects, Parts, and Categories.”</span> <em>Journal of Experimental Psychology: General</em> 113 (2): 169–93. <a href="https://doi.org/10.1037/0096-3445.113.2.169">https://doi.org/10.1037/0096-3445.113.2.169</a>.
+</div>
+<div id="ref-vandergijpInterpretationRadiologicalImages2014" class="csl-entry" role="listitem">
+Van Der Gijp, A., M. F. Van Der Schaaf, I. C. Van Der Schaaf, et al. 2014. <span>“Interpretation of Radiological Images: Towards a Framework of Knowledge and Skills.”</span> <em>Advances in Health Sciences Education</em> 19 (4): 565–80. <a href="https://doi.org/10.1007/s10459-013-9488-y">https://doi.org/10.1007/s10459-013-9488-y</a>.
+</div>
+<div id="ref-verhallenGeneralSpecificFactors2017" class="csl-entry" role="listitem">
+Verhallen, Roeland J., Jenny M. Bosten, Patrick T. Goodbourn, Adam J. Lawrance-Owen, Gary Bargary, and J. D. Mollon. 2017. <span>“General and Specific Factors in the Processing of Faces.”</span> <em>Vision Research</em> 141 (December): 217–27. <a href="https://doi.org/10.1016/j.visres.2016.12.014">https://doi.org/10.1016/j.visres.2016.12.014</a>.
+</div>
+<div id="ref-wagenmakersEZdiffusionModelResponse2007" class="csl-entry" role="listitem">
+Wagenmakers, Eric-Jan, Han L. J. Van Der Maas, and Raoul P. P. P. Grasman. 2007. <span>“An EZ-Diffusion Model for Response Time and Accuracy.”</span> <em>Psychonomic Bulletin &amp; Review</em> 14 (1): 3–22. <a href="https://doi.org/10.3758/BF03194023">https://doi.org/10.3758/BF03194023</a>.
+</div>
+<div id="ref-whiteUsingDecisionModels2016" class="csl-entry" role="listitem">
+White, Corey N., Ryan A. Curl, and Jennifer F. Sloane. 2016. <span>“Using Decision Models to Enhance Investigations of Individual Differences in Cognitive Neuroscience.”</span> <em>Frontiers in Psychology</em> 7 (February). <a href="https://doi.org/10.3389/fpsyg.2016.00081">https://doi.org/10.3389/fpsyg.2016.00081</a>.
+</div>
+<div id="ref-whiteNeedImproveWay2022" class="csl-entry" role="listitem">
+White, Corey N., and Kiah N. Kitchen. 2022. <span>“On the Need to Improve the Way Individual Differences in Cognitive Function Are Measured with Reaction Time Tasks.”</span> <em>Current Directions in Psychological Science</em> 31 (3): 223–30. <a href="https://doi.org/10.1177/09637214221077060">https://doi.org/10.1177/09637214221077060</a>.
+</div>
+<div id="ref-whitePassportOfficersErrors2014" class="csl-entry" role="listitem">
+White, David, Richard I. Kemp, Rob Jenkins, Michael Matheson, and A. Mike Burton. 2014. <span>“Passport Officers’ Errors in Face Matching.”</span> <em>PLoS ONE</em> 9 (8): e103510. <a href="https://doi.org/10.1371/journal.pone.0103510">https://doi.org/10.1371/journal.pone.0103510</a>.
+</div>
+<div id="ref-wilmerHumanFaceRecognition2010" class="csl-entry" role="listitem">
+Wilmer, Jeremy B., Laura Germine, Christopher F. Chabris, et al. 2010. <span>“Human Face Recognition Ability Is Specific and Highly Heritable.”</span> <em>Proceedings of the National Academy of Sciences</em> 107 (11): 5238–41. <a href="https://doi.org/10.1073/pnas.0913053107">https://doi.org/10.1073/pnas.0913053107</a>.
+</div>
+<div id="ref-wilmerCapturingSpecificAbilities2012" class="csl-entry" role="listitem">
+Wilmer, Jeremy B., Laura Germine, Christopher F. Chabris, Garga Chatterjee, Margaret Gerbasi, and Ken Nakayama. 2012. <span>“Capturing Specific Abilities as a Window into Human Individuality: The Example of Face Recognition.”</span> <em>Cognitive Neuropsychology</em> 29 (5-6): 360–92. <a href="https://doi.org/10.1080/02643294.2012.753433">https://doi.org/10.1080/02643294.2012.753433</a>.
+</div>
+<div id="ref-yarkoniGeneralizabilityCrisis2022" class="csl-entry" role="listitem">
+Yarkoni, Tal. 2022. <span>“The Generalizability Crisis.”</span> <em>Behavioral and Brain Sciences</em> 45 (January): e1. <a href="https://doi.org/10.1017/S0140525X20001685">https://doi.org/10.1017/S0140525X20001685</a>.
+</div>
+</div>
 </section>
 
 </main>
