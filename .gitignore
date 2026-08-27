@@ -2,11 +2,12 @@
 .Rhistory
 .RData
 .Ruserdata
+.DS_Store
 /from_raph
 /sandpit
 **/test
 /models
-/datadata/raw_data.csv
+data/raw_data.csv
 data/theta_pid.csv
 data/raw_data.csv
 data/theta_pid.csv
