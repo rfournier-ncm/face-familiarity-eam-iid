@@ -40,16 +40,16 @@ I would do a few things here.
 
 I think that a good stab at the manuscript at this point would be appreciated. Feel free to change it wherever you see fit and to add comments/notes as well. 
 
-###Introduction:
+### Introduction:
 
 I modified the intro in regards of your previous comments on it
 
 Paragraph 4:  I would like to develop this paragraph a bit more but I don't really have any clear idea so some help on this would be great
 
-###Methods:
+### Methods:
 - Correct figures for the face recognition task
 
-###Results:
+### Results:
 - Plots size: I think the plot size is good except for the Figure 6. The problem is that quarto does not handle different subfigure size very well. I would like the threshold subfigure to be smaller. I could do two different figures but I feel that it would add another figure and that it is not what we want. If you have any idea regarding this, I take it.
 
 - Table for model summary: I don;t know if I should add a summary table of the linear model parameter after the two model figures. 
@@ -65,7 +65,7 @@ I think that the flow of the discussion is pretty good. I just have an issue wit
 
 
 
-##August 20 - Raph notes
+## August 20 - Raph notes
 
 ### Intro: I am still a bit bothered by some phrasing and transitions between paragraphs. But I think that everything that we want to say is there. 
 ### Methods: Good
@@ -73,3 +73,117 @@ I think that the flow of the discussion is pretty good. I just have an issue wit
 ### Discussion: Paragraph 3 and 4 for sure need some rewriting, changing some sentences... 
 
 Overall I think that the introduction and the discussion would need a good stab. But again, I think that everything that we want to say is there, but it definitely needs refining. I am working now on the Supplementary materials for this manuscript.
+
+## Aug 27 - Rich notes
+
+### Title
+
+This could be simpler. Maybe:
+
+Face recognition ability predicts the computational processes that support face recognition
+
+Or
+
+Linking face recognition ability to the computational processes that support face recognition
+
+Or
+
+Individual differences in the computational processes that support face recognition
+
+(I think I like the last one so far as it seems simpler)
+
+Some further notes on the title. 
+I find it a little odd that we say face recognition ability predicts face recognition performance. 
+I know that's partly what we study, but there is a truism to this that strikes me as an odd way to characterise our aims and findings. 
+e.g., is it feasible that face recognition ability would NOT predict the comp processes of face recognition? I mean it is feasible that we would not detect anything for various reasons. But if the face recog test is valid, then surely it has to relate to another measure of a similar thing (another face recog task). Does this make sense?
+
+
+Another option would be to focus on the how of the research...
+
+How does face recognition ability shape the computational processes that support the identification of others?
+
+
+
+### intro
+
+Let's avoid the term "normal"
+
+paragraph 3. I don't follow the logic of the second half of the paragraph. See my notes below. Can you clarify?
+
+[[Raph - the importance and relevance for the next two sentences needs spelling out. See my comments in the Notes file.
+e.g., why do the results support the conclusions that they do?
+face AND general object in one sentence
+face OR object in the next sentence??
+But I don't understand the relevance for these claims in this para]]
+
+cite preprints with a year e.g., 2026 rather than in press. 
+This is because it is actually "published" in the sense that it is publically available for review and scrutiny.
+in press is instead reserved for papers accepted at a journal but not yet out
+
+
+### methods and results
+
+I skimmed these sections to focus on the intro and discussion. 
+
+However, I really like the figures and tables and general layout. 
+I'm really not worried about the sizing issues that you highlight in your notes. 
+I would just move on and fix it later if you think it is necessary.
+I think they all look good and are very clear and that's the main thing.
+
+As for the coefficients in the linear model, I'm not entirely sure what you are asking. 
+Is this the distinction between coefficients and posterior predictions?
+If so, I would just be clear in the method that we make posterior predictions and 95% QIs and interpret those. Cite a bunch of stuff for the benefits of doing so e.g., this book https://marginaleffects.com/, and these two papers https://doi.org/10.18637/jss.v111.i09, https://doi.org/10.1177/25152459261424825.
+
+If you want to, you can then also report a table of coefficients in supps for the linear model or a table of posterior preds in the main text and/or supps. 
+
+Maybe let's discuss in person??
+
+I would definitely add some text in section 3.4 that describes the posterior preds (and have a table that summarises the posterior preds).
+e.g., describe the visual patterns and QIs for an estimate of uncertainty in Figure 10a. This is one key result regarding our main question. 
+Then just say that when we add in car recog, the results look almost identical with no meaningful change (Figure 10b).
+That gives us our second inference - after adjusting for car recog, the pattern remains largely the same. inference = there is something about face recog blah blah...
+
+
+One further comment on the results after reading the discussion. 
+I would add much more narrative text that describes in simple words the patterns of results that you observed. 
+This would mean that when you get to the discussion there is less need to re-state the patterns of results as they are already very clear.
+
+One more thing. 
+In Figures 7, 8 and 9, is there any need to show the car data?
+e.g., our focus is face perception and we use car to adjust the regression model. 
+But car recog in itself as a predictor of comp processes, is not really our interest.
+So can we simplify the plots?
+
+Basically, I think we need a way to help readers access and digest the pattern of results a little easier. 
+These types of measures are not that common, and so folks need a little more help to guide them.
+
+Is Figure 6 missing by the way? I cannot see it in the pdf.
+
+
+### Discussion
+
+I split up the discussion of drift rate and threshold into separate paragraphs, just to make things easier to read.
+
+I also removed the below text because I think we can combine these two paras into one paragraph and make one point.
+And that one point should be that we show value in looking at individual differences in latent computational processes.
+I can help with this later. 
+
+--- text removed 
+Besides the insights obtained from the associations between individual differences and latent computational processes in the domain of face recognition, our choice of combining experimental, differential and computational methodologies has several implications for future differential studies, as well as for models of face perception and memory.
+On a more general level, it offers a novel approach to investigate individual differences and expertise effects in face processing.
+Most differential studies in face processing have used test scores to estimate different abilities underlying face processing and investigated if these abilities were related to each other or to other predictors of interest [@mccafferyIndividualDifferencesFace2018; @noyesFaceRecognitionAbility2018].
+In this study we used traditional approach of an experimental manipulation in a large sample, extended the separate analysis of response times and accuracy to the estimation of latent variables through computational modelling that we then associated with face recognition ability.
+The important difference with past investigations is that behavioral patterns (accuracy and response times) as well as latent variables patterns (LBA parameters) were associated with ability scores.
+Using this approach allowed more specific hypotheses regarding which parts of the system is related to which type of recognition abilities, potentially aiding the development of theory.
+We think that this approach could benefit future research on individual differences in visual recognition memory or visual perception more generally.
+
+*Paragraph 4: Theoretical implications for models of face perception and memory*
+
+Furthermore, we think that the insights obtained from this study could have theoretical implications for models of face perception and memory.
+Previous individual differences studies in face recognition have investigated how different facets of the face recognition ability are associated across the normal population or differ between groups (ex: prosopagnosia and control/super-recognizer and control).
+These findings extended the general cognitive model of the human face processing system (Bruce & Young, 1986), by showing that the performance (i.e response times and accuracy) to a face recognition task varies as a function of individual face recognition ability.
+With this study we also contribute to the extension of this model by showing that not only there are individual differences in the performance, but that there is also individual differences in the cognitive processes that give rise to this outcome. Furthermore these differences vary to certain degree as function of individual face recognition ability. Cognitive processes are not measurable *per se* but cognitive models can be used to estimate certain of them. In order to extend our understanding of the different cognitive processes involved in face recognition and the potential differences across individuals in these processes, future research could benefit from combining different approaches (i.e. experimental, differential...) and different computational models.
+
+
+Also, I think we should make the section on object recog abilities into one para, as it is currently two paras.
+two paras out of 1000 words, is prop too much for an exploratory observation
