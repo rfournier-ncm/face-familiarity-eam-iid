@@ -1,0 +1,216 @@
+---
+title: "Supplementary Materials"
+subtitle: "Individual differences in the computational processes that support face recognition"
+running-head: "Individual differences and decision models of face memory"
+author:
+  - name: Raphaël Fournier
+    orcid: 0000-0002-5135-4066
+    affiliation:
+      - ref: 1
+  - name: Paul Downing
+    affiliation: 
+      - ref: 2
+  - name: Richard Ramsey
+    email: rramsey@ethz.ch
+    orcid: 0000-0002-0329-2112
+    corresponding: true
+    affiliation:
+      - ref: 1
+      - ref: 3
+      - ref: 4
+affiliations:
+  - id: 1
+    name: Neural Control of Movement Laboratory
+    department: Department of Health Sciences and Technology, ETH Zurich
+  - id: 2
+    name: 
+    department: School of Psychology and Sports Science, Bangor University
+  - id: 3
+    name: Social Brain Sciences Laboratory
+    department: Department of Humanities, Social and Political Sciences, ETH Zurich
+  - id: 4
+    name: ETH Zürich
+    department: Learning and Instruction Laboratory, Department of Humanities, Social and Political Sciences
+keywords: [face perception, memory, familiarity, person knowledge, decision models, evidence accumulation modelling]
+bibliography: bibliography.bib
+csl: apa.csl
+functions: [place]
+format:
+  preprint-typst:
+    output-file: supplementary.pdf
+    fontsize: 11pt
+    mainfont: Libertinus Serif
+editor_options: 
+  chunk_output_type: console
+knitr:
+  opts_chunk:
+    dev: "ragg_png"
+editor: 
+  markdown: 
+    wrap: sentence
+---
+```{r}
+#| label: setup
+#| include: false
+
+pkgs <- c(
+  "tidyverse", "RColorBrewer", "patchwork", "paletteer", 
+  "here", "EMC2", "tidybayes", "tinytable", "osfr", "ragg"
+)
+vapply(
+  pkgs, library, logical(1),
+  character.only = TRUE, logical.return = TRUE
+)
+
+knitr::opts_chunk$set(echo = FALSE)
+
+theme_set(
+  theme_bw() +
+    theme(text = element_text(size = 15, face = "bold"), 
+          title = element_text(size = 15, face = "bold"),
+          legend.position = "none")
+)
+## plot settings ##
+## Plot colors
+safe_pal <- paletteer_d("rcartocolor::Safe", 4)
+
+myColors_3 <- c(
+  "novel"   = safe_pal[1],
+  "learned" = safe_pal[2]
+)
+
+# Subsets for plots if still needed
+myColors_1 <- myColors_3[c("novel", "learned")]
+
+## Set the amount of dodge in figures
+pd <- position_dodge(0.7)
+pd2 <- position_dodge(1)
+```
+
+{{< pagebreak >}}
+
+## Parameter recovery study
+
+
+
+{{< pagebreak >}}
+
+## Priors
+
+These are the priors used for the preregistered LBA model.
+
+```{r}
+prior_lba_table <- tibble(
+  parameter = c(
+    "v_SNovel:lMFALSE", "v_SLearned:lMFALSE",
+    "v_SNovel:lMTRUE",  "v_SLearned:lMTRUE",
+    "sv_lMTRUE",
+    "B_lRNovel", "B_lRLearned",
+    "A", "t0"
+  ),
+  description = c(
+    "Drift rate", "Drift rate",
+    "Drift rate", "Drift rate",
+    "SD drift rate (true accumulator)",
+    "Threshold", "Threshold",
+    "Start point", "Non-decision time"
+  ),
+  condition = c(
+    "Novel", "Learned",
+    "Novel", "Learned",
+    "-",
+    "-", "-",
+    "-", "-"
+  ),
+  correct = c(
+    "False", "False",
+    "True",  "True",
+    "True",
+    "-", "-",
+    "-", "-"
+  ),
+  response = c(
+    "-", "-", "-", "-", "-",
+    "Novel", "Learned",
+    "-", "-"
+  ),
+  mean = c(
+    "0", "0", "1", "1",
+    "log(0.5)",
+    "log(1)", "log(1)", "log(0.5)", "log(0.3)"
+  ),
+  sd = c(
+    "2", "2", "2", "2",
+    "0.5", "0.5", "0.5", "0.3", "0.3"
+  )
+)
+
+## create the table
+prior_lba_table |> 
+  tt() |> 
+  style_tt(fontsize = 0.85)
+```
+
+## Model checks
+
+### Convergence
+
+The chains showed satisfactory mixing as evidenced by the rhat values.
+
+```{r}
+#| label: fig-chains-exp1
+#| fig-cap: "MCMC chains"
+#| fig-width: 8
+#| fig-height: 6
+
+
+```
+
+### Posterior predictive checks
+
+```{r}
+#| label: fig-ppreds-exp1
+#| fig-cap: "Posterior predictive checks"
+#| fig-subcap:
+#|   - "CDF"
+#|   - "Density"
+#| layout-nrow: 2
+#| out-height: "40%"
+
+```
+
+### Prior vs posterior plots
+
+```{r}
+#| label: fig-prior-post-exp1
+#| fig-cap: "Priors vs posterior plots"
+#| fig-width: 8
+#| fig-height: 6
+
+```
+
+
+{{< pagebreak >}}
+
+## Point estimate correlations with Cambridge Car Memory scores
+
+```{r}
+
+```
+
+
+## Plausible value correlations with Cambridge Car Memory scores
+
+```{r}
+
+```
+
+
+## Bayesian linear regression models for threshold parameter
+
+```{r}
+
+```
+
+
+
