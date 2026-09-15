@@ -180,7 +180,7 @@ This could be considered as evidence that some part of the variance between face
 The use of directly observed or manifest measures, such as reaction time and accuracy, has made a valuable contribution to understanding the relationship between psychological processes in general and in the context of face perception.
 However, performance on such tests remains a distant proxy of the underlying cognitive processes at work during face recognition, which makes them far from ideal for capturing individual differences in cognitive processes [@hainesTheoreticallyInformedGenerative2020a].
 An alternative approach to this problem has emerged in the domain of mathematical psychology and involves using a computational model to estimate latent computational parameters, which can be closer to the cognitive processes of interest [@yarkoniGeneralizabilityCrisis2022].
-For instance, evidence-accumulation models translate the distribution of response times for correct and incorrect responses into parameters reflecting latent computational processes that are supposed to underlie the decision-making process (see Ratcliff et al., 2016 for a review).The linear ballistic accumulator (LBA) model (@fig-lba) belongs to the set of such evidence-accumulation models (brownSimplestCompleteModel).
+For instance, evidence-accumulation models translate the distribution of response times for correct and incorrect responses into parameters reflecting latent computational processes that are supposed to underlie the decision-making process (see Ratcliff et al., 2016 for a review).The linear ballistic accumulator (LBA) model (@fig-LBA) belongs to the set of such evidence-accumulation models (brownSimplestCompleteModel).
 In two-alternatives forced choice tasks, this model describes the accumulation of evidence (drift rate parameter) towards the two alternative options.
 Once the accumulation of evidence crosses the threshold, the corresponding response is then chosen.
 Moreover, these parameters can be interpreted in psychologically meaningful ways: the drift rate parameter reflect the signal-to-noise ratio provided by the stimulus and the threshold parameter reflects the response caution towards a response (the amount of evidence needed to trigger a particular response; Myers et al., 2022).
@@ -195,17 +195,17 @@ From an individual differences perspective, one can then study how variation in 
 ::::
 
 Approaches from differential psychology have historically run alongside, and largely separate to, research traditions from experimental psychology, which aim to estimate the average effect (aggregated across individuals) of an experimental manipulation [@myers2006experimental].
-For example, we previously used an experimental approach in combination with evidence accumulation modelling to study how familiarity impacts the computational processes that support face recognition [add ref: fournier2026familiarity].
+For example, we previously used an experimental approach in combination with evidence accumulation modelling to study how familiarity impacts the computational processes that support face recognition [@fournier2026familiarity].
 We found that different types of familiarity (visually familiar faces vs. famous faces) had a similar impact on the computational processes involved in the decision-making process of face recognition.
 Compared to learned faces, novel faces induced a greater accumulation of evidence (drift rate), as well as modest increase in response caution (threshold).
 This multifaceted effect of familiarity on the face recognition process would not have been possible using a traditional separate analysis of response times and accuracy.
 Although we showed that these results could be replicated in both laboratory and online settings, the work aimed to estimate an average effect across a relatively small number of individuals (N\~30), rather than investigate individual differences.
-As such, (add ref: fournier2026familiarity) were unable to estimate how variation in face recognition ability between individuals shapes the computational processes that determine how face recognition judgements are made.
+As such, (@fournier2026familiarity) were unable to estimate how variation in face recognition ability between individuals shapes the computational processes that determine how face recognition judgements are made.
 
 In the present study, therefore, we combined approaches from differential, experimental and mathematical psychology to investigate how latent computational parameters in face recognition relate to face recognition ability.
-More specifically, based on prior results from our lab [add ref: fournier2026familiarity], we investigated the extent to which drift rate and threshold vary as a function of face recognition ability specifically or of a more general object recognition ability.
+More specifically, based on prior results from our lab [@fournier2026familiarity], we investigated the extent to which drift rate and threshold vary as a function of face recognition ability specifically or of a more general object recognition ability.
 This approach can provide insights regarding the domain-specificity of the computational processes involved in face recognition.
-To do so, we used a similar face memory task as used previously by (add ref: fournier2026familiarity) to compute key latent parameters, whilst also measuring face recognition ability [@duchaineCambridgeFaceMemory2006] and general object recognition ability [@dennettCambridgeCarMemory2012] in a considerably larger sample of participants (N\~300) than our prior work to enable more robust estimates of between participant individual differences.
+To do so, we used a similar face memory task as used previously by (@fournier2026familiarity) to compute key latent parameters, whilst also measuring face recognition ability [@duchaineCambridgeFaceMemory2006] and general object recognition ability [@dennettCambridgeCarMemory2012] in a considerably larger sample of participants (N\~300) than our prior work to enable more robust estimates of between participant individual differences.
 
 Based on past research, we might expect that drift rate (the quality of the evidence accumulation) to positively correlate with face recognition ability, but it is less clear how threshold (response caution towards a response) may vary.
 For instance, a better face recognition could result in being more cautious or less cautious.
@@ -532,7 +532,7 @@ drift_acc_diff_group <- drift_group |>
     names_from = accuracy,
     values_from = value
   ) |>
-  mutate(diff =  - false)
+  mutate(diff = true - false)
 
 drift_acc_diff_pid <- drift_pid |>
   pivot_wider(
@@ -861,7 +861,7 @@ cor_long_drift <- cor_long |>
       param,
       "Drift rate learned (TRUE)",
       "Drift rate learned (FALSE)",
-      "Drift rate learned (TRUE - FALSE)",
+      "Drift rate learned (TRUE-FALSE)",
       "Drift rate novel (TRUE)",
       "Drift rate novel (FALSE)",
       "Drift rate novel (TRUE-FALSE)"
@@ -971,8 +971,8 @@ To estimate the uncertainty linked to the relationships between LBA estimated pa
 Like described above (see Methods), instead of using a single point estimate to assess the strength of the relationship between our variables of interest, the posterior distribution of the LBA parameters allows us to use the entire sampling distribution to do it.
 We calculated the Person's *r* between each sample value from our posterior distribution for each parameter of each subject and their face recognition ability.
 The posterior distributions of threshold plausible correlation values and their contrast are shown in @fig-plausible-corr-thresh.
-Posterior correlations with true and false drift rate for both conditions and recognition abilities can be found in @fig-plausible-corr-drift-true-false, and correlations with drift rate differences (true-false) by conditions as well as drift rate contrast (novel-false) in @fig-plausible-corr-drift-diff.
-For both threshold and drift rate, we evaluated the 95% CI of the distributions.
+Posterior correlations with true and false drift rate for both conditions and recognition abilities can be found in @fig-plausible-corr-drift-true-false, and correlations with drift rate differences (TRUE-FALSE) by conditions in @fig-plausible-corr-drift-diff.
+For both threshold and drift rate, we evaluated the 95% CI of the posterior distributions.
 If the 95% CI of the distribution does not include 0, we would be confident in the existence of a relationship between these parameters and the associated recognition ability.
 @tbl-plausible-cor provides a summary of these distributions.
 
@@ -994,22 +994,18 @@ param_cols <- c(
 all_prereg_params <- c(
   param_cols,
   "discrim_novel",
-  "discrim_learned",
-  "discrim_diff",
-  "thresh_diff"
+  "discrim_learned"
 )
 
 param_labels <- c(
   B_lRnovel = "Threshold: Novel",
   B_lRlearned = "Threshold: Learned",
-  thresh_diff = "Threshold: Novel - Learned",
-  v_Snovel_lMTRUE = "Drift: Novel (true)",
-  v_Snovel_lMFALSE = "Drift: Novel (false)",
-  discrim_novel = "Drift: Novel (true - false)",
-  v_Slearned_lMTRUE = "Drift: Learned (true)",
-  v_Slearned_lMFALSE = "Drift: Learned (false)",
-  discrim_learned = "Drift: Learned (true - false)",
-  discrim_diff = "Drift: (Novel - Learned) difference"
+  v_Snovel_lMTRUE = "Drift: Novel (TRUE)",
+  v_Snovel_lMFALSE = "Drift: Novel (FALSE)",
+  discrim_novel = "Drift: Novel (TRUE-FALSE)",
+  v_Slearned_lMTRUE = "Drift: Learned (TRUE)",
+  v_Slearned_lMFALSE = "Drift: Learned (FALSE)",
+  discrim_learned = "Drift: Learned (TRUE-FALSE)"
 )
 
 # join theta_pid (full posterior) with cambridge scores
@@ -1018,9 +1014,7 @@ pv_data <- theta_pid |>
   pivot_wider(names_from = param, values_from = value) |>
   mutate(
     discrim_novel = v_Snovel_lMTRUE - v_Snovel_lMFALSE,
-    discrim_learned = v_Slearned_lMTRUE - v_Slearned_lMFALSE,
-    discrim_diff = discrim_novel - discrim_learned,
-    thresh_diff = B_lRnovel - B_lRlearned
+    discrim_learned = v_Slearned_lMTRUE - v_Slearned_lMFALSE
   ) |>
   left_join(
     cam_face |> select(pid, face_recog_centred),
@@ -1210,8 +1204,6 @@ p_drift_mid <- ggplot(
     legend.text = element_text(size = 12, face = "bold")
   )
 
-ggsave(here("figures/corr/drift_plausible_value.jpeg"), height = 10, width = 15)
-
 # right panel — novel-learned difference of discriminations
 # pv_drift_diff <- pv_cors |>
 #   filter(param == "discrim_diff")
@@ -1308,18 +1300,19 @@ table_data <- pv_summary |>
   mutate(
     # extract accuracy before cleaning condition
     Accuracy = case_when(
-      grepl("\\(true\\)$", Condition, ignore.case = TRUE) ~ "TRUE",
-      grepl("\\(false\\)$", Condition, ignore.case = TRUE) ~ "FALSE",
-      TRUE ~ "-"
+      grepl("\\(TRUE\\)$", Condition, ignore.case = TRUE) ~ "TRUE",
+      grepl("\\(FALSE\\)$", Condition, ignore.case = TRUE) ~ "FALSE",
+      grepl("TRUE-FALSE", Condition, ignore.case = TRUE) ~ "TRUE-FALSE",
+  TRUE ~ "-"
     ),
     # clean up condition labels
     Condition = case_when(
-      Condition == "Learned (true)" ~ "Learned",
-      Condition == "Learned (false)" ~ "Learned",
-      Condition == "Novel (true)" ~ "Novel",
-      Condition == "Novel (false)" ~ "Novel",
-      Condition == "Learned (true - false)" ~ "Learned",
-      Condition == "Novel (true - false)" ~ "Novel",
+      Condition == "Learned (TRUE)" ~ "Learned",
+      Condition == "Learned (FALSE)" ~ "Learned",
+      Condition == "Novel (TRUE)" ~ "Novel",
+      Condition == "Novel (FALSE)" ~ "Novel",
+      Condition == "Learned (TRUE-FALSE)" ~ "Learned",
+      Condition == "Novel (TRUE-FALSE)" ~ "Novel",
       TRUE ~ Condition
     ),
     # set ordering
@@ -1328,7 +1321,7 @@ table_data <- pv_summary |>
       Condition,
       levels = c("Learned", "Novel")
     ),
-    Accuracy = factor(Accuracy, levels = c("True", "False", "-"))
+    Accuracy = factor(Accuracy, levels = c("TRUE", "FALSE", "TRUE-FALSE", "-"))
   ) |>
   arrange(Parameter, Condition, Accuracy)
 
