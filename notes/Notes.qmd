@@ -187,3 +187,60 @@ With this study we also contribute to the extension of this model by showing tha
 
 Also, I think we should make the section on object recog abilities into one para, as it is currently two paras.
 two paras out of 1000 words, is prop too much for an exploratory observation
+
+
+## Sept 16
+
+- Fix the Fournier REF consistently throughout to cite the preprint. 
+- REFs missing para 1 Intro.
+- I added some REFs on expertise at the end of the intro. The refs are as follows:
+
+https://pmc.ncbi.nlm.nih.gov/articles/PMC10437139/
+
+https://econtent.hogrefe.com/doi/10.1027/1618-3169/a000111
+
+https://link.springer.com/article/10.3758/16.6.1026
+
+https://doi.org/10.1525/collabra.160157
+
+
+- In the results, much more detail is required in 2.7.2, 2.7.4. e.g., What exactly did you do in the classical correlational analysis? Could someone else reproduce what you did from what you've written? And in the linear regression, you need to explain the varying effects/intercepts structure and any other relevant information, like software used and functions maybe? e.g., brms?
+
+- Results section. More narrative is required to remind the reader of the purpose of the analysis. 
+e.g., 3.1 LBA.
+We first estimated LBA params in individuals and at the group level.
+The purpose of doing so was twofold. 
+First, we needed subject specific estimates to address our primary RQs on indiv diffs.
+Second, we also wanted to check that we found a similar pattern of results, as we observed in our prior work using the same task.
+This is an important set to establish that the basic experimental effect is replicable at the group level before we pursue assessments of individual differences. 
+
+- Figure 4 and 5 could be combined possibly then panel A and B.
+the legend for Figures 4 and 5 needs working on. Much more detail required. 
+- one question. would it make sense for Figs 4 and 5 to have 3 panels - with a new right panel that plots the distributions per PID? that would then visualise the variation in thresh and drift rate values? Or overplot individuals in a faint colour on the current right panels so that folks can easily see the variation. Or is it too much of a mess with all of those PIDs??
+
+- Classic correlation analysis. You state the threshold results, but maybe add an extra sentence to explain what this means in simple terms. e.g., better face recogn ability is associated with blah, but the effect size is modest.
+
+- Results. Figure 6. Big decision here. Also applies to the rest of the results. Do we present the car results in the main text? I kind of feel like it makes things harder and more complicated to understand. Our target aim (as we pre-registered) was all about face ability and then adjusting for car ability via regression. So one option would be to present the current car and face plots in Supps and only plot the face results in the main text. let's discuss this.
+
+- 3.3 cite REFs for Bayesian plausible value correlations. - first sentence. 
+
+- the choice of colours on Figure 6 and 7 is confusing. e.g., face vs car in one, but then the same colours are novel vs learned in another. Note - this could be much easier to deal with if we only present face in the main text.
+
+- 3.4 linear regression. Say here how these results can be interpreted. e.g., as blah goes up, drift rate goes up for tue and down for false.  e.g., positive associaton vs negative association. Then say something about size, uncertainty, interval width etc.
+
+- Table 4 I don't quite follow. some values seem to be repeated and the accuracy column makes no sense. Am I missing something here?
+
+- Figure 6b. Change the order of panels. Make the far right panel be the contrast between TRUE - FALSE. Then the top row is learned and the bottom row is novel. That way you can easily see the progression from left to right.
+
+However, now that I think about it, if we remove the car results from Figs 6, 7, 8, 9 and table 4 (and place them all in supps), then the Figure 6 can be even easier to plot. 
+We can simply plot the scatter plot for novel and learned in one panel. 
+That way we highlight the difference in slope (if any) between novel and learned for faces only, which is our main goal and finding. 
+But we can show all of these plots in Supps so that we are consistent with our pre-reg. 
+And we can make a comment that we visualise face results in the main text.
+Then we can do the same in Figure 6b. 
+We will present 3 panels instead of 6 - novel vs learned for true, false, and the true-false difference.
+Does this make sense? I think it will be easier to digest.
+
+And then we remove car plots from figs 7, 8, 9 also.
+
+- Discussion - is this statement an accurate reflection of response caution. in other words, can we say this? : "who voluntary increase their response caution to ensure a better performance given the task demands"
