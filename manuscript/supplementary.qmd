@@ -192,14 +192,545 @@ The chains showed satisfactory mixing as evidenced by the rhat values.
 
 {{< pagebreak >}}
 
-## Point estimate correlations with Cambridge Car Memory scores
+## Point estimate correlations with Cambridge Car Memory score and Cambridge Face Memory scores
 
 ```{r}
+#| label: load-Cambridge-test
+#| include: false
+## read in the pid data
+cambridge_acc_pid <- read_csv(
+  here("data", "cambridge_acc_scores_pid.csv")
+)
+head(cambridge_acc_pid)
+glimpse(cambridge_acc_pid)
 
+## filter and wrangle
+## face scores
+cam_face <- cambridge_acc_pid |>
+  filter(task == "face") |>
+  rename(face_recog = n_correct) |>
+  mutate(
+    face_recog_centred = face_recog - mean(face_recog, na.rm = TRUE)
+  ) |>
+  select(pid, face_recog, face_recog_centred)
+
+## car scores
+cam_car <- cambridge_acc_pid |>
+  filter(task == "car") |>
+  rename(car_recog = n_correct) |>
+  mutate(
+    car_recog_centred = car_recog - mean(car_recog, na.rm = TRUE)
+  ) |>
+  select(pid, car_recog, car_recog_centred)
 ```
 
+```{r}
+#| label: corr-point-estimates
+#| include: false
+cor_data <- theta_pid_q |>
+  select(pid, param, value) |>
+  pivot_wider(names_from = param, values_from = value) |>
+  left_join(cam_face, by = "pid") |>
+  left_join(cam_car, by = "pid") |>
+  # derived contrasts
+  mutate(
+    # drift discrimination (true - false) per condition
+    discrim_novel = v_Snovel_lMTRUE - v_Snovel_lMFALSE,
+    discrim_learned = v_Slearned_lMTRUE - v_Slearned_lMFALSE,
+    # cross-condition drift contrast (novel - learned discrimination)
+    discrim_diff = discrim_novel - discrim_learned,
+    # threshold contrast
+    thresh_diff = B_lRnovel - B_lRlearned
+  )
 
-## Plausible value correlations with Cambridge Car Memory scores
+
+param_cols <- c(
+  "v_Snovel_lMTRUE",
+  "v_Snovel_lMFALSE",
+  "v_Slearned_lMTRUE",
+  "v_Slearned_lMFALSE",
+  "B_lRnovel",
+  "B_lRlearned",
+  "discrim_learned",
+  "discrim_novel"
+)
+
+# pivot to long with both predictors as a variable
+cor_long <- cor_data |>
+  pivot_longer(
+    cols = all_of(param_cols),
+    names_to = "param",
+    values_to = "estimate"
+  ) |>
+  pivot_longer(
+    cols = c(face_recog_centred, car_recog_centred),
+    names_to = "predictor",
+    values_to = "score"
+  ) |>
+  mutate(
+    predictor = if_else(str_detect(predictor, "face"), "Face", "Car"),
+    predictor = factor(predictor, levels = c("Face", "Car")),
+    param = fct_recode(
+      param,
+      "Drift rate learned (TRUE)" = "v_Slearned_lMTRUE",
+      "Drift rate learned (FALSE)" = "v_Slearned_lMFALSE",
+      "Drift rate novel (TRUE)" = "v_Snovel_lMTRUE",
+      "Drift rate novel (FALSE)" = "v_Snovel_lMFALSE",
+      "Threshold novel" = "B_lRnovel",
+      "Threshold learned" = "B_lRlearned",
+      "Drift rate learned (TRUE-FALSE)" = "discrim_learned",
+      "Drift rate novel (TRUE-FALSE)" = "discrim_novel"
+    )
+  )
+
+# compute r per param x predictor
+cor_long_thresh <- cor_long |>
+  filter(param %in% c("Threshold learned", "Threshold novel"))
+
+cor_labels_thresh <- cor_long_thresh |>
+  group_by(param, predictor) |>
+  summarise(
+    r = cor(estimate, score, use = "complete.obs"),
+    .groups = "drop"
+  ) |>
+  mutate(
+    label = sprintf("r = %.2f", r),
+    vjust = if_else(predictor == "Face", 1.5, 3.0)
+  )
+
+cor_long_drift <- cor_long |>
+  filter(
+    param %in%
+      c(
+        "Drift rate learned (TRUE)",
+        "Drift rate learned (FALSE)",
+        "Drift rate learned (TRUE-FALSE)",
+        "Drift rate novel (TRUE)",
+        "Drift rate novel (FALSE)",
+        "Drift rate novel (TRUE-FALSE)"
+      )
+  ) |>
+  mutate(
+    param = fct_relevel(
+      param,
+      "Drift rate learned (TRUE)",
+      "Drift rate learned (FALSE)",
+      "Drift rate learned (TRUE-FALSE)",
+      "Drift rate novel (TRUE)",
+      "Drift rate novel (FALSE)",
+      "Drift rate novel (TRUE-FALSE)"
+    )
+  )
+
+cor_labels_drift <- cor_long_drift |>
+  group_by(param, predictor) |>
+  summarise(
+    r = cor(estimate, score, use = "complete.obs"),
+    .groups = "drop"
+  ) |>
+  mutate(
+    label = sprintf("r = %.2f", r),
+    vjust = if_else(predictor == "Face", 1.5, 3.0),
+    param = fct_relevel(
+      param,
+      "Drift rate learned (TRUE)",
+      "Drift rate learned (FALSE)",
+      "Drift rate learned (TRUE-FALSE)",
+      "Drift rate novel (TRUE)",
+      "Drift rate novel (FALSE)",
+      "Drift rate novel (TRUE-FALSE)"
+    )
+  )
+```
+
+```{r}
+#| label: prepare-plot-corr-point-estimate
+#| include: false
+# plot thresh
+p_raw_params_thresh <- ggplot(
+  cor_long_thresh,
+  aes(x = score, y = estimate, colour = predictor, fill = predictor)
+) +
+  geom_point(alpha = 0.3, size = 2) +
+  geom_smooth(method = "lm", se = TRUE, alpha = 0.3) +
+  geom_text(
+    data = cor_labels_thresh,
+    aes(label = label, vjust = vjust, colour = predictor),
+    x = -Inf,
+    y = Inf,
+    hjust = -0.1,
+    size = 5,
+    fontface = "bold",
+    show.legend = FALSE
+  ) +
+  facet_wrap(~param, scales = "free_y") +
+  force_panelsizes(cols = c(1, 1), rows = 0.5) +
+  scale_colour_manual(values = c("Face" = safe_pal[1], "Car" = safe_pal[2])) +
+  scale_fill_manual(values = c("Face" = safe_pal[1], "Car" = safe_pal[2])) +
+  labs(
+    x = "Recognition score (centred)",
+    y = "Parameter estimate (median)",
+    colour = NULL,
+    fill = NULL
+  ) +
+  theme(legend.position = "bottom")
+
+
+# plot drift
+p_raw_params_drift <- ggplot(
+  cor_long_drift,
+  aes(x = score, y = estimate, colour = predictor, fill = predictor)
+) +
+  geom_point(alpha = 0.3, size = 2) +
+  geom_smooth(method = "lm", se = TRUE, alpha = 0.3) +
+  geom_text(
+    data = cor_labels_drift,
+    aes(label = label, vjust = vjust, colour = predictor),
+    x = -Inf,
+    y = Inf,
+    hjust = -0.1,
+    size = 5,
+    fontface = "bold",
+    show.legend = FALSE
+  ) +
+  facet_wrap(~param, scales = "free_y", ncol = 3) +
+  scale_colour_manual(values = c("Face" = safe_pal[1], "Car" = safe_pal[2])) +
+  scale_fill_manual(values = c("Face" = safe_pal[1], "Car" = safe_pal[2])) +
+  labs(
+    x = "Recognition score (centred)",
+    y = "Parameter estimate (median)",
+    colour = NULL,
+    fill = NULL
+  ) +
+  theme(legend.position = "bottom")
+```
+
+```{r}
+#| label: fig-corr-point-estimates
+#| fig-cap: "Point estimates correlations with recognition scores. In (b), drift rate (TRUE) reflects the accumulation of evidence when the response is correct and drift rate (FALSE) the accumulation of evidence when the response is incorrect. Drift rate (TRUE-FALSE) represent the signal-to-noise ratio provided by the stimulus."
+#| fig-subcap: 
+#|  - "Median threshold correlations with recognition ability"
+#|  - "Median drift rate correlations with recognition ability"
+#| layout-ncol: 1
+#| warning: false
+#| fig-width: 10
+#| fig-height: 7
+p_raw_params_thresh
+p_raw_params_drift
+```
+
+{{< pagebreak >}}
+
+## Plausible value correlations with Cambridge Car Memory scores and Cambridge Face Memory scores
+
+```{r}
+#| label: plausible-value-wrangle
+#| include: false
+param_cols <- c(
+  "v_Snovel_lMTRUE",
+  "v_Snovel_lMFALSE",
+  "v_Slearned_lMTRUE",
+  "v_Slearned_lMFALSE",
+  "sv_lMTRUE",
+  "B_lRnovel",
+  "B_lRlearned",
+  "A",
+  "t0"
+)
+
+all_prereg_params <- c(
+  param_cols,
+  "discrim_novel",
+  "discrim_learned"
+)
+
+param_labels <- c(
+  B_lRnovel = "Threshold: Novel",
+  B_lRlearned = "Threshold: Learned",
+  v_Snovel_lMTRUE = "Drift: Novel (TRUE)",
+  v_Snovel_lMFALSE = "Drift: Novel (FALSE)",
+  discrim_novel = "Drift: Novel (TRUE-FALSE)",
+  v_Slearned_lMTRUE = "Drift: Learned (TRUE)",
+  v_Slearned_lMFALSE = "Drift: Learned (FALSE)",
+  discrim_learned = "Drift: Learned (TRUE-FALSE)"
+)
+
+# join theta_pid (full posterior) with cambridge scores
+# theta_pid has 300 pids x 9 params x 15000 draws
+pv_data <- theta_pid |>
+  pivot_wider(names_from = param, values_from = value) |>
+  mutate(
+    discrim_novel = v_Snovel_lMTRUE - v_Snovel_lMFALSE,
+    discrim_learned = v_Slearned_lMTRUE - v_Slearned_lMFALSE
+  ) |>
+  left_join(
+    cam_face |> select(pid, face_recog_centred),
+    by = "pid"
+  ) |>
+  left_join(
+    cam_car |> select(pid, car_recog_centred),
+    by = "pid"
+  ) |>
+  pivot_longer(
+    cols = all_of(all_prereg_params),
+    names_to = "param",
+    values_to = "estimate"
+  )
+
+# compute correlation for each draw x param x predictor
+# this will take a moment with 15000 draws
+pv_cors <- pv_data |>
+  group_by(.draw, param) |>
+  summarise(
+    r_face = cor(estimate, face_recog_centred, use = "complete.obs"),
+    r_car = cor(estimate, car_recog_centred, use = "complete.obs"),
+    .groups = "drop"
+  ) |>
+  pivot_longer(
+    cols = c(r_face, r_car),
+    names_to = "predictor",
+    values_to = "r"
+  ) |>
+  mutate(predictor = if_else(str_detect(predictor, "_face"), "Face", "Car"))
+pv_summary <- pv_cors |>
+  group_by(param, predictor) |>
+  median_qi(r, .width = c(0.95)) |>
+  mutate(label = param_labels[param]) |>
+  print(n = Inf)
+```
+
+```{r}
+#| label: create-plausible-value-corr-plots-thresh
+#| include: false
+# left panel — novel and learned
+pv_thresh_main <- pv_cors |>
+  filter(param %in% c("B_lRnovel", "B_lRlearned")) |>
+  mutate(
+    response = if_else(param == "B_lRnovel", "Novel", "Learned"),
+    response = factor(response, levels = c("Learned", "Novel"))
+  )
+
+p_thresh_left <- ggplot(
+  pv_thresh_main,
+  aes(x = r, y = predictor, fill = response, colour = response)
+) +
+  stat_halfeye(alpha = 0.7, .width = c(0.5, 0.95)) +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "darkgrey") +
+  scale_fill_manual(values = myColors_4) +
+  scale_colour_manual(values = myColors_4) +
+  labs(
+    x = "Plausible r value",
+    y = NULL,
+    fill = NULL,
+    colour = NULL
+  ) +
+  theme(
+    legend.position = "bottom",
+    text = element_text(size = 5, face = "bold"),
+    strip.text = element_text(size = 5, face = "bold"),
+    axis.text = element_text(size = 12, face = "bold"),
+    axis.title = element_text(size = 14, face = "bold"),
+    legend.text = element_text(size = 12, face = "bold")
+  )
+```
+
+```{r}
+#| label: create-plausible-value-corr-plots-drift
+#| include: false
+# first panel - drift rate true and false
+pv_drift_true_false <- pv_cors |>
+  filter(
+    param %in%
+      c(
+        "v_Slearned_lMTRUE",
+        "v_Slearned_lMFALSE",
+        "v_Snovel_lMTRUE",
+        "v_Snovel_lMFALSE"
+      )
+  ) |>
+  mutate(
+    condition = if_else(
+      param == "v_Slearned_lMTRUE",
+      "Learned",
+      if_else(param == "v_Slearned_lMFALSE", "Learned", "Novel")
+    ),
+    accuracy = if_else(
+      param == "v_Slearned_lMTRUE",
+      "TRUE",
+      if_else(param == "v_Snovel_lMTRUE", "TRUE", "FALSE")
+    ),
+    accuracy = factor(accuracy, levels = c("TRUE", "FALSE"))
+  )
+
+p_drift_first <- ggplot(
+  pv_drift_true_false,
+  aes(x = r, y = predictor, fill = accuracy, colour = accuracy)
+) +
+  stat_halfeye(alpha = 0.7, .width = c(0.5, 0.95)) +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "darkgrey") +
+  scale_fill_manual(values = myColors_acc_2) +
+  scale_colour_manual(values = myColors_acc_2) +
+  labs(
+    x = "Plausible r value",
+    y = NULL,
+    fill = NULL,
+    colour = NULL
+  ) +
+  facet_wrap(~ condition) +
+  theme(
+    legend.position = "bottom",
+    text = element_text(size = 7, face = "bold"),
+    strip.text = element_text(size = 10, face = "bold"),
+    axis.text = element_text(size = 12, face = "bold"),
+    axis.title = element_text(size = 14, face = "bold"),
+    legend.text = element_text(size = 12, face = "bold")
+  )
+
+# middle panel — discrimination (true - false) per condition
+pv_drift_discrim <- pv_cors |>
+  filter(param %in% c("discrim_novel", "discrim_learned")) |>
+  mutate(
+    condition = if_else(param == "discrim_novel", "Novel", "Learned"),
+    condition = factor(condition, levels = c("Learned", "Novel"))
+  )
+
+p_drift_mid <- ggplot(
+  pv_drift_discrim,
+  aes(x = r, y = predictor, fill = condition, colour = condition)
+) +
+  stat_halfeye(alpha = 0.7, .width = c(0.5, 0.95)) +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "darkgrey") +
+  scale_fill_manual(values = myColors_4) +
+  scale_colour_manual(values = myColors_4) +
+  labs(
+    x = "Plausible r value",
+    y = NULL,
+    fill = NULL,
+    colour = NULL
+  ) +
+  theme(
+    legend.position = "bottom",
+    text = element_text(size = 7, face = "bold"),
+    strip.text = element_text(size = 7, face = "bold"),
+    axis.text = element_text(size = 12, face = "bold"),
+    axis.title = element_text(size = 14, face = "bold"),
+    legend.text = element_text(size = 12, face = "bold")
+  )
+```
+
+```{r}
+#| label: tbl-plausible-cor
+#| tbl-cap: "Median r and 95% quantile intervals of the plausible value correlations between LBA parameters and recogntion ability scores."
+#| include: true
+#| tbl-height: 10
+#| tbl-width: 15
+table_data <- pv_summary |>
+  filter(!is.na(label)) |>
+  # no longer drop true/false rows
+  mutate(
+    r_fmt = sprintf("%.2f", r),
+    ci_fmt = sprintf("[%.2f, %.2f]", .lower, .upper),
+    color = case_when(
+      .lower > 0 & .upper > 0 ~ "blue",
+      .lower < 0 & .upper < 0 ~ "red",
+      TRUE ~ "black"
+    )
+  ) |>
+  select(label, predictor, r_fmt, ci_fmt, color) |>
+  pivot_wider(
+    names_from = predictor,
+    values_from = c(r_fmt, ci_fmt, color),
+    names_glue = "{predictor}_{.value}"
+  ) |>
+  separate(
+    label,
+    into = c("Parameter", "Condition"),
+    sep = ": ",
+    fill = "right"
+  ) |>
+  mutate(
+    # extract accuracy before cleaning condition
+    Accuracy = case_when(
+      grepl("\\(TRUE\\)$", Condition, ignore.case = TRUE) ~ "TRUE",
+      grepl("\\(FALSE\\)$", Condition, ignore.case = TRUE) ~ "FALSE",
+      grepl("TRUE-FALSE", Condition, ignore.case = TRUE) ~ "TRUE-FALSE",
+      TRUE ~ "-"
+    ),
+    # clean up condition labels
+    Condition = case_when(
+      Condition == "Learned (TRUE)" ~ "Learned",
+      Condition == "Learned (FALSE)" ~ "Learned",
+      Condition == "Novel (TRUE)" ~ "Novel",
+      Condition == "Novel (FALSE)" ~ "Novel",
+      Condition == "Learned (TRUE-FALSE)" ~ "Learned",
+      Condition == "Novel (TRUE-FALSE)" ~ "Novel",
+      TRUE ~ Condition
+    ),
+    # set ordering
+    Parameter = factor(Parameter, levels = c("Threshold", "Drift")),
+    Condition = factor(
+      Condition,
+      levels = c("Learned", "Novel")
+    ),
+    Accuracy = factor(Accuracy, levels = c("TRUE", "FALSE", "TRUE-FALSE", "-"))
+  ) |>
+  arrange(Parameter, Condition, Accuracy)
+
+
+# rename columns to clean display names first
+table_data_tt <- table_data |>
+  rename(
+    `median r_Face` = Face_r_fmt,
+    `95% QI_Face` = Face_ci_fmt,
+    `median r_Car` = Car_r_fmt,
+    `95% QI_Car` = Car_ci_fmt
+  ) |>
+  select(
+    Parameter,
+    Condition,
+    Accuracy,
+    `median r_Face`,
+    `95% QI_Face`,
+    `median r_Car`,
+    `95% QI_Car`,
+    Face_color,
+    Car_color
+  )
+table_data_tt <- as.data.frame(table_data_tt)
+
+tt_table <- tt(
+  table_data_tt |> select(-Face_color, -Car_color),
+  notes = "Note. Blue = 95% QI entirely above zero; red = 95% QI entirely below zero."
+) |>
+  group_tt(j = list("Face" = 4:5, "Car" = 6:7)) |>
+  style_tt(i = 0, bold = TRUE) |>
+  style_tt(i = 1:nrow(table_data_tt), fontsize = 0.7) |>
+  style_tt(i = 0, fontsize = 0.8) |>
+  style_tt(i = -1, bold = TRUE, fontsize = 0.8) |>
+  style_tt(
+    i = which(table_data_tt$Face_color == "blue"),
+    j = 4:5,
+    color = "blue"
+  ) |>
+  style_tt(
+    i = which(table_data_tt$Face_color == "red"),
+    j = 4:5,
+    color = "red"
+  ) |>
+  style_tt(
+    i = which(table_data_tt$Car_color == "blue"),
+    j = 6:7,
+    color = "blue"
+  ) |>
+  style_tt(
+    i = which(table_data_tt$Car_color == "red"),
+    j = 6:7,
+    color = "red"
+  )
+
+tt_table
+```
+
 
 ```{r}
 
