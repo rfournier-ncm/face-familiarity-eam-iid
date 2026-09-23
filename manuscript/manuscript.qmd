@@ -31,7 +31,7 @@ affiliations:
     name: ETH Zürich
     department: Learning and Instruction Laboratory, Department of Humanities, Social and Political Sciences
 abstract: |
-  Face recognition ability varies substantially across the population, yet the cognitive and computational processes that give rise to this variation remain poorly understood. Here, we combined approaches from experimental, differential and mathematical psychology to test how individual differences in face recognition ability relate to latent parameters of the decision-making process. Participants (N = 300) completed a face memory task with learned and novel faces, together with measures of face recognition ability (Cambridge Face Memory Test) and general object recognition ability (car recognition). We modelled task performance with an evidence-accumulation model that translates accuracy and response times into latent parameters, including drift rate (the signal-to-noise ratio of the evidence) and threshold (response caution). Higher face recognition ability was associated with greater drift rate discrimination between correct and incorrect response accumulators, for both learned and novel faces and to a similar degree, consistent with expertise effects in other domains. This association remained largely unchanged when accounting for car recognition ability, suggesting that it is at least partly tied to face processing itself. Higher face recognition ability was also associated with greater response caution, which may reflect better calibration to task demands. Although the associations were modest in size, these findings suggest that individual differences in face recognition ability are reflected in distinct computational mechanisms, namely more efficient extraction of information from faces and a more cautious decision policy. This approach offers a more specific basis for theories of face recognition, and for testing whether these mechanisms operate similarly across the full spectrum of ability.
+  Face recognition ability varies substantially across the population, yet the cognitive and computational processes that give rise to this variation remain poorly understood. Here, we combined approaches from experimental, differential and mathematical psychology to test how individual differences in face recognition ability relate to latent parameters of the decision-making processes involved in face recognition. Participants (N = 300) completed a face memory task with learned and novel faces, together with measures of face recognition ability (Cambridge Face Memory Test) and general object recognition ability (car recognition). We modelled task performance with an evidence-accumulation model that translates accuracy and response times into latent parameters, including drift rate (the signal-to-noise ratio of the evidence) and threshold (response caution). Higher face recognition ability was associated with greater drift rate discrimination between correct and incorrect response accumulators, for both learned and novel faces and to a similar degree, consistent with expertise effects in other domains. This association remained largely unchanged when accounting for car recognition ability, suggesting that it is at least partly tied to face processing itself. Higher face recognition ability was also associated with greater response caution, which may reflect better calibration to task demands. Although the associations were modest in size, these findings suggest that individual differences in face recognition ability are reflected in distinct computational mechanisms, namely more efficient extraction of information from faces and a more cautious decision policy. This approach enables a more explicit and computational basis for cognitive theories of face recognition to be developed, as well as for testing whether these mechanisms operate similarly across the full spectrum of face recognition abilities.
 keywords: [face perception, memory, individual difference, familiarity, decision models, evidence accumulation modelling]
 wordcount: true
 date: last-modified
@@ -162,13 +162,13 @@ pd2 <- position_dodge(1)
 
 Being able to quickly and accurately recognise other people is a central aspect of everyday social interactions, as well as more specific tasks, such as eye-witness identification and passport control checks.
 However, face recognition ability varies across the population.
-For instance, people with developmental prosopagnosia show relatively poor face recognition ability, [@dobelProsopagnosiaApparentCause2007; @mcconachieDevelopmentalProsopagnosiaSingle1976], whereas so-called “super-recognisers" show a remarkably high face recognition ability compared to the average person [@bobakSuperrecognisersActionEvidence2016; @russellSuperrecognizersPeopleExtraordinary2009]. Even if we ignore these two extreme cases, face recognition ability varies throughout the general population, especially when identifying unfamiliar individuals [@dowsettUnfamiliarFaceMatching2015; @whitePassportOfficersErrors2014]. Unsurprisingly, therefore, research has attempted to understand the mental processes that determine variation in face recognition ability as one way to probe the structure of social perception and cognition [@rhodes2014individual; @wang2012individual; @yovel2014individual]. Here, in this project, we move this research field forward by combining approaches from experimental, differential and mathematical psychology, to investigate how individual differences in face recognition ability relate to the computational processes that support face recognition.
+For instance, people with developmental prosopagnosia show relatively poor face recognition ability [@dobelProsopagnosiaApparentCause2007; @mcconachieDevelopmentalProsopagnosiaSingle1976], whereas so-called “super-recognisers" show a remarkably high face recognition ability compared to the average person [@bobakSuperrecognisersActionEvidence2016; @russellSuperrecognizersPeopleExtraordinary2009]. Even if we ignore these two extreme cases, face recognition ability varies throughout the general population, especially when identifying unfamiliar individuals [@dowsettUnfamiliarFaceMatching2015; @whitePassportOfficersErrors2014]. Unsurprisingly, therefore, research has attempted to understand the mental processes that determine variation in face recognition ability as one way to probe the structure of social perception and cognition [@rhodes2014individual; @wang2012individual; @yovel2014individual]. Here, in this project, we move this research field forward by combining approaches from experimental, differential and mathematical psychology, to investigate how individual differences in face recognition ability relate to the computational processes that support face recognition.
 
 Attempts to understand differences between individuals has a long history in psychological research.
 Indeed, differential psychology represents a major branch of psychological research that aims to understand individual differences in thought, behaviour and ability [@marshEvolutionaryDifferentialPsychology2013; @lubinskiScientificSocialSignificance2000].
 In the domain of face recognition, there is a growing interest in investigating individual differences across the entire spectrum of face recognition ability, rather than focusing on specific subgroups, such as "super-recognisers" [@whiteNeedImproveWay2022].
 To this end, several assessment tools have been designed to measure different facets of face recognition performance [@duchaineCambridgeFaceMemory2006; @burtonGlasgowFaceMatching2010; @russellSuperrecognizersPeopleExtraordinary2009].
-For example, the Cambridge Face Memory Test (@duchaineCambridgeFaceMemory2006) measures how many previously seen faces individuals can accurately recognise, with performance varying across the general population and being poorer in individuals with developmental prosopagnosia.
+For example, the Cambridge Face Memory Test [@duchaineCambridgeFaceMemory2006] measures how many previously seen faces individuals can accurately recognise, with performance varying across the general population and being poorer in individuals with developmental prosopagnosia.
 As such, these tools appear to have sufficient validity to represent a marker of an individuals face recognition ability.
 
 Using these tools as a marker of face recognition ability, past research has estimated the association between the performance on these tests and broader perceptual and cognitive processes [@mccafferyIndividualDifferencesFace2018; @noyesFaceRecognitionAbility2018].
@@ -559,7 +559,7 @@ drift_acc_diff_pid <- drift_pid |>
 # novel - learned contrast
 drift_cond_diff_group <- drift_acc_diff_group |>
   pivot_wider(id_cols = .draw, names_from = condition, values_from = diff) |>
-  mutate(diff = Novel -Learned)
+  mutate(diff = Novel - Learned)
 
 drift_cond_diff_pid <- drift_acc_diff_pid |>
   pivot_wider(
@@ -589,10 +589,12 @@ The threshold parameter is higher for the Novel response compared to the Learned
 #| layout-nrow: 2
 #| fig-height: 5
 #| fig-width: 10
-
 # Threshold plots
 # Left panel: condition distributions
-p_thresh_group_cond <- ggplot(thresh_group, aes(x = value, y = fct_rev(response), fill = response)) +
+p_thresh_group_cond <- ggplot(
+  thresh_group,
+  aes(x = value, y = fct_rev(response), fill = response)
+) +
   stat_halfeye(alpha = 0.7) +
   geom_vline(xintercept = 0, colour = "darkgrey") +
   scale_fill_manual(values = myColors_4) +
@@ -612,7 +614,7 @@ p_thresh_group_diff <- ggplot(thresh_diff_group, aes(x = diff, y = "")) +
   theme(
     text = element_text(size = 6, face = "bold"),
     strip.text = element_text(size = 6, face = "bold"),
-    axis.text = element_text(size =10, face = "bold"),
+    axis.text = element_text(size = 10, face = "bold"),
     axis.title = element_text(size = 12, face = "bold")
   ) +
   labs(x = "Threshold (Novel - Learned)", y = "")
@@ -827,7 +829,13 @@ cor_long <- cor_data |>
 cor_long_thresh <- cor_long |>
   filter(param %in% c("Threshold learned", "Threshold novel")) |>
   rename(Threshold = param) |>
-  mutate(Threshold = fct_recode(Threshold, Novel="Threshold novel", Learned = "Threshold learned"))
+  mutate(
+    Threshold = fct_recode(
+      Threshold,
+      Novel = "Threshold novel",
+      Learned = "Threshold learned"
+    )
+  )
 
 cor_labels_thresh <- cor_long_thresh |>
   group_by(Threshold, Face) |>
@@ -866,12 +874,12 @@ cor_long_drift <- cor_long |>
   mutate(
     condition = case_when(
       str_detect(param, "learned") ~ "Learned",
-      str_detect(param, "novel")   ~ "Novel",
+      str_detect(param, "novel") ~ "Novel",
       TRUE ~ NA_character_
     ),
     drift = case_when(
       str_detect(param, "TRUE-FALSE") ~ "Drift rate (TRUE-FALSE)",
-      str_detect(param, "\\(TRUE\\)")  ~ "Drift rate (TRUE)",
+      str_detect(param, "\\(TRUE\\)") ~ "Drift rate (TRUE)",
       str_detect(param, "\\(FALSE\\)") ~ "Drift rate (FALSE)",
       TRUE ~ NA_character_
     ),
@@ -883,7 +891,7 @@ cor_long_drift <- cor_long |>
     ),
     face_type = factor(condition, levels = c("Learned", "Novel"))
   )
-  
+
 
 cor_labels_drift <- cor_long_drift |>
   group_by(drift, condition) |>
@@ -895,12 +903,14 @@ cor_labels_drift <- cor_long_drift |>
     label = sprintf("r = %.2f", r),
     vjust = if_else(condition == "Learned", 1.5, 3.0)
   ) |>
-  mutate(drift = fct_relevel(
-    drift,
+  mutate(
+    drift = fct_relevel(
+      drift,
       "Drift rate (TRUE)",
       "Drift rate (FALSE)",
       "Drift rate (TRUE-FALSE)"
-  ))
+    )
+  )
 ```
 
 ```{r}
@@ -1295,7 +1305,7 @@ tt_table <- tt(
     i = which(table_data_tt$color == "red"),
     j = 4:5,
     color = "red"
-  ) 
+  )
 
 tt_table
 ```
@@ -1744,15 +1754,15 @@ table_data_pred_contrast
 
 Although accurate recognition of other people is a fundamental ability that guides social behaviour, we currently have a rather limited understanding of the cognitive and computational processes that support such abilities.
 Using a computational model of decision-making, our results show that higher face recognition ability is associated with multiple latent parameters that subserve face recognition, including the ability to extract meaningful information from a face, as well as the tendency to respond in a more cautious manner.
-In the following, we situate these findings in the context of the expertise and face recognition literatures, and we comment on the strengths and weaknesses of the approach more generally.
+In the following, we situate these findings in the context of the expertise and face recognition literatures, and we comment on the strengths and weaknesses of the approach more generally for future theory development and empirical investigation.
 
 The drift rate results suggest that people who are generally better at recognising faces simultaneously accumulate more signal and less noise from the stimulus, and thus they have a higher drift rate discrimination between true and false accumulators.
-These findings are in accordance with previous expertise from a range of domains that showed that expertise effects are primarily and consistently due to better information extraction [@dutilh2009diffusion; @dutilh2011task; @litchfieldFlashpreviewMovingWindow2017; @parker2026evidence; @reinhartz2023mechanisms; @thompsonExpertiseFingerprintIdentification2013a; @vandergijpInterpretationRadiologicalImages2014].
+These findings are in accordance with previous expertise research from a range of domains that showed that expertise effects are consistently due to better information extraction [@dutilh2009diffusion; @dutilh2011task; @litchfieldFlashpreviewMovingWindow2017; @parker2026evidence; @reinhartz2023mechanisms; @thompsonExpertiseFingerprintIdentification2013a; @vandergijpInterpretationRadiologicalImages2014].
 The size of the association (slope) between face recognition ability and drift rate discrimination appeared to be largely invariant to whether the face was visually familiar or entirely novel.
 Indeed, although the overall drift rate difference was higher for novel than learned faces, which replicates our prior experimental work [@fournier2026familiarity], the association across participants was largely similar.
-This suggests that, at least in this task configuration using visual familiarity, greater face recognition ability was approximately equally beneficial to accumulating signal and filtering noise.
+This suggests that, at least in this task configuration using visual familiarity, greater face recognition ability was approximately equally beneficial to accumulating signal and filtering noise for learned and novel faces.
 
-The drift rate results also appeared to be largely similar when we adjusted our regression model for a more general, and non-social measure of perceptual ability (car recognition).
+The drift rate results also appeared to be largely similar after we adjusted our regression model for a more general, and non-social measure of perceptual ability (car recognition).
 This suggests that the relationships we observed between drift rate and face recognition ability cannot easily be explained by a general perceptual ability that generalises to non-social categories.
 Instead, we suggest that the association is, at least partly, tied to face processing per se, and thus to some degree reflective of a domain-specific process tied the face recognition.
 
@@ -1760,13 +1770,13 @@ In addition to drift rate discrimination, face recognition ability was also posi
 Previous studies have shown that confidence is itself a decision variable used to regulate future behaviour [@flemingNeuralMediatorsChanges2018; @folkeExplicitRepresentationConfidence2016].
 The positive association between the threshold parameter and face recognition ability could reflect a better estimation of the task difficulty for people with higher face recognition ability, whose response caution is increased to ensure a better performance given the task demands.
 Whether better recognisers strategically adjust their response caution during the task, or whether this modulation reflects a more automatic process, remains unknown and would require fitting computational models in which the response threshold can vary across trials.
-Nonetheless, our results suggest that high face recognition ability does not only predict a better ability to extract meaningful information for the recognition success but also predict a greater response caution.
+Nonetheless, our results suggest that high face recognition ability is not only associated with superior signal extraction during recognition, recognition success is also associated with greater response caution.
 
 More broadly, by combining approaches from experimental, differential and mathematical psychology, we move the research field into a new direction, which we feel has many benefits for understanding the cognitive processes involved in social perception and cognition more generally.
 Rather than focus on manifest / observed measures [@mccafferyIndividualDifferencesFace2018; @noyesFaceRecognitionAbility2018], we are able to more directly probe which psychological constructs of the decision-making process best describe different patterns of performance between participants [@alister2024Gaze; @evans2019evidence].
 This has knock-on consequences for the development of theories and the specification of hypotheses by being clearer and more specific about the cognitive and computational processes that support face recognition ability.
 For example, cognitive models of face perception [@bruce1986understanding] could incorporate computational mechanisms involved in face recognition and how these mechanisms vary as a function of face recognition ability.
-Future research could test whether these associations between recognition ability and computational mechanisms (signal-to-noise and response caution) extend to the ends of the ability spectrum, by comparing subgroups of recognisers such as individuals with prosopagnosia and super-recognisers.
+Moreover, future research could then test whether these associations between recognition ability and computational mechanisms (signal-to-noise and response caution) extend to the extreme ends of the ability spectrum, by comparing distinct subgroups such as individuals with prosopagnosia and "super-recognisers".
 Such work would clarify whether the computational mechanisms operate similarly across the entire range of face recognition ability or whether the extremes reflect qualitatively different processes, and would thereby constrain how theories account for individual differences in face recognition.
 
 Although our primary aim was to investigate how face recognition ability predicts computational processes involved in face perception, we conducted exploratory analyses using car recognition ability as a comparison.

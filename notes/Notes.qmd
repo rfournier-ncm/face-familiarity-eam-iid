@@ -244,3 +244,14 @@ Does this make sense? I think it will be easier to digest.
 And then we remove car plots from figs 7, 8, 9 also.
 
 - Discussion - is this statement an accurate reflection of response caution. in other words, can we say this? : "who voluntary increase their response caution to ensure a better performance given the task demands"
+
+
+## Sept 23
+
+- References - I think you should not have () in some places. You should have [] instead. e.g., The Cambridge Face Memory Task [@duchaineCambridgeFaceMemory2006]. By doing so, you avoid the double brackets around the whole thing and the year. I hope this makes sense. I change one already in the intro, but others need changing too.
+
+- Figure 5. Make the y axis scale fixed across panel b. Then it is easier to compare across panels.
+
+- In the discussion, when you talk about the Car recognition analyses, I would add a reference to Supp Materials. THen folks know they can get the data and plots if they want them. 
+
+- I might be tempted to delete the conclusion, as it is repetition. I'll leave that with you. It's not a big deal.
