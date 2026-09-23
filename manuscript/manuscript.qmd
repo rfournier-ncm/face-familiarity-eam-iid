@@ -437,8 +437,8 @@ The bayesian linear models were fitted using the brms R package [@brms].
 # create a df
 regression_formula <- tribble(
   ~Parameter          , ~Condition             , ~Ability     , ~Formula                                                                                     ,
-  "Median drift rate" , "familiarity:accuracy" , "Face"       , "Median drift rate:  0 + familiarity:accuracy + face_ability + (0|participant)"              ,
-  "Median drift rate" , "familiarity:accuracy" , "Face + Car" , "Median drift rate: 0 + familiarity:accuracy + face_ability + car_ability + (0|participant)" ,
+  "Median drift rate" , "familiarity:accuracy" , "Face"       , "Median drift rate:  0 + familiarity:accuracy + face_ability + (1|participant)"              ,
+  "Median drift rate" , "familiarity:accuracy" , "Face + Car" , "Median drift rate: 0 + familiarity:accuracy + face_ability + car_ability + (1|participant)" ,
 )
 ```
 
@@ -961,7 +961,7 @@ p_raw_params_drift <- ggplot(
     fontface = "bold",
     show.legend = FALSE
   ) +
-  facet_wrap(~drift, scales = "free_y", ncol = 3) +
+  facet_wrap(~drift, scales = "fixed", ncol = 3) +
   scale_colour_manual(values = myColors_4) +
   scale_fill_manual(values = myColors_4) +
   labs(
@@ -1779,7 +1779,7 @@ For example, cognitive models of face perception [@bruce1986understanding] could
 Moreover, future research could then test whether these associations between recognition ability and computational mechanisms (signal-to-noise and response caution) extend to the extreme ends of the ability spectrum, by comparing distinct subgroups such as individuals with prosopagnosia and "super-recognisers".
 Such work would clarify whether the computational mechanisms operate similarly across the entire range of face recognition ability or whether the extremes reflect qualitatively different processes, and would thereby constrain how theories account for individual differences in face recognition.
 
-Although our primary aim was to investigate how face recognition ability predicts computational processes involved in face perception, we conducted exploratory analyses using car recognition ability as a comparison.
+Although our primary aim was to investigate how face recognition ability predicts computational processes involved in face perception, we conducted exploratory analyses using car recognition ability as a comparison (see Supplementary Materials).
 Car recognition ability positively predicted drift rate for novel faces but not for learned faces, and unlike face recognition ability, it did not predict the discrimination between TRUE and FALSE drift rates for learned faces.
 These findings suggest that car and face recognition abilities relate differently to the computational processes underlying face recognition.
 We speculate that this pattern may reflect differences in information processing: object recognition relies primarily on featural processing, whereas face recognition increasingly integrates configural processing as faces become familiar [@cabezaFeaturesAreAlso2000; @madoleRoleObjectParts1995; @schwaningerRoleFeaturalConfigural2002; @tverskyObjectsPartsCategories1984].

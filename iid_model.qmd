@@ -15,7 +15,8 @@ knitr::opts_chunk$set(echo = TRUE, results = "markup")
 ## packages
 pkgs <- c(
   "cmdstanr", "tidyverse", "RColorBrewer", "patchwork",
-  "brms", "tidybayes", "bayesplot", "future", "parallel", "rstan"
+  "brms", "tidybayes", "bayesplot", "future", "parallel", 
+  "rstan", "here"
 )
 vapply(
   pkgs, library, logical(1), character.only = TRUE, logical.return = TRUE
@@ -296,8 +297,68 @@ b2_thresh <- fit_model(
 summary(b2_thresh)
 ```
 
-# 4. Model checks and diagnostics
+## fit car only models
 
-tbc
+### fit model b3 threshold
 
-chains, rhat etc.
+```{r}
+#| label: fit-b3-thresh
+
+## formula
+formula = bf(value ~ 0 + response + response:car + (1|pid))
+
+## check priors
+get_prior(formula, data = thresh_data, family = gaussian())
+
+## set priors
+priors <- c(
+  set_prior("normal(2, 1)", class = "b"),
+  set_prior("normal(0, 1)", class = "b", coef = c("responselearned:car",
+                                                  "responsenovel:car")),
+  set_prior("normal(0, 1)", class = "sd", group = "pid"),
+  set_prior("normal(0, 1)", class = "sigma")
+)
+
+## fit the model
+b3_thresh <- fit_model(
+  formula = formula,
+  prior = priors,
+  data = thresh_data,
+  file = "models/b3_thresh_car_only",
+)
+
+summary(b3_thresh)
+```
+
+### fit model b3 drift rate
+
+```{r}
+#| label: fit-b3-drift
+
+## formula
+formula = bf(value ~ 0 + condition + condition:car + (1|pid))
+
+## check priors
+get_prior(formula, data = drift_data, family = gaussian())
+
+## set priors
+priors <- c(
+  set_prior("normal(3, 1)", class = "b"),
+  set_prior("normal(0, 1)", class = "b", coef = c("conditionlearned.false:car",
+                                                  "conditionlearned.true:car",
+                                                  "conditionnovel.false:car",
+                                                  "conditionnovel.true:car")),
+  set_prior("normal(0, 1)", class = "sd", group = "pid"),
+  set_prior("normal(0, 1)", class = "sigma")
+)
+
+## fit the model
+b3_drift <- fit_model(
+  formula = formula,
+  prior = priors,
+  data = drift_data,
+  file = "models/b3_drift_car_only",
+)
+
+summary(b3_drift)
+```
