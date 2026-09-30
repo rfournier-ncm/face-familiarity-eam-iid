@@ -33,6 +33,8 @@ affiliations:
     department: Learning and Instruction Laboratory, Department of Humanities, Social and Political Sciences
 keywords: [face perception, memory, familiarity, person knowledge, decision models, evidence accumulation modelling]
 functions: [place]
+bibliography: supp-bibliography.bib
+csl: apa.csl
 format:
   preprint-typst:
     output-file: supplementary.pdf
@@ -123,11 +125,6 @@ pd2 <- position_dodge(1)
 
 {{< pagebreak >}}
 
-## Parameter recovery study
-
-
-
-{{< pagebreak >}}
 
 ## Priors
 
@@ -197,7 +194,7 @@ The chains showed satisfactory mixing as evidenced by the rhat values.
 #| fig-width: 8
 #| fig-height: 6
 
-
+knitr::include_graphics(here("manuscript", "figures", "chains.png"))
 ```
 
 ### Posterior predictive checks
@@ -211,6 +208,8 @@ The chains showed satisfactory mixing as evidenced by the rhat values.
 #| layout-nrow: 2
 #| out-height: "40%"
 
+knitr::include_graphics(here("manuscript", "figures", "pp_cdf.png"))
+knitr::include_graphics(here("manuscript", "figures", "pp_density.png"))
 ```
 
 ### Prior vs posterior plots
@@ -221,21 +220,22 @@ The chains showed satisfactory mixing as evidenced by the rhat values.
 #| fig-width: 8
 #| fig-height: 6
 
+knitr::include_graphics(here("manuscript", "figures", "pars.png"))
 ```
 
 {{< pagebreak >}}
 
 ## Subject-level drift rates and thresholds
 
-To visualize the individual variability of our parameters of interest, subject-level posterior distributions for threshold (Learned and Novel) and drift rate (Learned and novel) can be found in @fig-ind-param.
+To visualize the individual variability of our parameters of interest, distributions of the means of the subject-level posterior distributions for threshold (Learned and Novel) and drift rate (Learned and Novel) can be found in @fig-ind-param.
 
 ```{r}
 #| label: load-lba-data
 #| include: false
-theta_group <- read_csv(here("data/theta_group.csv"))
-theta_group_q <- read_csv(here("data/theta_group_q.csv"))
-theta_pid <- read_csv(here("data/theta_pid.csv"))
-theta_pid_q <- read_csv(here("data/theta_pid_q.csv"))
+theta_group <- read_csv(here("data/model/theta_group.csv"))
+theta_group_q <- read_csv(here("data/model/theta_group_q.csv"))
+theta_pid <- read_csv(here("data/model/theta_pid.csv"))
+theta_pid_q <- read_csv(here("data/model/theta_pid_q.csv"))
 ```
 
 ```{r}
@@ -275,8 +275,7 @@ drift_pid <- theta_pid |>
     condition = if_else(str_detect(param, "novel"), "Novel", "Learned"),
     accuracy = if_else(str_detect(param, "TRUE"), "true", "false"),
     condition = factor(condition, levels = c("Novel", "Learned")),
-    accuracy = factor(accuracy, levels = c("false", "true"))
-  )
+    accuracy = factor(accuracy, levels = c("false", "true")))
 
 # true - false per condition
 drift_acc_diff_group <- drift_group |>
@@ -318,6 +317,20 @@ post_dr <- drift_cond_diff_pid |>
     names_sep = "_"
   ) |>
   mutate(stimulus = factor(stimulus, levels = c("Novel", "Learned"))) 
+
+
+#Subject mean
+
+post_dr_mean <- post_dr |>
+  select(pid, .draw, stimulus, subject) |>
+  group_by(pid, stimulus) |>
+  summarise(mean_subject = mean(subject))
+post_th_mean <- post_th |>
+  select(pid, .draw, response, subject) |>
+  group_by(pid, response) |>
+  summarise(mean_subject = mean(subject))
+
+
 ```
 
 ```{r}
@@ -327,73 +340,178 @@ post_dr <- drift_cond_diff_pid |>
 # post_thr = threshold data frame  (pid, .draw, response, subject, group)
 # post_dr  = drift rate data frame (pid, .draw, stimulus, subject, group)
 
-# 0. Harmonise and combine
-panel_levels <- c("Threshold Learned", "Threshold Novel",
-                  "Drift rate Learned", "Drift rate Novel")
+#Harmonise and combine
+subj_all <- bind_rows(
+  post_th_mean |> rename(condition = response) |> mutate(parameter = "Threshold"),
+  post_dr_mean |> rename(condition = stimulus) |> mutate(parameter = "Drift rate")
+) |>
+  mutate(
+    parameter = factor(parameter, levels = c("Threshold", "Drift rate")),
+    condition = factor(condition, levels = c("Learned", "Novel"))
+  )
+
+#Median per panel (for a reference line)
+med_df <- subj_all |>
+  group_by(parameter, condition) |>
+  summarise(med = median(mean_subject), .groups = "drop")
+
+#Plot: rows = condition, columns = parameter
+indiv_density_plot <- ggplot(subj_all, aes(x = mean_subject, fill = condition)) +
+  geom_density(alpha = 0.6, colour = "grey20", linewidth = 0.3) +
+  geom_rug(aes(colour = condition), alpha = 0.4, length = unit(0.04, "npc"),
+           show.legend = FALSE) +
+  geom_vline(data = med_df, aes(xintercept = med), linetype = "dashed") +
+  facet_grid(condition ~ parameter, scales = "free") +
+  scale_fill_manual(values = myColors_4) +
+  scale_colour_manual(values = myColors_4) +
+  labs(x = "Participant mean posterior estimate", y = "Density") +
+  theme_bw() +
+  theme(legend.position = "none",
+        strip.background = element_rect(fill = "grey95"))
+
+subj_all |>
+  group_by(parameter, condition) |>
+  summarise(sd  = sd(mean_subject),
+            iqr = IQR(mean_subject),
+            min = min(mean_subject),
+            max = max(mean_subject),
+            .groups = "drop")
 
 post_all <- bind_rows(
   post_th |> rename(condition = response) |> mutate(parameter = "Threshold"),
-  post_dr  |> rename(condition = stimulus) |> mutate(parameter = "Drift rate")
+  post_dr |> rename(condition = stimulus) |> mutate(parameter = "Drift rate")
 ) |>
-  mutate(panel = factor(paste(parameter, condition), levels = panel_levels))
+  mutate(
+    parameter = factor(parameter, levels = c("Threshold", "Drift rate")),
+    condition = factor(condition, levels = c("Learned", "Novel"))
+  )
 
-# 1. Group-level draws: one row per draw x panel
-group_draws <- post_all |>
-  distinct(.draw, panel, group) |>
-  transmute(.draw, panel, label = "Group", value = group, level = "Group")
+post_all |>
+  group_by(parameter, condition, pid) |>
+  summarise(m = mean(subject), s = sd(subject), .groups = "drop") |>
+  group_by(parameter, condition) |>
+  summarise(sd_between   = sd(m),     # spread of the means
+            mean_post_sd = mean(s),   # typical uncertainty of one mean
+            ratio        = sd_between / mean_post_sd,
+            .groups = "drop")
 
-# 2. Participant-level draws
-pid_draws <- post_all |>
-  transmute(.draw, panel, label = as.character(pid), value = subject, level = "Participant")
+post_all |>
+  mutate(dev = subject - group) |>
+  group_by(parameter, condition, pid) |>
+  summarise(lo = quantile(dev, .025), hi = quantile(dev, .975), .groups = "drop") |>
+  group_by(parameter, condition) |>
+  summarise(prop_credibly_different = mean(lo > 0 | hi < 0), .groups = "drop")
 
-# 3. Order pids by posterior median within each panel (ascending, because the
-#    first level is drawn at the bottom), with the group row last = top
-key_levels <- pid_draws |>
-  group_by(panel, label) |>
-  summarise(med = median(value), .groups = "drop") |>
-  arrange(panel, med) |>
-  mutate(key = paste(label, panel, sep = "___")) |>
-  group_split(panel) |>
-  map(\(d) c(d$key, paste("Group", d$panel[1], sep = "___"))) |>
-  unlist()
+```
 
-plot_df <- bind_rows(group_draws, pid_draws) |>
-  mutate(key = factor(paste(label, panel, sep = "___"), levels = key_levels))
+```{r}
+#| label: table-diagnostics
+#| include: false
+pid_summary <- post_all |>
+  mutate(dev = subject - group) |>
+  group_by(parameter, condition, pid) |>
+  summarise(
+    m  = mean(subject),              # posterior mean
+    s  = sd(subject),                # posterior SD (uncertainty)
+    lo = quantile(dev, .025),        # 95% CI of deviation from group
+    hi = quantile(dev, .975),
+    .groups = "drop"
+  ) |>
+  mutate(credibly_different = lo > 0 | hi < 0)
 
-# Separator line between the pids and the group row, computed per panel
-sep_df <- pid_draws |>
-  group_by(panel) |>
-  summarise(y = n_distinct(label) + 0.5)
+# 2. Table 1: spread of the means vs. precision of each estimate
+tab_ratio <- pid_summary |>
+  group_by(parameter, condition) |>
+  summarise(
+    n_pid        = n(),
+    sd_between   = sd(m),
+    mean_post_sd = mean(s),
+    ratio        = sd_between / mean_post_sd,
+    .groups = "drop"
+  )
 
-# 4. Plot
-indiv_param_plot <- ggplot(plot_df, aes(x = value, y = key, fill = level)) +
-  stat_halfeye(.width = 0.95, point_interval = median_qi) +
-  geom_hline(data = sep_df, aes(yintercept = y), linetype = "dotted") +
-  scale_y_discrete(labels = \(x) sub("___.*", "", x)) +   # show pid / "Group" only
-  scale_fill_manual(values = c(Group = "#F8766D", Participant = "grey70")) +
-  facet_wrap(~ panel, ncol = 4, scales = "free") +
-  labs(x = "Subject-level posterior estimates", y = "", fill = NULL) +
-  theme_bw() +
-  theme(axis.text.y = element_blank())
+# 3. Table 2: participants credibly different from the group mean
+tab_cred <- pid_summary |>
+  group_by(parameter, condition) |>
+  summarise(
+    n_pid                   = n(),
+    n_different             = sum(credibly_different),
+    prop_credibly_different = mean(credibly_different),
+    .groups = "drop"
+  )
+
+
+
+#Joint table
+tab_all <- left_join(tab_ratio, tab_cred, by = c("parameter", "condition", "n_pid"))
+tab_out <- tab_all |>
+  select(parameter, condition, n_pid,
+         sd_between, mean_post_sd, ratio,
+         n_different, prop_credibly_different) |>
+  rename(
+    Parameter              = parameter,
+    Condition              = condition,
+    N                      = n_pid,
+    `SD between`           = sd_between,
+    `Mean posterior SD`    = mean_post_sd,
+    Ratio                  = ratio,
+    `N credibly different` = n_different,
+    Proportion             = prop_credibly_different
+  )
+
+tab_tt <- tt(
+  tab_out,
+  caption = "Between-Participant Variability in Subject-Level LBA Parameter Estimates Relative to Estimation Uncertainty",
+  notes = paste(
+    "SD between = standard deviation of participants' posterior means;",
+    "Mean posterior SD = average within-participant posterior standard deviation;",
+    "Ratio = SD between / Mean posterior SD;",
+    "N credibly different = number of participants whose 95% credible interval",
+    "of the deviation from the group-level estimate excluded zero."
+  )
+) |>
+  format_tt(j = c(4, 5, 6, 8), digits = 3, num_fmt = "decimal") |>
+  group_tt(j = list("Variability vs. precision" = 4:6,
+                    "Credibly different from group" = 7:8)) |>
+  style_tt(i = -1:0, bold = TRUE) |>
+  style_tt(i = 1:nrow(tab_out), fontsize = 0.7) |>
+  style_tt(i = -1:0, fontsize = 0.8)
+
+
 ```
 
 
 ```{r}
 #| label: fig-ind-param
-#| fig-cap: "Subject-level posterior distribution of the threshold parameter (Learned and Novel) and the drift rate parameter (Learned and Novel). The top distribution visualize the group-level distribution. Black points denotate the median of the distribtuiona and error bars the 95% QI intervals."
+#| fig-cap: "Distribution of subject-level posterior means of the threshold parameter (Learned and Novel) and the drift rate parameter (Learned and Novel). Black doted lines denotate the median parameter estimates and the small color lines denotate the individual subject mean parameter estimates."
 #| include: true
 #| fig-width: 10
-#| fig-height: 15
-indiv_param_plot
+#| fig-height: 7
+indiv_density_plot
 ```
+
+To assess whether participants' parameter estimates varied enough to support an individual-differences approach, we compared the spread of the subject-level posterior means with the precision of each individual estimate. Estimates from hierarchical models are shrunk toward the group mean, so their observed spread understates true between-participant variance. More importantly, variability is only meaningful when it exceeds the uncertainty of each estimate [@haines2025tutorial; @hedge2018reliability; @rouder2019psychometrics]. For each parameter and condition, we therefore computed the ratio of the between-participant SD of posterior means to the average within-participant posterior SD. Ratios were [1.88–2.04] for threshold and [1.307–1.535] for drift rate, indicating that participants differed by more than the uncertainty in their individual estimates. As a complementary check, we computed, for each participant, the 95% credible interval of their deviation from the group-level estimate. For threshold, 28.3% (learned) and 29.7% (novel) of participants deviated credibly from the group mean; for drift rate, the proportions were 11.0% (learned) and 18.3% (novel). All proportions exceed the maximum of 5% expected if participants did not differ, which is a conservative benchmark given hierarchical shrinkage. Together, these results indicate substantial between-participant variability.
+
+```{r}
+#| label: tbl-diagnostics
+#| tbl-cap: "Between-Participant Variability in Subject-Level LBA Parameter Estimates Relative to Estimation Uncertainty"
+#| include: true
+#| tbl-height: 10
+#| tbl-width: 15
+tab_tt
+```
+
+
 
 {{< pagebreak >}}
 
-## Point estimate correlations with Cambridge Car Memory score and Cambridge Face Memory scores
+## Point estimate correlations between LBA parameters and Cambridge Car Memory score/Cambridge Face Memory scores
 
+To estimate the association between LBA parameters and car recognition ability, we computed the linear relationship between the median of the posterior distribution of each estimated parameters of interest and the car recognition ability scores centred (z-transformed).
+These relationships can be seen in @fig-corr-point-estimates-supp. Correlations with the face recognition scores were added to facilitate comparisons between these correlations
 
 ```{r}
-#| label: load-Cambridge-test
+#| label: load-Cambridge-test-supp
 #| include: false
 ## read in the pid data
 cambridge_acc_pid <- read_csv(
@@ -423,7 +541,7 @@ cam_car <- cambridge_acc_pid |>
 ```
 
 ```{r}
-#| label: corr-point-estimates
+#| label: corr-point-estimates-supp
 #| include: false
 cor_data <- theta_pid_q |>
   select(pid, param, value) |>
@@ -542,7 +660,7 @@ cor_labels_drift <- cor_long_drift |>
 ```
 
 ```{r}
-#| label: prepare-plot-corr-point-estimate
+#| label: prepare-plot-corr-point-estimate-supp
 #| include: false
 # plot thresh
 p_raw_params_thresh <- ggplot(
@@ -605,7 +723,7 @@ p_raw_params_drift <- ggplot(
 
 
 ```{r}
-#| label: fig-corr-point-estimates
+#| label: fig-corr-point-estimates-supp
 #| fig-cap: "Point estimates correlations with recognition scores. In (b), drift rate (TRUE) reflects the accumulation of evidence when the response is correct and drift rate (FALSE) the accumulation of evidence when the response is incorrect. Drift rate (TRUE-FALSE) represent the signal-to-noise ratio provided by the stimulus."
 #| fig-subcap: 
 #|  - "Median threshold correlations with recognition ability"
@@ -622,10 +740,10 @@ p_raw_params_drift
 
 ## Plausible value correlations with Cambridge Car Memory scores and Cambridge Face Memory scores
 
-We calculated the posterior correlations distributions between car recognition ability and our parameters of interest. Correlations with threshold can be found in @fig-plausible-corr-thresh and correlations with drift rate in @fig-plausible-corr-drift. @tbl-plausible-cor summarize these distributions. The posterior correlations with face recognition ability were added to facilitate comparisons between the two memory scores. 
+We calculated the posterior correlations distributions between car recognition ability and our parameters of interest. Correlations with threshold can be found in @fig-plausible-corr-thresh-supp and correlations with drift rate in @fig-plausible-corr-drift-supp. @tbl-plausible-cor-supp summarize these distributions. The posterior correlations with face recognition ability were added to facilitate comparisons between the two memory scores. 
 
 ```{r}
-#| label: plausible-value-wrangle
+#| label: plausible-value-wrangle-supp
 #| include: false
 param_cols <- c(
   "v_Snovel_lMTRUE",
@@ -736,7 +854,7 @@ p_thresh_left <- ggplot(
 ```
 
 ```{r}
-#| label: create-plausible-value-corr-plots-drift
+#| label: create-plausible-value-corr-plots-drift-supp
 #| include: false
 # first panel - drift rate true and false
 pv_drift_true_false <- pv_cors |>
@@ -820,7 +938,7 @@ p_drift_mid <- ggplot(
 ```
 
 ```{r}
-#| label: fig-plausible-corr-thresh
+#| label: fig-plausible-corr-thresh-supp
 #| fig-cap: "Plausible correlation values distributions between threshold by response and recognition abilities. Points denote the median of the distribution and error bars represent 95% quantile intervals."
 #| warning: false
 #| fig-width: 10
@@ -829,7 +947,7 @@ p_thresh_left
 ```
 
 ```{r}
-#| label: fig-plausible-corr-drift
+#| label: fig-plausible-corr-drift-supp
 #| fig-cap: "Plausible correlation values distributions between drift rate parameters by stimulus and recognition abilities. Points denote the median of the distribution and error bars represent 95% quantile intervals."
 #| fig-subcap: 
 #|  - "Plausible value correlations between drift rate (TRUE) and drift rate (FALSE) and recognition abilities for both stimulus conditions"
@@ -844,7 +962,7 @@ p_drift_mid
 
 
 ```{r}
-#| label: tbl-plausible-cor
+#| label: tbl-plausible-cor-supp
 #| tbl-cap: "Median r and 95% quantile intervals of the plausible value correlations between LBA parameters and recogntion ability scores."
 #| include: true
 #| tbl-height: 10
@@ -960,6 +1078,13 @@ tt_table
 ## Bayesian linear regression models for threshold parameter
 
 We ran two Bayesian linear regression models to estimate if face recognition ability could predict the threshold parameter (response cautions) for both the Learned and Novel responses. The models description can be found in @tbl-regression-model-tresh-formula. 
+
+Following our preregistration, the predictions of the two regression models for threshold can be seen in @fig-prediction-thresh.
+From visual inspection, the response caution seems to increase when face recognition increases for both the Learned and Novel response.
+This pattern of prediction remains the same when accounting for car recognition ability for the "Learned" response but not for the "Novel" response.
+Inspection of the posterior predictions in @tbl-pred-acc-thresh shows that some of these predicted intervals overlap with 0, and that caution is needed when extrapolating these results.
+
+{{< pagebreak >}}
 
 ```{r}
 #| label: regression-model-formula-thresh-face
@@ -1128,8 +1253,6 @@ thr_tab <- slopes |>
     `l-95% CI`  = .lower,
     `u-95% CI`  = .upper
   )
-
-
 ```
 
 
@@ -1144,7 +1267,7 @@ p_contrast_b1_b2
 ```
 
 ```{r}
-#| label: tbl-pred-acc
+#| label: tbl-pred-acc-thresh
 #| tbl-cap: "Estimates and 95% quantile intervals of the predicted threshold values slope from face recognition ability scores"
 #| include: true
 #| tbl-height: 10
@@ -1156,13 +1279,14 @@ tt(thr_tab) |>
   style_tt(i = 0, fontsize = 0.8)
 ```
 
+{{< pagebreak >}}
 
 ## Bayesian linear regression models: Car predictor
 
-As an exploratory analysis, we were interested to see how does object recognition ability predict the drift rate and threshold values from the face recognition task. 
+As an exploratory analysis, we were interested to see how does object recognition ability predict the drift rate and threshold values estimated from our face recognition task. 
 We ran two Bayesian linear regression models: the first one to estimate if object recognition ability could predict the response caution for learned and novel response and the second one to estimate if object recognition ability could predict the different drift rates (TRUE, FALSE and TRUE-FALSE) for learned and novel face stimuli. The models specificity can be found in @tbl-regression-model-formula-car. 
 
-{{< pagebreak >}}
+
 
 ```{r}
 #| label: regression-model-formula-car
@@ -1343,7 +1467,7 @@ learned_novel_contrast <- discrim_contrast |>
 *Drift rate (TRUE and FALSE)*: Regarding the drift rate (TRUE) and (FALSE), visual inspections of the predictions show that, as car recognition ability increases, both drift rate (TRUE and FALSE) for both stimuli conditions (Learned and Novel) increases as well. In summary, as car recognition ability increases, the accumulation of signal (drift rate TRUE) and the accumulation of noise (FALSE) increase, regardless of the stimulus condition (@fig-prediction-drift-car). 
 
 ```{r}
-#| label: ppreds-drift-plot-2x2
+#| label: ppreds-drift-plot-2x2-supp
 #| include: false
 condition <- c("novel" = "Novel", "learned" = "Learned")
 plot_preds_2x2 <- function(preds, title) {
@@ -1384,7 +1508,7 @@ p_2x2_b3
 ```
 
 ```{r}
-#| label: ppreds-drift-constrasts
+#| label: ppreds-drift-constrasts-supp
 #| include: false
 ##Face model
 # split condition back into learned/novel and true/false, then difference
@@ -1465,3 +1589,5 @@ p_contrast_b1 <- plot_preds_contrast(diff_summary_car, "")
 #| fig-height: 7
 p_contrast_b1
 ```
+
+{{< pagebreak >}}

@@ -40,7 +40,7 @@ functions: [place, appendix]
 format:
   html:
     toc: true
-    toc-depth: 3
+    toc-depth: 3 
     toc-expand: true
     fontsize: 14pt
     mainfont: Fira Sans
@@ -478,10 +478,10 @@ Posterior distributions for threshold and drift rate parameters are visualized i
 ```{r}
 #| label: load-lba-data
 #| include: false
-theta_group <- read_csv(here("data/theta_group.csv"))
-theta_group_q <- read_csv(here("data/theta_group_q.csv"))
-theta_pid <- read_csv(here("data/theta_pid.csv"))
-theta_pid_q <- read_csv(here("data/theta_pid_q.csv"))
+theta_group <- read_csv(here("data/model/theta_group.csv"))
+theta_group_q <- read_csv(here("data/model/theta_group_q.csv"))
+theta_pid <- read_csv(here("data/model/theta_pid.csv"))
+theta_pid_q <- read_csv(here("data/model/theta_pid_q.csv"))
 ```
 
 ```{r}

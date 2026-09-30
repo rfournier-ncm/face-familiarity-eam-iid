@@ -3,14 +3,11 @@
 .RData
 .Ruserdata
 .DS_Store
-/from_raph
 /sandpit
 **/test
 /models
 data/raw_data.csv
-data/theta_pid.csv
-data/raw_data.csv
-data/theta_pid.csv
+data/model/theta_pid.csv
 
 /.quarto/
 **/*.quarto_ipynb
