@@ -192,7 +192,7 @@ The chains showed satisfactory mixing as evidenced by the rhat values.
 #| label: fig-chains-exp1
 #| fig-cap: "MCMC chains"
 #| fig-width: 8
-#| fig-height: 6
+#| fig-height: 5
 
 knitr::include_graphics(here("manuscript", "figures", "chains.png"))
 ```
@@ -430,52 +430,33 @@ tab_ratio <- pid_summary |>
     .groups = "drop"
   )
 
-# 3. Table 2: participants credibly different from the group mean
-tab_cred <- pid_summary |>
-  group_by(parameter, condition) |>
-  summarise(
-    n_pid                   = n(),
-    n_different             = sum(credibly_different),
-    prop_credibly_different = mean(credibly_different),
-    .groups = "drop"
-  )
-
-
-
 #Joint table
-tab_all <- left_join(tab_ratio, tab_cred, by = c("parameter", "condition", "n_pid"))
-tab_out <- tab_all |>
-  select(parameter, condition, n_pid,
-         sd_between, mean_post_sd, ratio,
-         n_different, prop_credibly_different) |>
+tab_out <- tab_ratio |>
+  select(parameter, condition,
+         sd_between, mean_post_sd, ratio) |>
   rename(
     Parameter              = parameter,
     Condition              = condition,
-    N                      = n_pid,
-    `SD between`           = sd_between,
-    `Mean posterior SD`    = mean_post_sd,
-    Ratio                  = ratio,
-    `N credibly different` = n_different,
-    Proportion             = prop_credibly_different
+    `Between`              = sd_between,
+    `Within`               = mean_post_sd,
+    Ratio                  = ratio
   )
 
 tab_tt <- tt(
   tab_out,
-  caption = "Between-Participant Variability in Subject-Level LBA Parameter Estimates Relative to Estimation Uncertainty",
+  width = 1,   # span the full text width
   notes = paste(
-    "SD between = standard deviation of participants' posterior means;",
-    "Mean posterior SD = average within-participant posterior standard deviation;",
-    "Ratio = SD between / Mean posterior SD;",
-    "N credibly different = number of participants whose 95% credible interval",
-    "of the deviation from the group-level estimate excluded zero."
+    "Between = standard deviation of participants' posterior means;",
+    "Within = average within-participant posterior standard deviation;",
+    "Ratio = Between / Within."
   )
 ) |>
-  format_tt(j = c(4, 5, 6, 8), digits = 3, num_fmt = "decimal") |>
-  group_tt(j = list("Variability vs. precision" = 4:6,
-                    "Credibly different from group" = 7:8)) |>
+  format_tt(j = 3:5, digits = 3, num_fmt = "decimal", num_zero = TRUE) |>
+  group_tt(j = list("Variability vs. precision" = 3:5)) |>
   style_tt(i = -1:0, bold = TRUE) |>
   style_tt(i = 1:nrow(tab_out), fontsize = 0.7) |>
-  style_tt(i = -1:0, fontsize = 0.8)
+  style_tt(i = -1:0, fontsize = 0.8) |>
+  style_tt(i = "notes", fontsize = 0.7)
 
 
 ```
@@ -490,20 +471,17 @@ tab_tt <- tt(
 indiv_density_plot
 ```
 
-To assess whether participants' parameter estimates varied enough to support an individual-differences approach, we compared the spread of the subject-level posterior means with the precision of each individual estimate. Estimates from hierarchical models are shrunk toward the group mean, so their observed spread understates true between-participant variance. More importantly, variability is only meaningful when it exceeds the uncertainty of each estimate [@haines2025tutorial; @hedge2018reliability; @rouder2019psychometrics]. For each parameter and condition, we therefore computed the ratio of the between-participant SD of posterior means to the average within-participant posterior SD. Ratios were [1.88–2.04] for threshold and [1.307–1.535] for drift rate, indicating that participants differed by more than the uncertainty in their individual estimates. As a complementary check, we computed, for each participant, the 95% credible interval of their deviation from the group-level estimate. For threshold, 28.3% (learned) and 29.7% (novel) of participants deviated credibly from the group mean; for drift rate, the proportions were 11.0% (learned) and 18.3% (novel). All proportions exceed the maximum of 5% expected if participants did not differ, which is a conservative benchmark given hierarchical shrinkage. Together, these results indicate substantial between-participant variability.
+To assess whether participants' parameter estimates varied enough to support an individual-differences approach, we compared the spread of the subject-level posterior means with the precision of each individual estimate. Estimates from hierarchical models are shrunk toward the group mean, so their observed spread understates true between-participant variance. More importantly, variability is only meaningful when it exceeds the uncertainty of each estimate [@haines2025tutorial; @hedge2018reliability; @rouder2019psychometrics]. For each parameter and condition, we therefore computed the ratio of the between-participant SD of posterior means to the average within-participant posterior SD. Ratios were 1.88-2.04 for threshold and 1.307–1.535 for drift rate, indicating that participants differed by more than the uncertainty in their individual estimates.Together, these results indicate substantial between-participant variability.
+
+{{< pagebreak >}}
 
 ```{r}
 #| label: tbl-diagnostics
-#| tbl-cap: "Between-Participant Variability in Subject-Level LBA Parameter Estimates Relative to Estimation Uncertainty"
+#| tbl-cap: "Between-Participant Variability in Subject-Level LBA Parameter Estimates Relative to Within-Participant Estimation Uncertainty"
 #| include: true
-#| tbl-height: 10
-#| tbl-width: 15
 tab_tt
 ```
 
-
-
-{{< pagebreak >}}
 
 ## Point estimate correlations between LBA parameters and Cambridge Car Memory score/Cambridge Face Memory scores
 
@@ -1110,8 +1088,8 @@ regression_formula |>
 ```{r}
 #| label: read-thresh-models
 #| include: false
-b1_thresh <- readRDS(here("models/b1_thresh_face.rds"))
-b2_thresh <- readRDS(here("models/b2_thresh_car.rds"))
+b1_thresh <- readRDS(here("models/iid/b1_thresh_face.rds"))
+b2_thresh <- readRDS(here("models/iid/b2_thresh_car.rds"))
 ```
 
 ```{r}
@@ -1312,8 +1290,8 @@ regression_formula |>
 ```{r}
 #| label: read-models-car
 #| include: false
-b3_thresh <- readRDS(here("models/b3_thresh_car_only.rds"))
-b3_drift <- readRDS(here("models/b3_drift_car_only.rds"))
+b3_thresh <- readRDS(here("models/iid/b3_thresh_car_only.rds"))
+b3_drift <- readRDS(here("models/iid/b3_drift_car_only.rds"))
 ```
 
 ```{r}
